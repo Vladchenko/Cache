@@ -52,24 +52,25 @@ public class Processing {
             System.out.println("Level 1 cache size has been set to " 
                     + level1CacheSize);
         } catch (NumberFormatException nfe) {
-            System.out.println("Level 1 cache size is not specified ! Used by default.");
+            System.out.println("Level 1 cache size is specified in a wrong way ! Used by default.");
             level1CacheSize = LEVEL1CACHECSIZEDEFAULT;
         }
         
-        // Processing a level1 cache size value
+        // Processing a level2 cache size value
         number = arguments.get("level2Cache");
         try {
             level2CacheSize = Integer.parseInt(number);
-            System.out.println("Level 2 cache size has been set to " 
-                    + level2CacheSize);
             if (level2CacheSize < LEVEL2CACHEMINIMUMVALUE) {
                 throw new NumberFormatException();
             }
+            System.out.println("Level 2 cache size has been set to " 
+                    + level2CacheSize);
         } catch (NumberFormatException nfe) {
-            System.out.println("Level 2 cache size is not specified ! Used by default.");
+            System.out.println("Level 2 cache size is specified in a wrong way ! Used by default.");
             level2CacheSize = LEVEL2CACHECSIZEDEFAULT;
         }
 
+        // Uncomment in case want to see a full list of key-value pairs
 //        printArgs(arguments);
     }
 
