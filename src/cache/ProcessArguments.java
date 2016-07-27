@@ -60,12 +60,12 @@ public class ProcessArguments {
             System.out.println("Level 2 cache size is specified in a wrong way ! Used by default.");
             oRepository.setLevel2CacheSize(oRepository.getLEVEL2CACHECSIZEDEFAULT());
         }
-        setCacheKind(arguments.get("cachekind"));
-        if (getCacheKind().isEmpty()) {
+        oRepository.setCacheKind(arguments.get("cachekind"));
+        if (oRepository.getCacheKind().isEmpty()) {
             System.out.println("cachekind is not set, used default - least recently used");
-            setCacheKind("lru");
+            oRepository.setCacheKind("lru");
         } else {
-            System.out.println("cachekind is set to - " + getCacheKind());
+            System.out.println("cachekind is set to - " + oRepository.getCacheKind());
         }
 
         // Uncomment in case want to see a full list of key-value pairs
@@ -86,34 +86,4 @@ public class ProcessArguments {
         }
     }
 
-    //<editor-fold defaultstate="collapsed" desc="getters & setters">
-
-    /**
-     * @return the arguments
-     */
-    public Map<String, String> getArguments() {
-        return arguments;
-    }
-
-    /**
-     * @param arguments the arguments to set
-     */
-    public void setArguments(Map<String, String> arguments) {
-        this.arguments = arguments;
-    }
-
-    /**
-     * @return the cacheKind
-     */
-    public String getCacheKind() {
-        return cacheKind;
-    }
-
-    /**
-     * @param cacheKind the cacheKind to set
-     */
-    public void setCacheKind(String cacheKind) {
-        this.cacheKind = cacheKind;
-    }
-//</editor-fold>
 }
