@@ -12,18 +12,18 @@ import java.util.Map;
  *
  * @author v.yanchenko
  */
-public class Processing {
+public class ProcessArguments {
 
     // Keeps a couples of "value=key" arguments
     Map<String, String> arguments = new HashMap();
+    // Default sizes for cache (in case defined ones are wrong)
     private static final int LEVEL1CACHECSIZEDEFAULT = 10;
     private static final int LEVEL2CACHECSIZEDEFAULT = 10;
+    // Minimum size that cache is alowed to have 
     private static final int LEVEL1CACHEMINIMUMVALUE = 1;
     private static final int LEVEL2CACHEMINIMUMVALUE = 1;
     private int level1CacheSize = 0;
     private int level2CacheSize = 0;
-    // Keeps a strings of arguments
-//    List<String> lstStringArgs = new ArrayList<String>();
 
     // Putting a couples of "value=key" to a map
     public void processArgs(String[] args) {
@@ -42,7 +42,7 @@ public class Processing {
             }
         }
         
-        // Processing a level1 cache size value
+        // ProcessArguments a level1 cache size value
         number = arguments.get("level1Cache");
         try {
             level1CacheSize = Integer.parseInt(number);
@@ -56,7 +56,7 @@ public class Processing {
             level1CacheSize = LEVEL1CACHECSIZEDEFAULT;
         }
         
-        // Processing a level2 cache size value
+        // ProcessArguments a level2 cache size value
         number = arguments.get("level2Cache");
         try {
             level2CacheSize = Integer.parseInt(number);

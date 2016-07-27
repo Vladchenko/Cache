@@ -11,7 +11,7 @@ package cache;
  */
 public class Cache {
     
-    Processing prc = new Processing();
+    ProcessArguments prc = new ProcessArguments();
 
     /**
      * @param args the command line arguments
