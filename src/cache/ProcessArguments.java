@@ -14,18 +14,8 @@ import java.util.Map;
  */
 public class ProcessArguments {
 
-    // Keeps a couples of "value=key" of a command line arguments
-    private Map<String, String> arguments = new HashMap();
-    // Default sizes for cache (in case defined ones are wrong)
-    private static final int LEVEL1CACHECSIZEDEFAULT = 10;
-    private static final int LEVEL2CACHECSIZEDEFAULT = 10;
-    // Minimum size that cache is allowed to have 
-    private static final int LEVEL1CACHEMINIMUMVALUE = 1;
-    private static final int LEVEL2CACHEMINIMUMVALUE = 1;
-    private int level1CacheSize = 0;
-    private int level2CacheSize = 0;
-    private String cacheKind;
-
+    public static Repository oRepository = Repository.getInstance();
+    
     // Putting a couples of "value=key" to a map
     public void processArgs(String[] args) {
         String number;
@@ -46,29 +36,29 @@ public class ProcessArguments {
         // ProcessArguments a level1 cache size value
         number = arguments.get("level1Cache");
         try {
-            setLevel1CacheSize(Integer.parseInt(number));
-            if (getLevel1CacheSize() < getLEVEL1CACHEMINIMUMVALUE()) {
+            oRepository.setLevel1CacheSize(Integer.parseInt(number));
+            if (oRepository.getLevel1CacheSize() < oRepository.getLEVEL1CACHEMINIMUMVALUE()) {
                 throw new NumberFormatException();
             }
             System.out.println("Level 1 cache size is set to "
-                    + getLevel1CacheSize());
+                    + oRepository.getLevel1CacheSize());
         } catch (NumberFormatException nfe) {
             System.out.println("Level 1 cache size is specified in a wrong way ! Used by default.");
-            setLevel1CacheSize(getLEVEL1CACHECSIZEDEFAULT());
+            oRepository.setLevel1CacheSize(oRepository.getLEVEL1CACHECSIZEDEFAULT());
         }
 
         // ProcessArguments a level2 cache size value
         number = arguments.get("level2Cache");
         try {
-            setLevel2CacheSize(Integer.parseInt(number));
-            if (getLevel2CacheSize() < getLEVEL2CACHEMINIMUMVALUE()) {
+            oRepository.setLevel2CacheSize(Integer.parseInt(number));
+            if (oRepository.getLevel2CacheSize() < oRepository.getLEVEL2CACHEMINIMUMVALUE()) {
                 throw new NumberFormatException();
             }
             System.out.println("Level 2 cache size is set to "
-                    + getLevel2CacheSize());
+                    + oRepository.getLevel2CacheSize());
         } catch (NumberFormatException nfe) {
             System.out.println("Level 2 cache size is specified in a wrong way ! Used by default.");
-            setLevel2CacheSize(getLEVEL2CACHECSIZEDEFAULT());
+            oRepository.setLevel2CacheSize(oRepository.getLEVEL2CACHECSIZEDEFAULT());
         }
         setCacheKind(arguments.get("cachekind"));
         if (getCacheKind().isEmpty()) {
@@ -97,33 +87,6 @@ public class ProcessArguments {
     }
 
     //<editor-fold defaultstate="collapsed" desc="getters & setters">
-    /**
-     * @return the LEVEL1CACHECSIZEDEFAULT
-     */
-    public static int getLEVEL1CACHECSIZEDEFAULT() {
-        return LEVEL1CACHECSIZEDEFAULT;
-    }
-
-    /**
-     * @return the LEVEL2CACHECSIZEDEFAULT
-     */
-    public static int getLEVEL2CACHECSIZEDEFAULT() {
-        return LEVEL2CACHECSIZEDEFAULT;
-    }
-
-    /**
-     * @return the LEVEL1CACHEMINIMUMVALUE
-     */
-    public static int getLEVEL1CACHEMINIMUMVALUE() {
-        return LEVEL1CACHEMINIMUMVALUE;
-    }
-
-    /**
-     * @return the LEVEL2CACHEMINIMUMVALUE
-     */
-    public static int getLEVEL2CACHEMINIMUMVALUE() {
-        return LEVEL2CACHEMINIMUMVALUE;
-    }
 
     /**
      * @return the arguments
@@ -137,34 +100,6 @@ public class ProcessArguments {
      */
     public void setArguments(Map<String, String> arguments) {
         this.arguments = arguments;
-    }
-
-    /**
-     * @return the level1CacheSize
-     */
-    public int getLevel1CacheSize() {
-        return level1CacheSize;
-    }
-
-    /**
-     * @param level1CacheSize the level1CacheSize to set
-     */
-    public void setLevel1CacheSize(int level1CacheSize) {
-        this.level1CacheSize = level1CacheSize;
-    }
-
-    /**
-     * @return the level2CacheSize
-     */
-    public int getLevel2CacheSize() {
-        return level2CacheSize;
-    }
-
-    /**
-     * @param level2CacheSize the level2CacheSize to set
-     */
-    public void setLevel2CacheSize(int level2CacheSize) {
-        this.level2CacheSize = level2CacheSize;
     }
 
     /**
