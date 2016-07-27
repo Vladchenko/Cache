@@ -12,6 +12,34 @@ import java.util.Map;
  *
  * @author v.yanchenko
  */
-public class RAMCache {
-    Map<String,String> objects = new HashMap();
+public class RAMCache implements ICache {
+    
+    Map<String,Object> objects = new HashMap();
+
+    @Override
+    public void clearCache() {
+        objects.clear();
+    }
+
+    @Override
+    public Object getObject(String key) {
+        return objects.get(key);
+    }
+
+    @Override
+    public void addObject(String guid, Object obj) {
+        objects.put(guid, obj);
+    }
+
+    @Override
+    public void removeObject(String key) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int getCacheSize() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
 }

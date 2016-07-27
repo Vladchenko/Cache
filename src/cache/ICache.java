@@ -11,8 +11,8 @@ package cache;
  */
 public interface ICache {
     public void clearCache();
-    public Object getObject();
-    public void addObject();
-    public void removeObject(Object obj);
+    public Object getObject(String key);
+    public void addObject(String guid, Object obj);
+    public void removeObject(String key);
     public int getCacheSize();
 }
