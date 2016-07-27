@@ -36,6 +36,15 @@ public class RAMCache implements ICache {
     @Override
     public void removeObject(String key) {
         objects.remove(key);
+//        if (lfu) {
+//            remove the one with a least frequency
+//        }
+//        if (lru) {
+//            remove the one that used a long time ago
+//        }
+//        if (mru) {
+//            remove the one that used at most recent time
+//        }
     }
 
     @Override
