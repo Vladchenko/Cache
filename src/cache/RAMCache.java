@@ -15,6 +15,7 @@ import java.util.Map;
 public class RAMCache implements ICache {
     
     Map<String,Object> objects = new HashMap();
+    Map<String,Integer> frequency = new HashMap();
 
     @Override
     public void clearCache() {
@@ -29,16 +30,17 @@ public class RAMCache implements ICache {
     @Override
     public void addObject(String guid, Object obj) {
         objects.put(guid, obj);
+        frequency.put(guid, frequency.get(obj) + 1);
     }
 
     @Override
     public void removeObject(String key) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        objects.remove(key);
     }
 
     @Override
     public int getCacheSize() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return objects.size();
     }
 
 
