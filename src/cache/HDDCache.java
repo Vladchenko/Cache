@@ -34,16 +34,6 @@ public class HDDCache implements Serializable, ICache {
 
     @Override
     public Object getObject(String uid) throws IOException, FileNotFoundException {
-        FileOutputStream fos = null;
-        ObjectOutputStream ous = null;
-        // Deserialize object
-        fos = new FileOutputStream(Repository.FILEPREFIX + uid);
-        ous = new ObjectOutputStream(fos);
-        return ous;
-    }
-
-    @Override
-    public void addObject(String uid, Object obj) throws IOException, FileNotFoundException {
         FileInputStream fos = null;
         ObjectInputStream ous = null;
         // Serialize object
@@ -52,6 +42,24 @@ public class HDDCache implements Serializable, ICache {
         if (ous != null) {
             objects.put(uid, obj);
         }
+        return ous;
+    }
+
+    @Override
+    public void addObject(String uid, Object obj) throws IOException, FileNotFoundException {
+        FileOutputStream fos = null;
+        ObjectOutputStream ous = null;
+        if (ous != null) {
+            objects.put(uid, obj);
+        }
+        // Deserialize object
+        fos = new FileOutputStream(Repository.FILEPREFIX + uid);
+        ous = new ObjectOutputStream(fos);
+        ous.writeObject(obj);
+        ous.flush();
+        ous.close();
+        fos.flush();
+        fos.close();
     }
 
     @Override
