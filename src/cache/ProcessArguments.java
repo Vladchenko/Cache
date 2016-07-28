@@ -62,7 +62,7 @@ public class ProcessArguments {
         }
         oRepository.setCacheKind(arguments.get("cachekind"));
         if (oRepository.getCacheKind() == null
-                || oRepository.getCacheKind().isEmpty()) {
+                ||  oRepository.getCacheKind().isEmpty()) {
             System.out.println("cachekind is not set, used default - least recently used");
             oRepository.setCacheKind("lru");
         } else {
