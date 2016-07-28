@@ -37,31 +37,32 @@ public class ProcessArguments {
         number = arguments.get("level1Cache");
         try {
             oRepository.setLevel1CacheSize(Integer.parseInt(number));
-            if (oRepository.getLevel1CacheSize() < oRepository.getLEVEL1CACHEMINIMUMVALUE()) {
+            if (oRepository.getLevel1CacheSize() < Repository.LEVEL1CACHEMINIMUMVALUE) {
                 throw new NumberFormatException();
             }
             System.out.println("Level 1 cache size is set to "
                     + oRepository.getLevel1CacheSize());
         } catch (NumberFormatException nfe) {
             System.out.println("Level 1 cache size is specified in a wrong way ! Used by default.");
-            oRepository.setLevel1CacheSize(oRepository.getLEVEL1CACHECSIZEDEFAULT());
+            oRepository.setLevel1CacheSize(Repository.LEVEL1CACHECSIZEDEFAULT);
         }
 
         // ProcessArguments a level2 cache size value
         number = arguments.get("level2Cache");
         try {
             oRepository.setLevel2CacheSize(Integer.parseInt(number));
-            if (oRepository.getLevel2CacheSize() < oRepository.getLEVEL2CACHEMINIMUMVALUE()) {
+            if (oRepository.getLevel2CacheSize() < Repository.LEVEL2CACHEMINIMUMVALUE) {
                 throw new NumberFormatException();
             }
             System.out.println("Level 2 cache size is set to "
                     + oRepository.getLevel2CacheSize());
         } catch (NumberFormatException nfe) {
             System.out.println("Level 2 cache size is specified in a wrong way ! Used by default.");
-            oRepository.setLevel2CacheSize(oRepository.getLEVEL2CACHECSIZEDEFAULT());
+            oRepository.setLevel2CacheSize(Repository.LEVEL2CACHECSIZEDEFAULT);
         }
         oRepository.setCacheKind(arguments.get("cachekind"));
-        if (oRepository.getCacheKind().isEmpty()) {
+        if (oRepository.getCacheKind() == null
+                || oRepository.getCacheKind().isEmpty()) {
             System.out.println("cachekind is not set, used default - least recently used");
             oRepository.setCacheKind("lru");
         } else {
