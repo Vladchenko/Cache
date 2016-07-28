@@ -1,0 +1,6 @@
+Create a configurable two-level cache (for caching objects).
+Level 1 is memory, level 2 is file system. Config params should one specify cache strategies and max size of level 1 and 2.
+
+http://0agr.ru/blog/2011/08/05/testovoe-zadanie-configurable-two-level-cache/ - TwoLevelCache.zip
+
+level1Cache=12 level2Cache=20 = 12= == =11 cachekind=lru

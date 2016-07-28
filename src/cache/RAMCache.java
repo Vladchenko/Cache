@@ -52,5 +52,4 @@ public class RAMCache implements ICache {
         return objects.size();
     }
 
-
 }

@@ -33,6 +33,7 @@ public class HDDCache implements Serializable, ICache {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    // Uploads file to RAM. Checked for correct performance.
     @Override
     public Object getObject(String uid) throws IOException, 
             FileNotFoundException, ClassNotFoundException {
@@ -53,6 +54,7 @@ public class HDDCache implements Serializable, ICache {
         return obj;
     }
 
+    // Saves file to disk. Checked for correct performance.
     @Override
     public void addObject(String uid, Object obj) throws IOException, 
             FileNotFoundException {
