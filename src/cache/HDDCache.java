@@ -34,14 +34,20 @@ public class HDDCache implements Serializable, ICache {
 
     @Override
     public Object getObject(String uid) throws IOException, FileNotFoundException {
+        Object obj;
         FileInputStream fos = null;
         ObjectInputStream ous = null;
         // Serialize object
         fos = new FileInputStream(Repository.FILEPREFIX + uid);
         ous = new ObjectInputStream(fos);
-        if (ous != null) {
-            objects.put(uid, obj);
+        try {
+            obj = ous.readObject();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(HDDCache.class.getName()).log(Level.SEVERE, null, ex);
         }
+//        if (ous != null) {
+//            objects.put(uid, obj);
+//        }
         return ous;
     }
 

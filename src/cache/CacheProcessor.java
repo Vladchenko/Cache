@@ -12,7 +12,11 @@ package cache;
 public class CacheProcessor {
     
     private void addEntry(Object obj) {
-        
+        /** 
+         * 1. Add entry to a cache1
+         *      1.1 
+         * 
+         */
     }
     
 }
