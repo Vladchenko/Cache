@@ -14,8 +14,10 @@ import java.io.IOException;
  */
 public interface ICache {
     public void clearCache();
-    public Object getObject(String key)  throws IOException,FileNotFoundException;
-    public void addObject(String guid, Object obj) throws IOException, FileNotFoundException;
+    public Object getObject(String key)  throws IOException,
+            FileNotFoundException, ClassNotFoundException;
+    public void addObject(String guid, Object obj) throws IOException, 
+            FileNotFoundException;
     public void removeObject(String key) throws NotPresentException;
     public int getCacheSize();
 }

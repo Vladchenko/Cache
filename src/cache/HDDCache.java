@@ -14,6 +14,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +25,7 @@ import java.util.logging.Logger;
 public class HDDCache implements Serializable, ICache {
 
     Map<String, Object> objects = new HashMap();
-    Map<String, Integer> frequency = new HashMap();
+    Map<String, Integer> frequency = new TreeMap();
 //    public static Repository oRepository = Repository.getInstance();
 
     @Override
@@ -33,8 +34,9 @@ public class HDDCache implements Serializable, ICache {
     }
 
     @Override
-    public Object getObject(String uid) throws IOException, FileNotFoundException {
-        Object obj;
+    public Object getObject(String uid) throws IOException, 
+            FileNotFoundException, ClassNotFoundException {
+        Object obj = null;
         FileInputStream fos = null;
         ObjectInputStream ous = null;
         // Serialize object
@@ -48,11 +50,12 @@ public class HDDCache implements Serializable, ICache {
 //        if (ous != null) {
 //            objects.put(uid, obj);
 //        }
-        return ous;
+        return obj;
     }
 
     @Override
-    public void addObject(String uid, Object obj) throws IOException, FileNotFoundException {
+    public void addObject(String uid, Object obj) throws IOException, 
+            FileNotFoundException {
         FileOutputStream fos = null;
         ObjectOutputStream ous = null;
         if (ous != null) {
