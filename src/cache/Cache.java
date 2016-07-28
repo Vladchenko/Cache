@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 public class Cache {
     
     ProcessArguments prc = new ProcessArguments();
-    HDDCache hddcache = new HDDCache();
 
     /**
      * @param args the command line arguments
@@ -25,27 +24,7 @@ public class Cache {
         // TODO code application logic here
         Cache cache = new Cache();
         cache.prc.processArgs(args);
-        try {
-            cache.hddcache.addObject("123", args);
-        } catch (IOException ex) {
-            System.out.println("No way");
-            Logger.getLogger(Cache.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            cache.hddcache.addObject("123", args);
-        } catch (IOException ex) {
-            System.out.println("No way");
-            Logger.getLogger(Cache.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            System.out.println(cache.hddcache.getObject("123"));
-        } catch (IOException ex) {
-            System.out.println("No way 1");
-            Logger.getLogger(Cache.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            System.out.println("No way 2");
-            Logger.getLogger(Cache.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
     }
     
 }
