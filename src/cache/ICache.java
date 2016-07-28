@@ -5,14 +5,17 @@
  */
 package cache;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 /**
  *
  * @author v.yanchenko
  */
 public interface ICache {
     public void clearCache();
-    public Object getObject(String key);
-    public void addObject(String guid, Object obj);
-    public void removeObject(String key);
+    public Object getObject(String key)  throws IOException,FileNotFoundException;
+    public void addObject(String guid, Object obj) throws IOException, FileNotFoundException;
+    public void removeObject(String key) throws NotPresentException;
     public int getCacheSize();
 }

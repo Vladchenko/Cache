@@ -11,17 +11,17 @@ package cache;
  */
 public class Repository {
 
+    public static Repository oRepository = Repository.getInstance();
     public static final int LEVEL1CACHECSIZEDEFAULT = 10;
     public static final int LEVEL2CACHECSIZEDEFAULT = 10;
     public static final int LEVEL1CACHEMINIMUMVALUE = 1;
     public static final int LEVEL2CACHEMINIMUMVALUE = 1;
+    public static final String FILEPREFIX = "cache_File_";
 
     private int level1CacheSize;
     private int level2CacheSize;
 
     private String cacheKind;
-
-    public static Repository oRepository = Repository.getInstance();
 
     private Repository() {
     }

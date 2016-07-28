@@ -33,7 +33,7 @@ public class ProcessArguments {
             }
         }
 
-        // ProcessArguments a level1 cache size value
+        // Processing arguments for level1 cache
         number = arguments.get("level1Cache");
         try {
             oRepository.setLevel1CacheSize(Integer.parseInt(number));
@@ -47,7 +47,7 @@ public class ProcessArguments {
             oRepository.setLevel1CacheSize(Repository.LEVEL1CACHECSIZEDEFAULT);
         }
 
-        // ProcessArguments a level2 cache size value
+        // Processing arguments for level2 cache
         number = arguments.get("level2Cache");
         try {
             oRepository.setLevel2CacheSize(Integer.parseInt(number));
