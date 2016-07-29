@@ -62,7 +62,10 @@ public class CacheProcessor {
                     // Making a retrieval count for this object to be 1.
                     ramCache.frequency.put(uid, 1);
                 } else {    // RAM cache is full, it needs an extrusion 
-                    
+                   /*
+                    * Find the least used and move to HDD cache and if an 
+                    * HDD cache is full, remove the least used one.
+                    */
                 }
             }
         }
