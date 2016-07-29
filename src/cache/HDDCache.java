@@ -5,6 +5,7 @@
  */
 package cache;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,6 +13,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -28,6 +32,19 @@ public class HDDCache implements Serializable, ICache {
     Map<String, Integer> frequency = new TreeMap();
 //    public static Repository oRepository = Repository.getInstance();
 
+    public HDDCache() {
+        checkFolderPresence();
+    }
+    
+    private void checkFolderPresence() {
+        Path pth = Paths.get(Repository.FILESFOLDER);
+        // Checking if directory exists
+        if (!Files.exists(pth)) {
+            // And if not, makу ше
+            new File(Repository.FILESFOLDER).mkdir();
+        }
+    }
+
     @Override
     public void clearCache() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -35,14 +52,14 @@ public class HDDCache implements Serializable, ICache {
 
     // Uploads file to RAM. Checked for correct performance.
     @Override
-    public Object getObject(String uid) throws IOException, 
+    public Object getObject(String uid) throws IOException,
             FileNotFoundException, ClassNotFoundException {
         Object obj = null;
         FileInputStream fos = null;
         ObjectInputStream ous = null;
         // Serialize object
-        fos = new FileInputStream(Repository.FILESFOLDER + 
-                Repository.FILEPREFIX + uid + Repository.FILEEXT);
+        fos = new FileInputStream(Repository.FILESFOLDER
+                + Repository.FILEPREFIX + uid + Repository.FILEEXT);
         ous = new ObjectInputStream(fos);
         try {
             obj = ous.readObject();
@@ -57,7 +74,7 @@ public class HDDCache implements Serializable, ICache {
 
     // Saves file to disk. Checked for correct performance.
     @Override
-    public void addObject(String uid, Object obj) throws IOException, 
+    public void addObject(String uid, Object obj) throws IOException,
             FileNotFoundException {
         FileOutputStream fos = null;
         ObjectOutputStream ous = null;
@@ -65,8 +82,8 @@ public class HDDCache implements Serializable, ICache {
             objects.put(uid, obj);
         }
         // Deserialize object
-        fos = new FileOutputStream(Repository.FILESFOLDER + 
-                Repository.FILEPREFIX + uid + Repository.FILEEXT);
+        fos = new FileOutputStream(Repository.FILESFOLDER
+                + Repository.FILEPREFIX + uid + Repository.FILEEXT);
         ous = new ObjectOutputStream(fos);
         ous.writeObject(obj);
         ous.flush();
