@@ -24,7 +24,8 @@ public class CacheProcessor {
          *          (obj) from it, checks if there is a room in RC for it and 
          *          1.2.3 if there is, add obj to RC and does (1).
          *          1.2.4 if there is no, checks if there is a room in DC for it.
-         *              1.2.4.1 If there is, passes other(*) obj to DC, does (1),
+         *              1.2.4.1 If there is one, passes other obj, defined by 
+         *                  picked algorithm to DC, does (1),
          *              1.2.4.2 and writes an obj to RC.
          *              1.2.4.3 If there is no, removes some _obj from DC, 
          *              using a picked removal algorithm, moves one from an RC 
