@@ -44,7 +44,11 @@ public class CacheProcessor {
          * 
          * (1) - Some manipulation with a data that goes along with an algorythm.
          */
-        ramCache.objects.get(uid);
+        if (ramCache.objects.containsKey(uid)) {
+            return ramCache.objects.get(uid);
+        } else {
+            
+        }
         return new Object();
     }
     

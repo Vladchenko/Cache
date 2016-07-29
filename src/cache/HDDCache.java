@@ -28,11 +28,13 @@ import java.util.logging.Logger;
  */
 public class HDDCache implements Serializable, ICache {
 
-    Map<String, Object> objects = new HashMap();
-    Map<String, Integer> frequency = new TreeMap();
+    Map<String, Object> objects;
+    Map<String, Integer> frequency;
 //    public static Repository oRepository = Repository.getInstance();
 
     public HDDCache() {
+        objects = new HashMap();
+        frequency = new TreeMap();
         createFilesFolder();
     }
     

@@ -14,8 +14,13 @@ import java.util.Map;
  */
 public class RAMCache implements ICache {
     
-    Map<String,Object> objects = new HashMap();
-    Map<String,Integer> frequency = new HashMap();
+    Map<String,Object> objects;
+    Map<String,Integer> frequency;
+    
+    public RAMCache() {
+        objects = new HashMap();
+        frequency = new HashMap();
+    }
 
     @Override
     public void clearCache() {
