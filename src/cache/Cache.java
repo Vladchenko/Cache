@@ -5,10 +5,6 @@
  */
 package cache;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author v.yanchenko
@@ -17,10 +13,11 @@ public class Cache {
     
     private ProcessArguments prc;
     private CacheProcessor cacheProcessor;
+    private Repository repository = Repository.getInstance();
     
     public Cache() {
-        prc = new ProcessArguments();
-        cacheProcessor = new CacheProcessor();
+        prc = new ProcessArguments(repository);
+        cacheProcessor = new CacheProcessor(repository);
     }
 
     /**
@@ -30,7 +27,8 @@ public class Cache {
         // TODO code application logic here
         Cache cache = new Cache();
         cache.prc.processArgs(args);
-        cache.cacheProcessor.processRequest(null);
+        cache.cacheProcessor.processRequest(
+                Long.toString((long)(Math.random() * 1000000000000000000L)));
     }
     
 }

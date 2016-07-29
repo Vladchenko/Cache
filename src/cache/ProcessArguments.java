@@ -14,7 +14,11 @@ import java.util.Map;
  */
 public class ProcessArguments {
 
-    public static Repository oRepository = Repository.getInstance();
+    public static Repository repository = Repository.getInstance();
+    
+    public ProcessArguments(Repository repository) {
+        this.repository = repository;
+    }
 
     // Putting a couples of "value=key" to a map
     public void processArgs(String[] args) {
@@ -36,37 +40,37 @@ public class ProcessArguments {
         // Processing arguments for level1 cache
         number = arguments.get("level1Cache");
         try {
-            oRepository.setLevel1CacheSize(Integer.parseInt(number));
-            if (oRepository.getLevel1CacheSize() < Repository.LEVEL1CACHEMINIMUMVALUE) {
+            repository.setLevel1CacheSize(Integer.parseInt(number));
+            if (repository.getLevel1CacheSize() < Repository.LEVEL1CACHEMINIMUMVALUE) {
                 throw new NumberFormatException();
             }
             System.out.println("Level 1 cache size is set to "
-                    + oRepository.getLevel1CacheSize());
+                    + repository.getLevel1CacheSize());
         } catch (NumberFormatException nfe) {
             System.out.println("Level 1 cache size is specified in a wrong way ! Used by default.");
-            oRepository.setLevel1CacheSize(Repository.LEVEL1CACHECSIZEDEFAULT);
+            repository.setLevel1CacheSize(Repository.LEVEL1CACHECSIZEDEFAULT);
         }
 
         // Processing arguments for level2 cache
         number = arguments.get("level2Cache");
         try {
-            oRepository.setLevel2CacheSize(Integer.parseInt(number));
-            if (oRepository.getLevel2CacheSize() < Repository.LEVEL2CACHEMINIMUMVALUE) {
+            repository.setLevel2CacheSize(Integer.parseInt(number));
+            if (repository.getLevel2CacheSize() < Repository.LEVEL2CACHEMINIMUMVALUE) {
                 throw new NumberFormatException();
             }
             System.out.println("Level 2 cache size is set to "
-                    + oRepository.getLevel2CacheSize());
+                    + repository.getLevel2CacheSize());
         } catch (NumberFormatException nfe) {
             System.out.println("Level 2 cache size is specified in a wrong way ! Used by default.");
-            oRepository.setLevel2CacheSize(Repository.LEVEL2CACHECSIZEDEFAULT);
+            repository.setLevel2CacheSize(Repository.LEVEL2CACHECSIZEDEFAULT);
         }
-        oRepository.setCacheKind(arguments.get("cachekind"));
-        if (oRepository.getCacheKind() == null
-                || oRepository.getCacheKind().isEmpty()) {
+        repository.setCacheKind(arguments.get("cachekind"));
+        if (repository.getCacheKind() == null
+                || repository.getCacheKind().isEmpty()) {
             System.out.println("cachekind is not set, used default - least recently used");
-            oRepository.setCacheKind("lru");
+            repository.setCacheKind("lru");
         } else {
-            System.out.println("cachekind is set to - " + oRepository.getCacheKind());
+            System.out.println("cachekind is set to - " + repository.getCacheKind());
         }
 
         // Uncomment in case want to see a full list of key-value pairs

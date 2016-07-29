@@ -24,6 +24,7 @@ public class Repository {
     private int level2CacheSize;
 
     private String cacheKind;
+//    enum cacheKindEnum {lfu, lru}
 
     private Repository() {
     }
