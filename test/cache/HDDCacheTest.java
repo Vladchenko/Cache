@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  */
 public class HDDCacheTest {
     
-    String uid = "1784568996454";
+    String uid = Long.toString((long)(Math.random() * 1000000000000000000L));
     Object obj = new String("Test Object");
     
     public HDDCacheTest() {

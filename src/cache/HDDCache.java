@@ -33,13 +33,15 @@ public class HDDCache implements Serializable, ICache {
 //    public static Repository oRepository = Repository.getInstance();
 
     public HDDCache() {
-        checkFolderPresence();
+        createFilesFolder();
     }
     
-    private void checkFolderPresence() {
-        Path pth = Paths.get(Repository.FILESFOLDER);
+    private void createFilesFolder() {
+//        Path pth = Paths.get(Repository.FILESFOLDER);
+        File theDir = new File(Repository.FILESFOLDER);
         // Checking if directory exists
-        if (!Files.exists(pth)) {
+//        if (!Files.exists(pth)) {
+            if (!theDir.exists()) {
             // And if not, makу ше
             new File(Repository.FILESFOLDER).mkdir();
         }

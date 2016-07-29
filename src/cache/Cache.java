@@ -24,7 +24,6 @@ public class Cache {
         // TODO code application logic here
         Cache cache = new Cache();
         cache.prc.processArgs(args);
-
     }
     
 }

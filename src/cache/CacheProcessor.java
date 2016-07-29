@@ -11,7 +11,7 @@ package cache;
  */
 public class CacheProcessor {
     
-    private void processRequest(Object obj) {
+    private void processRequest(String uid) {
         /** 
          * Initially, ram cache (RC) and disk cache (DC) are empty. CPU receives 
          * a command to get data.
