@@ -15,7 +15,13 @@ import java.util.logging.Logger;
  */
 public class Cache {
     
-    ProcessArguments prc = new ProcessArguments();
+    private ProcessArguments prc;
+    private CacheProcessor cacheProcessor;
+    
+    public Cache() {
+        prc = new ProcessArguments();
+        cacheProcessor = new CacheProcessor();
+    }
 
     /**
      * @param args the command line arguments
@@ -24,6 +30,7 @@ public class Cache {
         // TODO code application logic here
         Cache cache = new Cache();
         cache.prc.processArgs(args);
+        cache.cacheProcessor.processRequest(null);
     }
     
 }

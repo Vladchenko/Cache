@@ -11,7 +11,16 @@ package cache;
  */
 public class CacheProcessor {
     
-    private void processRequest(String uid) {
+    RAMCache ramCache;
+    HDDCache hddCache;
+    
+    public CacheProcessor() {
+        ramCache = new RAMCache();
+        hddCache = new HDDCache();
+    }
+    
+    // Retrieving an object from a cache
+    public Object processRequest(String uid) {
         /** 
          * Initially, ram cache (RC) and disk cache (DC) are empty. CPU receives 
          * a command to get data.
@@ -35,6 +44,8 @@ public class CacheProcessor {
          * 
          * (1) - Some manipulation with a data that goes along with an algorythm.
          */
+        ramCache.objects.get(uid);
+        return new Object();
     }
     
 }
