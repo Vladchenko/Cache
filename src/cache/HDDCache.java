@@ -41,7 +41,8 @@ public class HDDCache implements Serializable, ICache {
         FileInputStream fos = null;
         ObjectInputStream ous = null;
         // Serialize object
-        fos = new FileInputStream(Repository.FILEPREFIX + uid);
+        fos = new FileInputStream(Repository.FILESFOLDER + 
+                Repository.FILEPREFIX + uid + Repository.FILEEXT);
         ous = new ObjectInputStream(fos);
         try {
             obj = ous.readObject();
@@ -64,7 +65,8 @@ public class HDDCache implements Serializable, ICache {
             objects.put(uid, obj);
         }
         // Deserialize object
-        fos = new FileOutputStream(Repository.FILEPREFIX + uid);
+        fos = new FileOutputStream(Repository.FILESFOLDER + 
+                Repository.FILEPREFIX + uid + Repository.FILEEXT);
         ous = new ObjectOutputStream(fos);
         ous.writeObject(obj);
         ous.flush();

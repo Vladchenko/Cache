@@ -17,6 +17,8 @@ public class Repository {
     public static final int LEVEL1CACHEMINIMUMVALUE = 1;
     public static final int LEVEL2CACHEMINIMUMVALUE = 1;
     public static final String FILEPREFIX = "cache_File_";
+    public static final String FILEEXT = ".cache";
+    public static final String FILESFOLDER = "Cached Data\\";
 
     private int level1CacheSize;
     private int level2CacheSize;
