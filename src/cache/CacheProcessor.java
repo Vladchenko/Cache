@@ -5,6 +5,8 @@
  */
 package cache;
 
+import java.util.Map;
+
 /**
  *
  * @author v.yanchenko
@@ -41,6 +43,8 @@ public class CacheProcessor {
          * (1) - Some manipulation with a data that goes along with an
          * algorythm.
          */
+        Map.Entry<String, Integer> entry;
+
         if (ramCache.objects.containsKey(uid)) {
 //            if (repository.getCacheKind().equals(uid))
             // Increasing a retrieval count for this object
@@ -62,10 +66,43 @@ public class CacheProcessor {
                     // Making a retrieval count for this object to be 1.
                     ramCache.frequency.put(uid, 1);
                 } else {    // RAM cache is full, it needs an extrusion 
-                   /*
-                    * Find the least used and move to HDD cache and if a 
-                    * HDD cache is full, remove the least used one.
-                    */
+                    /*
+                     * Find the least used object in RAM cache and move it to HDD 
+                     * cache and if a HDD cache is full, remove the least used 
+                     * one. Then write to RAM cache a new entry.
+                     */
+                    if (hddCache.objects.size() < repository.getLevel2CacheSize()) {
+                        // Looking for least used entry in a RAM cache
+                        entry = ramCache.frequency.entrySet().iterator().next();
+                        // Moving a least used RAM object to a HDD cache.
+                        hddCache.objects.put(uid, ramCache.frequency.get(entry.getKey()));
+                        // Making a retrieval count for this object to be 1.
+                        hddCache.frequency.put(uid, 1);
+                        ramCache.objects.remove(entry.getKey());
+
+                        // Adding a newly downloaded object to a RAM cache.
+                        ramCache.objects.put(uid, readObject(uid));
+                        // Making a retrieval count for this object to be 1.
+                        ramCache.frequency.put(uid, 1);
+
+                    } else {
+                        // Remove least used item from an HDD cache
+                        entry = hddCache.frequency.entrySet().iterator().next();
+                        ramCache.objects.remove(entry.getKey(), ramCache.objects.get(entry.getKey()));
+
+                        // Looking for least used entry in a RAM cache
+                        entry = ramCache.frequency.entrySet().iterator().next();
+                        // Moving a least used RAM object to a HDD cache.
+                        hddCache.objects.put(uid, ramCache.frequency.get(entry.getKey()));
+                        // Making a retrieval count for this object to be 1.
+                        hddCache.frequency.put(uid, 1);
+                        ramCache.objects.remove(entry.getKey());
+
+                        // Adding a newly downloaded object to a RAM cache.
+                        ramCache.objects.put(uid, readObject(uid));
+                        // Making a retrieval count for this object to be 1.
+                        ramCache.frequency.put(uid, 1);
+                    }
                 }
             }
         }
@@ -79,9 +116,9 @@ public class CacheProcessor {
     private Object readObject(String uid) {
         return new Object();
     }
-    
+
     private void extrudeRAMCache() {
-        
+
     }
 
 }
