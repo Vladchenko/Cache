@@ -27,8 +27,7 @@ public class Cache {
         // TODO code application logic here
         Cache cache = new Cache();
         cache.prc.processArgs(args);
-        cache.cacheProcessor.processRequest(
-                Long.toString((long)(Math.random() * 1000000000000000000L)));
+        cache.cacheProcessor.performCachingProcess();
     }
     
 }
