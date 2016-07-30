@@ -121,4 +121,12 @@ public class CacheProcessor {
 
     }
 
+    private void printCaches() {
+        for (Map.Entry<String, Object> entrySet : ramCache.objects.entrySet()) {
+            Object key = entrySet.getKey();
+            Object value = entrySet.getValue();
+            System.out.println("value=" + value + " (" + (int)ramCache.frequency.get(key) + ")");
+        }
+    }
+
 }

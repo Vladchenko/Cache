@@ -7,6 +7,7 @@ package cache;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -19,7 +20,7 @@ public class RAMCache implements ICache {
     
     public RAMCache() {
         objects = new HashMap();
-        frequency = new HashMap();
+        frequency = new TreeMap();
     }
 
     @Override
