@@ -63,7 +63,7 @@ public class CacheProcessor {
                     ramCache.frequency.put(uid, 1);
                 } else {    // RAM cache is full, it needs an extrusion 
                    /*
-                    * Find the least used and move to HDD cache and if an 
+                    * Find the least used and move to HDD cache and if a 
                     * HDD cache is full, remove the least used one.
                     */
                 }
