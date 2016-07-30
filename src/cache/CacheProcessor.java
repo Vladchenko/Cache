@@ -184,6 +184,7 @@ public class CacheProcessor {
         for (int i = 0; i < number; i++) {
             obj = processRequest(cacheFeeder.dummyAddress());
         }
+        System.out.println("Caching cycle is over.");
     }
 
 }
