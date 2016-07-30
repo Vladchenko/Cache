@@ -121,9 +121,9 @@ public class CacheProcessor {
      * Method generates a new object, pretending that is was downloaded from
      * outer source.
      */
-    private Object readObject(String uid) {
-        return new Object();
-    }
+//    private Object readObject(String uid) {
+//        return new Object();
+//    }
 
     private void printCaches() {
         for (Map.Entry<String, Object> entrySet : ramCache.objects.entrySet()) {
@@ -134,8 +134,9 @@ public class CacheProcessor {
     }
     
     public void performCachingProcess() {
+        Object obj;
         for (int i = 0; i < number; i++) {
-            
+            obj = processRequest(cacheFeeder.dummyAddress());
         }
     }
 

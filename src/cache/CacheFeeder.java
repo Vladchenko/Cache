@@ -46,4 +46,9 @@ public class CacheFeeder {
         return data[i];
     }
     
+    public String dummyAddress() {
+        i = (int)(Math.random() * entryNumber); 
+        return data[i];
+    }
+    
 }
