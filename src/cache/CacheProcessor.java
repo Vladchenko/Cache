@@ -6,6 +6,7 @@
 package cache;
 
 import java.util.Map;
+import javax.swing.Timer;
 
 /**
  *
@@ -16,15 +17,22 @@ public class CacheProcessor {
     RAMCache ramCache;
     HDDCache hddCache;
     Repository repository;
+    CacheFeeder cacheFeeder;
+    
+    // Number of times caches process is going to be performed
+    int number = 100;
+    
+//    Timer tmr = new Timer();
 
     public CacheProcessor(Repository repository) {
         ramCache = new RAMCache();
         hddCache = new HDDCache();
         this.repository = repository;
+        cacheFeeder = new CacheFeeder();
     }
 
     // Retrieving an object from a cache
-    public Object processRequest(String uid) {
+    private Object processRequest(String uid) {
         /**
          * Initially, ram cache (RC) and disk cache (DC) are empty. CPU receives
          * a command to get data. Algorythm: 1. CPU checks if an RC has this
@@ -62,7 +70,7 @@ public class CacheProcessor {
                 // Try adding a newly downloaded object to cache.
                 if (ramCache.objects.size() < repository.getLevel1CacheSize()) {
                     // Adding a newly downloaded object to a RAM cache.
-                    ramCache.objects.put(uid, readObject(uid));
+                    ramCache.objects.put(uid, cacheFeeder.feed(uid));
                     // Making a retrieval count for this object to be 1.
                     ramCache.frequency.put(uid, 1);
                 } else {    // RAM cache is full, it needs an extrusion 
@@ -81,7 +89,7 @@ public class CacheProcessor {
                         ramCache.objects.remove(entry.getKey());
 
                         // Adding a newly downloaded object to a RAM cache.
-                        ramCache.objects.put(uid, readObject(uid));
+                        ramCache.objects.put(uid, cacheFeeder.feed(uid));
                         // Making a retrieval count for this object to be 1.
                         ramCache.frequency.put(uid, 1);
 
@@ -99,7 +107,7 @@ public class CacheProcessor {
                         ramCache.objects.remove(entry.getKey());
 
                         // Adding a newly downloaded object to a RAM cache.
-                        ramCache.objects.put(uid, readObject(uid));
+                        ramCache.objects.put(uid, cacheFeeder.feed(uid));
                         // Making a retrieval count for this object to be 1.
                         ramCache.frequency.put(uid, 1);
                     }
@@ -117,15 +125,17 @@ public class CacheProcessor {
         return new Object();
     }
 
-    private void extrudeRAMCache() {
-
-    }
-
     private void printCaches() {
         for (Map.Entry<String, Object> entrySet : ramCache.objects.entrySet()) {
             Object key = entrySet.getKey();
             Object value = entrySet.getValue();
             System.out.println("value=" + value + " (" + (int)ramCache.frequency.get(key) + ")");
+        }
+    }
+    
+    public void performCachingProcess() {
+        for (int i = 0; i < number; i++) {
+            
         }
     }
 
