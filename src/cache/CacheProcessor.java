@@ -5,6 +5,7 @@
  */
 package cache;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
@@ -56,13 +57,14 @@ public class CacheProcessor {
         Map.Entry<String, Integer> entry;
         Object obj = null;
 
+        System.out.println("Requested key=" + uid);
         printCaches();
 
         if (ramCache.objects.containsKey(uid)) {
 //            if (repository.getCacheKind().equals(uid))
             // Increasing a retrieval count for this object
             ramCache.frequency.put(uid, ramCache.frequency.get(uid) + 1);
-            System.out.println("RAM cache hit, " + uid);
+            System.out.println("RAM cache hit, key=" + uid + "\n");
             return ramCache.objects.get(uid);
         } else {
 
@@ -84,32 +86,35 @@ public class CacheProcessor {
                 return obj;
 
             } else {
-                System.out.println("No hit to any cache");
+                System.out.print("No hit to any cache, ");
                 // Try adding a newly downloaded object to cache.
                 if (ramCache.objects.size() < repository.getLevel1CacheSize()) {
                     // Adding a newly downloaded object to a RAM cache.
                     ramCache.objects.put(uid, cacheFeeder.feed(uid));
                     // Making a retrieval count for this object to be 1.
                     ramCache.frequency.put(uid, 1);
+                    System.out.println("object with key=" + uid + " is added.\n");
                 } else {    // RAM cache is full, it needs an extrusion 
                     /*
                      * Find the least used object in RAM cache and move it to HDD 
                      * cache and if a HDD cache is full, remove the least used 
                      * one. Then write to RAM cache a new entry.
                      */
+                    System.out.println(" performing extrusion ... \n");
                     if (hddCache.size < repository.getLevel2CacheSize()) {
                         // Looking for least used entry in a RAM cache
                         entry = ramCache.frequency.entrySet().iterator().next();
                         // Moving a least used RAM object to a HDD cache.
 //                        hddCache.objects.put(uid, ramCache.objects.get(entry.getKey()));
                         try {
-                            hddCache.addObject(uid, ramCache.objects.get(entry.getKey()));
+                            hddCache.addObject(entry.getKey(), ramCache.objects.get(entry.getKey()));
                         } catch (IOException ex) {
                             Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         // Making a retrieval count for this object to be 1.
                         hddCache.frequency.put(uid, 1);
                         ramCache.objects.remove(entry.getKey());
+                        ramCache.frequency.remove(entry.getKey());
 
                         // Adding a newly downloaded object to a RAM cache.
                         ramCache.objects.put(uid, cacheFeeder.feed(uid));
@@ -154,14 +159,23 @@ public class CacheProcessor {
 //        return new Object();
 //    }
     private void printCaches() {
+        System.out.print("--- RAM cache: ");
         for (Map.Entry<String, Object> entrySet : ramCache.objects.entrySet()) {
             Object key = entrySet.getKey();
             Object value = entrySet.getValue();
-            System.out.print("value=" + key + " (" + (int) ramCache.frequency.get(key) + "), ");
+            System.out.print("key=" + key + " (" + (int) ramCache.frequency.get(key) + "), ");
         }
-        if (ramCache.objects.size() > 0) {
-            System.out.println("\n");
+//        if (ramCache.objects.size() > 0) {
+            System.out.println("");
+//        }
+        System.out.print("--- HDD cache: ");
+        File dir = new File(Repository.FILESFOLDER);
+        for (File file : dir.listFiles()) {
+            System.out.print(file + ", ");
         }
+//        if (hddCache.size > 0) {
+            System.out.println("");
+//        }
     }
 
     public void performCachingProcess() {
