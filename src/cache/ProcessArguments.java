@@ -33,9 +33,10 @@ public class ProcessArguments {
                     arguments.put(map[0], map[1]);
                 }
             } catch (Exception ex) {
-                System.out.println("Wrong argument present...");
+                System.out.print("Wrong argument present... ");
             }
         }
+        System.out.println("");
 
         // Processing arguments for level1 cache
         number = arguments.get("level1Cache");
