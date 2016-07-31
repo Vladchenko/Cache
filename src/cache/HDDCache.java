@@ -37,7 +37,7 @@ public class HDDCache implements Serializable, ICache {
         objects = new HashMap();
         frequency = new TreeMap();
         createFilesFolder();    // Makes a folder, when there is no such
-        clearCache();
+        clearCache();           // Clear a cache before run a caching loop
     }
 
     private void createFilesFolder() {
