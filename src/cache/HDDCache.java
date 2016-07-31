@@ -30,20 +30,22 @@ public class HDDCache implements Serializable, ICache {
 
     Map<String, Object> objects;
     Map<String, Integer> frequency;
+    int size = 0;
 //    public static Repository oRepository = Repository.getInstance();
 
     public HDDCache() {
         objects = new HashMap();
         frequency = new TreeMap();
-        createFilesFolder();
+        createFilesFolder();    // Makes a folder, when there is no such
+        clearCache();
     }
-    
+
     private void createFilesFolder() {
 //        Path pth = Paths.get(Repository.FILESFOLDER);
         File theDir = new File(Repository.FILESFOLDER);
         // Checking if directory exists
 //        if (!Files.exists(pth)) {
-            if (!theDir.exists()) {
+        if (!theDir.exists()) {
             // And if not, makу ше
             new File(Repository.FILESFOLDER).mkdir();
         }
@@ -51,7 +53,12 @@ public class HDDCache implements Serializable, ICache {
 
     @Override
     public void clearCache() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        File dir = new File(Repository.FILESFOLDER);
+        for (File file : dir.listFiles()) {
+            if (!file.isDirectory()) {
+                file.delete();
+            }
+        }
     }
 
     // Uploads file to RAM. Checked for correct performance.
@@ -70,9 +77,6 @@ public class HDDCache implements Serializable, ICache {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(HDDCache.class.getName()).log(Level.SEVERE, null, ex);
         }
-//        if (ous != null) {
-//            objects.put(uid, obj);
-//        }
         return obj;
     }
 
@@ -94,6 +98,7 @@ public class HDDCache implements Serializable, ICache {
         ous.close();
         fos.flush();
         fos.close();
+        size++;
     }
 
     @Override
