@@ -82,7 +82,7 @@ public class CacheProcessor {
             if (obj != null) {
                 // Increasing a retrieval frequency for this object
                 hddCache.frequency.put(uid, hddCache.frequency.get(uid) + 1);
-                System.out.println("HDD cache hit");
+                System.out.println("HDD cache hit\n");
                 return obj;
 
             } else {
@@ -171,7 +171,7 @@ public class CacheProcessor {
         System.out.print("--- HDD cache: ");
         File dir = new File(Repository.FILESFOLDER);
         for (File file : dir.listFiles()) {
-            System.out.print(file + ", ");
+            System.out.print(file.getName() + ", (" + (int) hddCache.frequency.get(key) + "), ");
         }
 //        if (hddCache.size > 0) {
             System.out.println("");
