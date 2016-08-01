@@ -127,25 +127,31 @@ public class CacheProcessor {
                         try {
                             // Removing this entry
                             hddCache.removeObject(entry.getKey());
+                            System.out.println("Object with key=" + entry.getKey() + " is removed from an HDD cache. ");
                         } catch (NotPresentException ex) {
                             Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         // Getting the least used entry in a RAM cache.
                         entry = ramCache.frequency.entrySet().iterator().next();
-//                        System.out.println("Entry is |" + entry.getKey() + "|");
+                        System.out.println("Entry is |" + entry.getKey() + "|");
 //                        System.out.println(key);
                         try {
                             // Moving a least used RAM object to a HDD cache.
-                            hddCache.addObject(entry.getKey(), entry);
+                            hddCache.addObject(entry.getKey(), ramCache.getObject(entry.getKey()));
+                            System.out.println("Least used in RAM cache object with key=" 
+                                    + entry.getKey() + " is moved to an HDD cache. ");
                         } catch (IOException ex) {
                             System.out.println("Cannot move to HDD cache !");
                             Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         // Removing a least used entry from a RAM cache.
                         ramCache.removeObject(entry.getKey());
-
+                        System.out.println("Least used in RAM cache object with key=" 
+                                    + entry.getKey() + " is removed.");
                         // Adding a newly downloaded object to a RAM cache.
                         ramCache.addObject(key, cacheFeeder.feed(key));
+                        System.out.println("New object with key=" 
+                                    + entry.getKey() + " is added to a RAM cache.");
                     }
                 }
             }

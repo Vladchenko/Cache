@@ -14,11 +14,13 @@ import java.io.IOException;
  */
 public interface ICache {
     public void clearCache();
-    public boolean hasObject(String key);
-    public Object getObject(String key)  throws IOException,
-            FileNotFoundException, ClassNotFoundException;
     public void addObject(String guid, Object obj) throws IOException, 
             FileNotFoundException;
-    public void removeObject(String key) throws NotPresentException;
+    public String findLeastUsed();
+    public Object getObject(String key)  throws IOException,
+            FileNotFoundException, ClassNotFoundException;
     public int getSize();
+    public boolean hasObject(String key);
+    public void removeObject(String key) throws NotPresentException;
+    
 }

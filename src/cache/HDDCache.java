@@ -13,11 +13,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +27,7 @@ import java.util.logging.Logger;
 public class HDDCache implements Serializable, ICache {
 
     Map<String, Object> mapFiles;
-    Map<String, Integer> mapFrequency;
+    NavigableMap<String, Integer> mapFrequency;
     int size = 0;
 //    public static Repository oRepository = Repository.getInstance();
 
@@ -130,6 +128,11 @@ public class HDDCache implements Serializable, ICache {
         File file = new File(Repository.FILESFOLDER
                 + Repository.FILEPREFIX + key + Repository.FILEEXT);
         return file.exists();
+    }
+
+    @Override
+    public String findLeastUsed() {
+        return mapFrequency.lastKey();
     }
 
 }

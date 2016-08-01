@@ -5,18 +5,20 @@
  */
 package cache;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.TreeMap;
 
 /**
  *
  * @author v.yanchenko
  */
-public class RAMCache implements ICache {
+public class RAMCache implements Serializable, ICache {
     
     Map<String,Object> objects;
-    Map<String,Integer> frequency;
+    NavigableMap<String,Integer> frequency;
     int size = 0;
     
     public RAMCache() {
@@ -66,6 +68,11 @@ public class RAMCache implements ICache {
     @Override
     public boolean hasObject(String key) {
         return objects.containsKey(key);
+    }
+
+    @Override
+    public String findLeastUsed() {
+        return frequency.lastKey();
     }
 
 }
