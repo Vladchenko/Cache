@@ -28,14 +28,14 @@ import java.util.logging.Logger;
  */
 public class HDDCache implements Serializable, ICache {
 
-    Map<String, Object> objects;
-    Map<String, Integer> frequency;
+    Map<String, Object> mapFiles;
+    Map<String, Integer> mapFrequency;
     int size = 0;
 //    public static Repository oRepository = Repository.getInstance();
 
     public HDDCache() {
-        objects = new HashMap();
-        frequency = new TreeMap();
+        mapFiles = new HashMap();
+        mapFrequency = new TreeMap();
         createFilesFolder();    // Makes a folder, when there is no such
         clearCache();           // Clear a cache before run a caching loop
     }
@@ -63,17 +63,23 @@ public class HDDCache implements Serializable, ICache {
 
     // Uploads file to RAM. Checked for correct performance.
     @Override
-    public Object getObject(String uid) throws IOException,
+    public Object getObject(String key) throws IOException,
             FileNotFoundException, ClassNotFoundException {
         Object obj = null;
         FileInputStream fos = null;
         ObjectInputStream ous = null;
         // Serialize object
-        fos = new FileInputStream(Repository.FILESFOLDER
-                + Repository.FILEPREFIX + uid + Repository.FILEEXT);
+//        try {
+            fos = new FileInputStream((String) mapFiles.get(key));
+//        } catch (Exception ex) {
+//            // No such file, means HDD cache has no such entry.
+//            return null;
+//        }
         ous = new ObjectInputStream(fos);
         try {
             obj = ous.readObject();
+            // Increasing a call count for this entry.
+            mapFrequency.put(key, mapFrequency.get(key) + 1);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(HDDCache.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -82,16 +88,14 @@ public class HDDCache implements Serializable, ICache {
 
     // Saves file to disk. Checked for correct performance.
     @Override
-    public void addObject(String uid, Object obj) throws IOException,
+    public void addObject(String key, Object obj) throws IOException,
             FileNotFoundException {
+        String fullFileName = Repository.FILESFOLDER
+                + Repository.FILEPREFIX + key + Repository.FILEEXT;
         FileOutputStream fos = null;
         ObjectOutputStream ous = null;
-        if (ous != null) {
-            objects.put(uid, obj);
-        }
         // Deserialize object
-        fos = new FileOutputStream(Repository.FILESFOLDER
-                + Repository.FILEPREFIX + uid + Repository.FILEEXT);
+        fos = new FileOutputStream(fullFileName);
         ous = new ObjectOutputStream(fos);
         ous.writeObject(obj);
         ous.flush();
@@ -99,20 +103,33 @@ public class HDDCache implements Serializable, ICache {
         fos.flush();
         fos.close();
         size++;
+        mapFrequency.put(key, 1);
+        mapFiles.put(key, fullFileName);
     }
 
     @Override
     public void removeObject(String key) throws NotPresentException {
-        if (objects.containsKey(key)) {
-            objects.remove(key);
+        File file = new File(Repository.FILESFOLDER
+                + Repository.FILEPREFIX + key + Repository.FILEEXT);
+        if (file.exists()) {
+            file.delete();
+            mapFrequency.remove(key);
+            mapFiles.remove(key);
         } else {
             throw new NotPresentException();
         }
     }
 
     @Override
-    public int getCacheSize() {
+    public int getSize() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean hasObject(String key) {
+        File file = new File(Repository.FILESFOLDER
+                + Repository.FILEPREFIX + key + Repository.FILEEXT);
+        return file.exists();
     }
 
 }

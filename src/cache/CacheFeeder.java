@@ -41,7 +41,7 @@ public class CacheFeeder {
         }
     }
     
-    public Object feed(String uid) {
+    public Object feed(String key) {
         i = (int)(Math.random() * entryNumber); 
         return data[i];
     }

@@ -114,29 +114,38 @@ public class CacheProcessor {
                         }
 
                     } else {
-                        // Remove least used item from an HDD cache
+                        
+                        /**
+                         * When all the caches are full and new entry is 
+                         * downloaded, remove least used entry from an HDD cache
+                         * , then move least used RAM cache entry to an HDD 
+                         * cache and write a new entry to RAM cache.
+                         */
+                        
+                        // Getting the least used entry in an HDD cache.
                         entry = hddCache.mapFrequency.entrySet().iterator().next();
-//                        ramCache.objects.remove(entry.getKey(), ramCache.objects.get(entry.getKey()));
-                        ramCache.removeObject(key);
-
-                        // Looking for least used entry in a RAM cache
+                        try {
+                            // Removing this entry
+                            hddCache.removeObject(entry.getKey());
+                        } catch (NotPresentException ex) {
+                            Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        // Getting the least used entry in a RAM cache.
                         entry = ramCache.frequency.entrySet().iterator().next();
+//                        System.out.println("Entry is |" + entry.getKey() + "|");
+//                        System.out.println(key);
                         try {
                             // Moving a least used RAM object to a HDD cache.
-//                        hddCache.objects.put(key, ramCache.mapFrequency.get(entry.getKey()));
-                            hddCache.addObject(key, entry);
+                            hddCache.addObject(entry.getKey(), entry);
                         } catch (IOException ex) {
                             System.out.println("Cannot move to HDD cache !");
                             Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        // Making a retrieval count for this object to be 1.
-                        hddCache.mapFrequency.put(key, 1);
-                        ramCache.objects.remove(entry.getKey());
+                        // Removing a least used entry from a RAM cache.
+                        ramCache.removeObject(entry.getKey());
 
                         // Adding a newly downloaded object to a RAM cache.
-                        ramCache.objects.put(key, cacheFeeder.feed(key));
-                        // Making a retrieval count for this object to be 1.
-                        ramCache.frequency.put(key, 1);
+                        ramCache.addObject(key, cacheFeeder.feed(key));
                     }
                 }
             }

@@ -17,6 +17,7 @@ public class RAMCache implements ICache {
     
     Map<String,Object> objects;
     Map<String,Integer> frequency;
+    int size = 0;
     
     public RAMCache() {
         objects = new HashMap();
@@ -30,18 +31,22 @@ public class RAMCache implements ICache {
 
     @Override
     public Object getObject(String key) {
+        frequency.put(key, frequency.get(key) + 1);
         return objects.get(key);
     }
 
     @Override
     public void addObject(String guid, Object obj) {
         objects.put(guid, obj);
-        frequency.put(guid, frequency.get(obj) + 1);
+        frequency.put(guid, 1);
+        size++;
     }
 
     @Override
     public void removeObject(String key) {
         objects.remove(key);
+        frequency.remove(key);
+        size--;
 //        if (lfu) {
 //            remove the one with a least frequency
 //        }
@@ -54,8 +59,13 @@ public class RAMCache implements ICache {
     }
 
     @Override
-    public int getCacheSize() {
+    public int getSize() {
         return objects.size();
+    }
+
+    @Override
+    public boolean hasObject(String key) {
+        return objects.containsKey(key);
     }
 
 }
