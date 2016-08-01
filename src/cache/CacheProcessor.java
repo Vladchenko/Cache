@@ -7,10 +7,11 @@ package cache;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Timer;
 
 /**
  *
@@ -26,7 +27,6 @@ public class CacheProcessor {
     // Number of times cache process is going to be performed
     int number = 100;
 
-//    Timer tmr = new Timer();
     public CacheProcessor(Repository repository) {
         ramCache = new RAMCache();
         hddCache = new HDDCache();
@@ -35,7 +35,7 @@ public class CacheProcessor {
     }
 
     // Retrieving an object from a cache
-    private Object processRequest(String uid) {
+    private Object processRequest(String key) {
         /**
          * Initially, ram cache (RC) and disk cache (DC) are empty. CPU receives
          * a command to get data. Algorythm: 1. CPU checks if an RC has this
@@ -57,20 +57,23 @@ public class CacheProcessor {
         Map.Entry<String, Integer> entry;
         Object obj = null;
 
-        System.out.println("Requested key=" + uid);
+        System.out.println("Requested key=" + key);
         printCaches();
 
-        if (ramCache.objects.containsKey(uid)) {
-//            if (repository.getCacheKind().equals(uid))
+        if (ramCache.hasObject(key)) {
+//            if (repository.getCacheKind().equals(key))
             // Increasing a retrieval count for this object
-            ramCache.frequency.put(uid, ramCache.frequency.get(uid) + 1);
-            System.out.println("RAM cache hit, key=" + uid + "\n");
-            return ramCache.objects.get(uid);
+//            ramCache.mapFrequency.put(key, ramCache.mapFrequency.get(key) + 1);
+            System.out.println("RAM cache hit, key=" + key + "\n");
+            return ramCache.getObject(key);
         } else {
 
             // Trying to retrieve an entry from an HDD cache
             try {
-                obj = hddCache.getObject(uid);
+                obj = hddCache.getObject(key);
+                System.out.println("HDD cache hit\n");
+            } catch (NullPointerException ex) {
+                    
             } catch (IOException ex) {
 //                System.out.println("Cannot retrieve an entry from an HDD cache");
 //                Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
@@ -79,71 +82,61 @@ public class CacheProcessor {
 //                Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            if (obj != null) {
-                // Increasing a retrieval frequency for this object
-                hddCache.frequency.put(uid, hddCache.frequency.get(uid) + 1);
-                System.out.println("HDD cache hit\n");
-                return obj;
-
-            } else {
+            if (obj == null) {
                 System.out.print("No hit to any cache, ");
                 // Try adding a newly downloaded object to cache.
-                if (ramCache.objects.size() < repository.getLevel1CacheSize()) {
+                if (ramCache.getSize() < repository.getLevel1CacheSize()) {
                     // Adding a newly downloaded object to a RAM cache.
-                    ramCache.objects.put(uid, cacheFeeder.feed(uid));
-                    // Making a retrieval count for this object to be 1.
-                    ramCache.frequency.put(uid, 1);
-                    System.out.println("object with key=" + uid + " is added.\n");
+                    ramCache.addObject(key, cacheFeeder.feed(key));
+                    System.out.println("object with key=" + key + " is added to RAM cache.\n");
                 } else {    // RAM cache is full, it needs an extrusion 
                     /*
                      * Find the least used object in RAM cache and move it to HDD 
                      * cache and if a HDD cache is full, remove the least used 
                      * one. Then write to RAM cache a new entry.
                      */
-                    System.out.println(" performing extrusion ... \n");
+                    System.out.print("\nRAM cache is full, performing extrusion.");
                     if (hddCache.size < repository.getLevel2CacheSize()) {
                         // Looking for least used entry in a RAM cache
                         entry = ramCache.frequency.entrySet().iterator().next();
                         // Moving a least used RAM object to a HDD cache.
-//                        hddCache.objects.put(uid, ramCache.objects.get(entry.getKey()));
+//                        hddCache.objects.put(key, ramCache.objects.get(entry.getKey()));
                         try {
-                            hddCache.addObject(entry.getKey(), ramCache.objects.get(entry.getKey()));
+                            hddCache.addObject(entry.getKey(), ramCache.getObject(entry.getKey()));
+                            System.out.println(" An object with key=" + entry.getKey() + " is moved to HDD cache.\n");
+                            // Removing such object from a cache
+                            ramCache.removeObject(entry.getKey());
+                            // Adding a newly downloaded object to a RAM cache.
+                            ramCache.addObject(key, cacheFeeder.feed(key));
                         } catch (IOException ex) {
+                            System.out.println();
                             Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        // Making a retrieval count for this object to be 1.
-                        hddCache.frequency.put(uid, 1);
-                        ramCache.objects.remove(entry.getKey());
-                        ramCache.frequency.remove(entry.getKey());
-
-                        // Adding a newly downloaded object to a RAM cache.
-                        ramCache.objects.put(uid, cacheFeeder.feed(uid));
-                        // Making a retrieval count for this object to be 1.
-                        ramCache.frequency.put(uid, 1);
 
                     } else {
                         // Remove least used item from an HDD cache
-                        entry = hddCache.frequency.entrySet().iterator().next();
-                        ramCache.objects.remove(entry.getKey(), ramCache.objects.get(entry.getKey()));
+                        entry = hddCache.mapFrequency.entrySet().iterator().next();
+//                        ramCache.objects.remove(entry.getKey(), ramCache.objects.get(entry.getKey()));
+                        ramCache.removeObject(key);
 
                         // Looking for least used entry in a RAM cache
                         entry = ramCache.frequency.entrySet().iterator().next();
                         try {
                             // Moving a least used RAM object to a HDD cache.
-//                        hddCache.objects.put(uid, ramCache.frequency.get(entry.getKey()));
-                            hddCache.addObject(uid, entry);
+//                        hddCache.objects.put(key, ramCache.mapFrequency.get(entry.getKey()));
+                            hddCache.addObject(key, entry);
                         } catch (IOException ex) {
                             System.out.println("Cannot move to HDD cache !");
                             Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         // Making a retrieval count for this object to be 1.
-                        hddCache.frequency.put(uid, 1);
+                        hddCache.mapFrequency.put(key, 1);
                         ramCache.objects.remove(entry.getKey());
 
                         // Adding a newly downloaded object to a RAM cache.
-                        ramCache.objects.put(uid, cacheFeeder.feed(uid));
+                        ramCache.objects.put(key, cacheFeeder.feed(key));
                         // Making a retrieval count for this object to be 1.
-                        ramCache.frequency.put(uid, 1);
+                        ramCache.frequency.put(key, 1);
                     }
                 }
             }
@@ -151,31 +144,21 @@ public class CacheProcessor {
         return new Object();
     }
 
-    /**
-     * Method generates a new object, pretending that is was downloaded from
-     * outer source.
-     */
-//    private Object readObject(String uid) {
-//        return new Object();
-//    }
     private void printCaches() {
         System.out.print("--- RAM cache: ");
         for (Map.Entry<String, Object> entrySet : ramCache.objects.entrySet()) {
             Object key = entrySet.getKey();
             Object value = entrySet.getValue();
-            System.out.print("key=" + key + " (" + (int) ramCache.frequency.get(key) + "), ");
+            System.out.print("key=" + key + "(" + (int) ramCache.frequency.get(key) + "), ");
         }
-//        if (ramCache.objects.size() > 0) {
-            System.out.println("");
-//        }
+        System.out.println("");
         System.out.print("--- HDD cache: ");
-        File dir = new File(Repository.FILESFOLDER);
-        for (File file : dir.listFiles()) {
-            System.out.print(file.getName() + ", (" + (int) hddCache.frequency.get(key) + "), ");
+        for (Map.Entry<String, Object> entrySet : hddCache.mapFiles.entrySet()) {
+            Object key = entrySet.getKey();
+            Object value = entrySet.getValue();
+            System.out.print("file=" + ((String)value).split("[\\\\]+")[1] + "(" + (int) hddCache.mapFrequency.get(key) + "), ");
         }
-//        if (hddCache.size > 0) {
-            System.out.println("");
-//        }
+        System.out.println("");
     }
 
     public void performCachingProcess() {
@@ -184,7 +167,6 @@ public class CacheProcessor {
         for (int i = 0; i < number; i++) {
             obj = processRequest(cacheFeeder.dummyAddress());
         }
-        System.out.println("Caching cycle is over.");
     }
 
 }
