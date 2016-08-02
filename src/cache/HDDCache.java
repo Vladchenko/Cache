@@ -14,9 +14,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.NavigableMap;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,13 +26,14 @@ import java.util.logging.Logger;
 public class HDDCache implements Serializable, ICache {
 
     Map<String, Object> mapFiles;
-    NavigableMap<String, Integer> mapFrequency;
+    Map<String, Integer> mapFrequency;
+    String keyLastAccessed;
     int size = 0;
 //    public static Repository oRepository = Repository.getInstance();
 
     public HDDCache() {
         mapFiles = new HashMap();
-        mapFrequency = new TreeMap();
+        mapFrequency = new LinkedHashMap();
         createFilesFolder();    // Makes a folder, when there is no such
         clearCache();           // Clear a cache before run a caching loop
     }
@@ -78,6 +78,7 @@ public class HDDCache implements Serializable, ICache {
             obj = ous.readObject();
             // Increasing a call count for this entry.
             mapFrequency.put(key, mapFrequency.get(key) + 1);
+            keyLastAccessed = key;
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(HDDCache.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -103,6 +104,7 @@ public class HDDCache implements Serializable, ICache {
         size++;
         mapFrequency.put(key, 1);
         mapFiles.put(key, fullFileName);
+        keyLastAccessed = key;
     }
 
     @Override
@@ -132,7 +134,8 @@ public class HDDCache implements Serializable, ICache {
 
     @Override
     public String findLeastUsed() {
-        return mapFrequency.lastKey();
+//        return mapFrequency.lastKey();
+        return keyLastAccessed;
     }
 
 }
