@@ -80,12 +80,12 @@ public class CacheProcessor {
                 if (ramCache.getSize() < repository.getLevel1CacheSize()) {
                     // try adding a newly downloaded object to a RAM cache.
                     ramCache.addObject(key, cacheFeeder.feed(key));
-                    System.out.println("object with key=" + key + " is added to RAM cache.\n");
+                    System.out.println("entry with key=" + key + " is added to a RAM cache.\n");
                 } else {    // RAM cache is full, it needs an extrusion 
                     /*
-                     * Find the least used object in RAM cache and move it to HDD 
-                     * cache and if a HDD cache is full, remove the least used 
-                     * one. Then write to RAM cache a new entry.
+                     * Find the least used entry in a RAM cache and move it to 
+                     * an HDD cache and if HDD cache is full, remove the least 
+                     * used one. Then write to a RAM cache a new entry.
                      */
                     System.out.print("\nRAM cache is full, performing an extrusion.");
                     if (hddCache.size < repository.getLevel2CacheSize()) {
@@ -95,7 +95,7 @@ public class CacheProcessor {
                         try {
                             hddCache.addObject(key_, ramCache.getObject(key_));
                             hddCache.mapFrequency.put(key_, 0);
-                            System.out.println(" An object with key=" + key_ + " is moved to HDD cache.\n");
+                            System.out.println(" An entry with key=" + key_ + " is moved to an HDD cache.\n");
                             // Removing such entry from a RAM cache.
                             ramCache.removeObject(key_);
                             // Adding a newly downloaded entry to a RAM cache.
@@ -111,13 +111,13 @@ public class CacheProcessor {
                          * , then move least used RAM cache entry to an HDD 
                          * cache and write a new entry to RAM cache.
                          */
-                        System.out.print("\nHDD cache is full, performing an extrusion.");
-                        // Getting the least used entry in an HDD cache.
+                        System.out.print("\nHDD cache is full, removing a least used entry.");
+                        // Getting the least used entry in an HDD cache 
                         String key_ = hddCache.findLeastUsed();
                         try {
-                            // Removing this entry
+                            // and removing this entry.
                             hddCache.removeObject(key_);
-                            System.out.println("Object with key=" + key_ + " is removed from an HDD cache. ");
+                            System.out.println("Entry with key=" + key_ + " is removed from an HDD cache. ");
                         } catch (NotPresentException ex) {
                             Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -127,7 +127,7 @@ public class CacheProcessor {
                             // Moving a least used RAM object to a HDD cache.
                             hddCache.addObject(key_, ramCache.getObject(key_));
                             hddCache.mapFrequency.put(key_, 0);
-                            System.out.println("Least used in RAM cache object with key=" 
+                            System.out.println("Least used entry in RAM cache with key=" 
                                     + key_ + " is moved to an HDD cache. ");
                         } catch (IOException ex) {
                             System.out.println("Cannot move to HDD cache !");
@@ -139,13 +139,19 @@ public class CacheProcessor {
                                     + key_ + " is removed.");
                         // Adding a newly downloaded object to a RAM cache.
                         ramCache.addObject(key, cacheFeeder.feed(key));
-                        System.out.println("New object with key=" 
+                        System.out.println("New entry with key=" 
                                     + key + " is added to a RAM cache.\n");
                     }
                 }
             }
         }
+        recache();
+        // Retrieving a requested antry to a CPU.
         return new Object();
+    }
+    
+    private void recache() {
+        
     }
 
     private void printCaches() {

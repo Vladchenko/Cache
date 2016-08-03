@@ -15,7 +15,7 @@ import java.util.Map;
 public class ProcessArguments {
 
     public static Repository repository = Repository.getInstance();
-    
+
     public ProcessArguments(Repository repository) {
         this.repository = repository;
     }
@@ -65,14 +65,31 @@ public class ProcessArguments {
             System.out.println("Level 2 cache size is specified in a wrong way ! Used by default.");
             repository.setLevel2CacheSize(Repository.LEVEL2CACHECSIZEDEFAULT);
         }
-        repository.setCacheKind(arguments.get("cachekind"));
-        if (repository.getCacheKind() == null
-                || repository.getCacheKind().isEmpty()) {
-            System.out.println("cachekind is not set, used default - least recently used");
-            repository.setCacheKind("lru");
+        if (arguments.get("cachekind") == null) {
+            System.out.println("cachekind is not set, used default - Most Recently Used.");
+            repository.setCacheKind(Repository.cacheKindEnum.MRU);
         } else {
+            switch (arguments.get("cachekind")) {
+                case "LFU": {
+                    repository.setCacheKind(Repository.cacheKindEnum.LFU);
+                    break;
+                }
+                case "LRU": {
+                    repository.setCacheKind(Repository.cacheKindEnum.LRU);
+                    break;
+                }
+                case "LRR": {
+                    repository.setCacheKind(Repository.cacheKindEnum.LRR);
+                    break;
+                }
+                case "MRU": {
+                    repository.setCacheKind(Repository.cacheKindEnum.MRU);
+                    break;
+                }
+            }
             System.out.println("cachekind is set to - " + repository.getCacheKind());
         }
+        
 
         // Uncomment in case want to see a full list of key-value pairs
 //        printArgs(arguments);
