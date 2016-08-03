@@ -34,11 +34,11 @@ public class CacheProcessor {
         cacheFeeder = new CacheFeeder();
     }
 
-    // Retrieving an object from a cache
+    // Retrieving an entry from a cache
     private Object processRequest(String key) {
         /**
          * Initially, ram cache (RC) and disk cache (DC) are empty. CPU receives
-         * a command to get data. Algorythm: 1. CPU checks if an RC has this
+         * a request to get data. Algorythm: 1. CPU checks if an RC has this
          * data, i.e. object (obj) 1.1 If so, retrieves it and does (1). 1.2 If
          * not, checks if it is present in a DC. 1.2.1 If present, retrieves it
          * to CPU and does (1). 1.2.2 If not present, addresses to some memory,
@@ -73,12 +73,12 @@ public class CacheProcessor {
                 System.out.println("HDD cache hit, key=" + key + "\n");
             } catch (NullPointerException | IOException | ClassNotFoundException ex) {
             }
-            // When both the cache do not have such entry,
+            // When both caches miss,
             if (obj == null) {
                 System.out.print("Cache miss, ");
                 // if RAM cache is not full,
                 if (ramCache.getSize() < repository.getLevel1CacheSize()) {
-                    // try adding a newly downloaded object to a RAM cache.
+                    // try adding a newly downloaded entry to a RAM cache.
                     ramCache.addObject(key, cacheFeeder.feed(key));
                     System.out.println("entry with key=" + key + " is added to a RAM cache.\n");
                 } else {    // RAM cache is full, it needs an extrusion 
@@ -124,7 +124,7 @@ public class CacheProcessor {
                         // Getting the least used entry in a RAM cache.
                         key_ = ramCache.findLeastUsed();
                         try {
-                            // Moving a least used RAM object to a HDD cache.
+                            // Moving a least used RAM entry to a HDD cache.
                             hddCache.addObject(key_, ramCache.getObject(key_));
                             hddCache.mapFrequency.put(key_, 0);
                             System.out.println("Least used entry in RAM cache with key=" 
@@ -135,9 +135,9 @@ public class CacheProcessor {
                         }
                         // Removing a least used entry from a RAM cache.
                         ramCache.removeObject(key_);
-                        System.out.println("Least used in RAM cache object with key=" 
+                        System.out.println("Least used in RAM cache entry with key=" 
                                     + key_ + " is removed.");
-                        // Adding a newly downloaded object to a RAM cache.
+                        // Adding a newly downloaded entry to a RAM cache.
                         ramCache.addObject(key, cacheFeeder.feed(key));
                         System.out.println("New entry with key=" 
                                     + key + " is added to a RAM cache.\n");
@@ -146,7 +146,7 @@ public class CacheProcessor {
             }
         }
         recache();
-        // Retrieving a requested antry to a CPU.
+        // Retrieving a requested entry to a CPU.
         return new Object();
     }
     
