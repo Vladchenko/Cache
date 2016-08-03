@@ -34,27 +34,11 @@ public class CacheProcessor {
         cacheFeeder = new CacheFeeder();
     }
 
-    // Retrieving an entry from a cache
+    // Retrieving an entry from a cache to allegedly pass it to CPU.
     private Object processRequest(String key) {
-        /**
-         * Initially, ram cache (RC) and disk cache (DC) are empty. CPU receives
-         * a request to get data. Algorythm: 1. CPU checks if an RC has this
-         * data, i.e. object (obj) 1.1 If so, retrieves it and does (1). 1.2 If
-         * not, checks if it is present in a DC. 1.2.1 If present, retrieves it
-         * to CPU and does (1). 1.2.2 If not present, addresses to some memory,
-         * gets an (obj) from it, checks if there is a room in RC for it and
-         * 1.2.3 if there is, add obj to RC and does (1). 1.2.4 if there is no,
-         * checks if there is a room in DC for it. 1.2.4.1 If there is one,
-         * passes other obj, defined by picked algorithm to DC, does (1),
-         * 1.2.4.2 and writes an obj to RC. 1.2.4.3 If there is no, removes some
-         * _obj from DC, using a picked removal algorithm, moves one from an RC
-         * to DC, using a picked removal algorithm, and does (1). 1.2.5 Obj from
-         * DC might go to RC, if algorythm tells so.
-         *
-         * (1) - Some manipulation with a data that goes along with an
-         * algorythm.
-         */
+
 //        Map.Entry<String, Integer> entry;
+        // Data that is going to be retrieved on a CPU alleged request.
         Object obj = null;
 
         System.out.println("Requested key=" + key);
@@ -71,6 +55,7 @@ public class CacheProcessor {
                 // trying to retrieve an entry from an HDD cache.
                 obj = hddCache.getObject(key);
                 System.out.println("HDD cache hit, key=" + key + "\n");
+                return obj;
             } catch (NullPointerException | IOException | ClassNotFoundException ex) {
             }
             // When both caches miss,
@@ -78,10 +63,13 @@ public class CacheProcessor {
                 System.out.print("Cache miss, ");
                 // if RAM cache is not full,
                 if (ramCache.getSize() < repository.getLevel1CacheSize()) {
+                    // downloading a requested data from a mock source,
+                    obj = cacheFeeder.feed(key);
                     // try adding a newly downloaded entry to a RAM cache.
-                    ramCache.addObject(key, cacheFeeder.feed(key));
+                    ramCache.addObject(key, obj);
                     System.out.println("entry with key=" + key + " is added to a RAM cache.\n");
-                } else {    // RAM cache is full, it needs an extrusion 
+                    return obj;
+                } else {    // RAM cache is full, it needs an extrusion.
                     /*
                      * Find the least used entry in a RAM cache and move it to 
                      * an HDD cache and if HDD cache is full, remove the least 
@@ -98,8 +86,11 @@ public class CacheProcessor {
                             System.out.println(" An entry with key=" + key_ + " is moved to an HDD cache.\n");
                             // Removing such entry from a RAM cache.
                             ramCache.removeObject(key_);
+                            // Downloading a requested data from a mock source.
+                            obj = cacheFeeder.feed(key);
                             // Adding a newly downloaded entry to a RAM cache.
-                            ramCache.addObject(key, cacheFeeder.feed(key));
+                            ramCache.addObject(key, obj);
+                            return obj;
                         } catch (IOException ex) {
                             System.out.println();
                             Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
@@ -147,7 +138,7 @@ public class CacheProcessor {
         }
         recache();
         // Retrieving a requested entry to a CPU.
-        return new Object();
+        return obj;
     }
     
     private void recache() {
@@ -173,7 +164,7 @@ public class CacheProcessor {
 
     public void performCachingProcess() {
         Object obj;
-        System.out.println("\n||| Data retrieval/caching loop begun |||");
+        System.out.println("\n\n<<<--- Data retrieval/caching loop begun --->>>\n");
         for (int i = 0; i < number; i++) {
             obj = processRequest(cacheFeeder.dummyAddress());
         }
