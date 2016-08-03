@@ -60,29 +60,25 @@ public class CacheProcessor {
         System.out.println("Requested key=" + key);
         printCaches();
 
+        // If RAM cache has a requested entry,
         if (ramCache.hasObject(key)) {
             System.out.println("RAM cache hit, key=" + key + "\n");
+            // return it to CPU.
             return ramCache.getObject(key);
         } else {
-            // Trying to retrieve an entry from an HDD cache
+            // RAM cache miss, 
             try {
+                // trying to retrieve an entry from an HDD cache.
                 obj = hddCache.getObject(key);
                 System.out.println("HDD cache hit, key=" + key + "\n");
-            } catch (NullPointerException ex) {
-                    
-            } catch (IOException ex) {
-//                System.out.println("Cannot retrieve an entry from an HDD cache");
-//                Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-//                System.out.println("Cannot retrieve an entry from an HDD cache");
-//                Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NullPointerException | IOException | ClassNotFoundException ex) {
             }
-
+            // When both the cache do not have such entry,
             if (obj == null) {
                 System.out.print("Cache miss, ");
-                // Try adding a newly downloaded object to cache.
+                // if RAM cache is not full,
                 if (ramCache.getSize() < repository.getLevel1CacheSize()) {
-                    // Adding a newly downloaded object to a RAM cache.
+                    // try adding a newly downloaded object to a RAM cache.
                     ramCache.addObject(key, cacheFeeder.feed(key));
                     System.out.println("object with key=" + key + " is added to RAM cache.\n");
                 } else {    // RAM cache is full, it needs an extrusion 
@@ -91,34 +87,31 @@ public class CacheProcessor {
                      * cache and if a HDD cache is full, remove the least used 
                      * one. Then write to RAM cache a new entry.
                      */
-                    System.out.print("\nRAM cache is full, performing extrusion.");
+                    System.out.print("\nRAM cache is full, performing an extrusion.");
                     if (hddCache.size < repository.getLevel2CacheSize()) {
-                        // Looking for least used entry in a RAM cache
+                        // Getting the least used entry in a RAM cache.
                         String key_ = ramCache.findLeastUsed();
-                        // Moving a least used RAM object to a HDD cache.
-//                        hddCache.objects.put(key, ramCache.objects.get(entry.getKey()));
+                        // Moving a least used RAM entry to an HDD cache.
                         try {
                             hddCache.addObject(key_, ramCache.getObject(key_));
                             hddCache.mapFrequency.put(key_, 0);
                             System.out.println(" An object with key=" + key_ + " is moved to HDD cache.\n");
-                            // Removing such object from a cache
+                            // Removing such entry from a RAM cache.
                             ramCache.removeObject(key_);
-                            // Adding a newly downloaded object to a RAM cache.
+                            // Adding a newly downloaded entry to a RAM cache.
                             ramCache.addObject(key, cacheFeeder.feed(key));
                         } catch (IOException ex) {
                             System.out.println();
                             Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
                         }
-
                     } else {
-                        
                         /**
                          * When all the caches are full and new entry is 
                          * downloaded, remove least used entry from an HDD cache
                          * , then move least used RAM cache entry to an HDD 
                          * cache and write a new entry to RAM cache.
                          */
-                        
+                        System.out.print("\nHDD cache is full, performing an extrusion.");
                         // Getting the least used entry in an HDD cache.
                         String key_ = hddCache.findLeastUsed();
                         try {
@@ -130,8 +123,6 @@ public class CacheProcessor {
                         }
                         // Getting the least used entry in a RAM cache.
                         key_ = ramCache.findLeastUsed();
-//                        System.out.println("Entry is |" + key_ + "|");
-//                        System.out.println(key);
                         try {
                             // Moving a least used RAM object to a HDD cache.
                             hddCache.addObject(key_, ramCache.getObject(key_));
