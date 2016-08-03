@@ -67,7 +67,7 @@ public class CacheProcessor {
             // Trying to retrieve an entry from an HDD cache
             try {
                 obj = hddCache.getObject(key);
-                System.out.println("HDD cache hit\n");
+                System.out.println("HDD cache hit, key=" + key + "\n");
             } catch (NullPointerException ex) {
                     
             } catch (IOException ex) {
@@ -79,7 +79,7 @@ public class CacheProcessor {
             }
 
             if (obj == null) {
-                System.out.print("No hit to any cache, ");
+                System.out.print("Cache miss, ");
                 // Try adding a newly downloaded object to cache.
                 if (ramCache.getSize() < repository.getLevel1CacheSize()) {
                     // Adding a newly downloaded object to a RAM cache.

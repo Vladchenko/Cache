@@ -7,10 +7,10 @@ level1Cache=12 level2Cache=20 = 12= == =11 cachekind=lru
 
 
 
-Requested key=138280645
---- RAM cache: key=940174092(1), key=292357056(2), key=879523639(1), key=723800261(1), 
---- HDD cache: file=cache_File_255154519.cache(1), 
+Requested key=719314315
+--- RAM cache: key=728146445(2), key=244711005(1), key=993550896(2), key=275171652(1), 
+--- HDD cache: 
 No hit to any cache, 
-RAM cache is full, performing extrusion. An object with key=292357056 is moved to HDD cache.
+RAM cache is full, performing extrusion. An object with key=993550896 is moved to HDD cache.
 
-Problem: object with key=292357056 SHOULD NOT be moved to HDD cache.
+Problem: object with key=993550896 SHOULD NOT be moved to HDD cache.

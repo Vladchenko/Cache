@@ -7,6 +7,7 @@ package cache;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -18,12 +19,13 @@ import java.util.TreeMap;
 public class RAMCache implements Serializable, ICache {
     
     Map<String,Object> objects;
-    NavigableMap<String,Integer> frequency;
+    Map<String,Integer> frequency;
+    String keyLastAccessed;
     int size = 0;
     
     public RAMCache() {
         objects = new HashMap();
-        frequency = new TreeMap();
+        frequency = new LinkedHashMap();
     }
 
     @Override
@@ -34,13 +36,15 @@ public class RAMCache implements Serializable, ICache {
     @Override
     public Object getObject(String key) {
         frequency.put(key, frequency.get(key) + 1);
+        keyLastAccessed = key;
         return objects.get(key);
     }
 
     @Override
-    public void addObject(String guid, Object obj) {
-        objects.put(guid, obj);
-        frequency.put(guid, 1);
+    public void addObject(String key, Object obj) {
+        keyLastAccessed = key;
+        objects.put(key, obj);
+        frequency.put(key, 1);
         size++;
     }
 
@@ -72,7 +76,8 @@ public class RAMCache implements Serializable, ICache {
 
     @Override
     public String findLeastUsed() {
-        return frequency.lastKey();
+//        return frequency.lastKey();
+        return keyLastAccessed;
     }
 
 }

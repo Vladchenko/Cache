@@ -14,7 +14,7 @@ import java.io.IOException;
  */
 public interface ICache {
     public void clearCache();
-    public void addObject(String guid, Object obj) throws IOException, 
+    public void addObject(String key, Object obj) throws IOException, 
             FileNotFoundException;
     public String findLeastUsed();
     public Object getObject(String key)  throws IOException,
