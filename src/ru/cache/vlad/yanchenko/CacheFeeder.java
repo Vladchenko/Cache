@@ -5,7 +5,9 @@
  */
 package ru.cache.vlad.yanchenko;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,34 +19,30 @@ public class CacheFeeder {
     private int i = 0;
     // Number of an entries that a data map is to have. 
     private int entryNumber = 0;
-    // Data that is gonna be fed to a cacheProcessor.
-//    Map<String, Object> dataMap = new HashMap();
     private String[] values;
+    // Data that is gonna be fed to a cacheProcessor.
     private Map<Object, Object> mapObjectsFed;
+    Object[] arrValues;
 
     CacheFeeder(int enrtyNumber) {
         this.entryNumber = enrtyNumber;
-        values = new String[entryNumber];
+        // Array that keeps the keys to all the maps, for further picking a 
+        // random key out of it, that will be requested from cacheProcessor.
+        arrValues = new Object[entryNumber];
         mapObjectsFed = new HashMap();
-        populateData();
-    }
-
-    public CacheFeeder(Map<Object, Object> map) {
-        mapObjectsFed = map;
-    }
-
-    // Adding entry to a map that holds the data to be fed to a cacheProcessor.
-    private void addEntry(Map<Object, Object> map) {
-        map.put(Integer.toString((int) (Math.random() * 1000000000)),
-                Integer.toString((int) (Math.random() * 1000000000)));
+        mapObjectsFed = populateData(mapObjectsFed);
+//        arrValues = (new ArrayList<Object>(mapObjectsFed.keySet())).toArray();
+        
     }
 
     // Populating data that is going to be fed to a cacheProcessor.
-    private void populateData() {
+    private Map<Object, Object> populateData(Map<Object, Object> map) {
         for (int i = 0; i < entryNumber; i++) {
-            values[i] = Integer.toString((int) (Math.random() * 1000000000));
-            addEntry(mapObjectsFed);
+            arrValues[i] = Integer.toString((int) (Math.random() * 1000000000));
+            String key = arrValues[i].toString();
+            map.put(key, Integer.toString((int) (Math.random() * 1000000000)));
         }
+        return map;
     }
 
     /**
@@ -53,8 +51,7 @@ public class CacheFeeder {
      * @return 
      */
     public Object deliverObject(String key) {
-        i = (int) (Math.random() * entryNumber);
-        return values[i];
+        return mapObjectsFed.get(key);
     }
 
     /**
@@ -63,9 +60,8 @@ public class CacheFeeder {
      * finally, retrieve to alleged CPU.
      */
     public String requestObject() {
-
         i = (int) (Math.random() * entryNumber);
-        return values[i];
+        return (String)arrValues[i];
     }
 
 }
