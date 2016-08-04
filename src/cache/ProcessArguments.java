@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class ProcessArguments {
 
-    public static Repository repository = Repository.getInstance();
+    private Repository repository = Repository.getInstance();
 
     public ProcessArguments(Repository repository) {
         this.repository = repository;
@@ -30,7 +30,7 @@ public class ProcessArguments {
             String[] map = arg.split(delims);
             try {
                 if (!map[0].isEmpty()) {
-                    arguments.put(map[0], map[1]);
+                    arguments.put(map[0].toLowerCase(), map[1].toLowerCase());
                 }
             } catch (Exception ex) {
                 System.out.print("Wrong argument present... ");
@@ -39,7 +39,7 @@ public class ProcessArguments {
         System.out.println("");
 
         // Processing arguments for level1 cache
-        number = arguments.get("level1Cache");
+        number = arguments.get("level1cache");
         try {
             repository.setLevel1CacheSize(Integer.parseInt(number));
             if (repository.getLevel1CacheSize() < Repository.LEVEL1CACHEMINIMUMVALUE) {
@@ -53,7 +53,7 @@ public class ProcessArguments {
         }
 
         // Processing arguments for level2 cache
-        number = arguments.get("level2Cache");
+        number = arguments.get("level2cache");
         try {
             repository.setLevel2CacheSize(Integer.parseInt(number));
             if (repository.getLevel2CacheSize() < Repository.LEVEL2CACHEMINIMUMVALUE) {
@@ -70,17 +70,25 @@ public class ProcessArguments {
             repository.setCacheKind(Repository.cacheKindEnum.MRU);
         } else {
             switch (arguments.get("cachekind")) {
+                case "lfu": {
+                }
                 case "LFU": {
                     repository.setCacheKind(Repository.cacheKindEnum.LFU);
                     break;
+                }
+                case "lru": {
                 }
                 case "LRU": {
                     repository.setCacheKind(Repository.cacheKindEnum.LRU);
                     break;
                 }
+                case "lrr": {
+                }
                 case "LRR": {
                     repository.setCacheKind(Repository.cacheKindEnum.LRR);
                     break;
+                }
+                case "mru": {
                 }
                 case "MRU": {
                     repository.setCacheKind(Repository.cacheKindEnum.MRU);
