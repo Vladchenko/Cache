@@ -5,8 +5,6 @@
  */
 package cache;
 
-import java.util.Iterator;
-import java.util.Map;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,25 +28,75 @@ public class RAMCacheTest {
     }
 
     @Test
-    public void testgetLeastUsed() {
-        System.out.println("getLeastUsed");
-        RAMCache ramCache = new RAMCache();
+    public void testGetLeastUsedLFU() {
+        
+//        Repository repository = Repository.getInstance();
+//        repository.setCacheKind(Repository.cacheKindEnum.LRR);
+//        
+//        RAMCache ramCache = new RAMCache();
 //        ramCache.addObject("123", new Object());
 //        ramCache.addObject("456", new Object());
 //        ramCache.addObject("789", new Object());
 //        ramCache.getObject("123");
 //        ramCache.getObject("123");
 //        ramCache.getObject("456");
-        ramCache.addObject("728146445", new Object());
-        ramCache.addObject("244711005", new Object());
-        ramCache.addObject("993550896", new Object());
-        ramCache.addObject("275171652", new Object());
+//        
+//        // The least used here is "123".
+//        assertEquals(ramCache.getLeastUsed(Repository.cacheKindEnum.LRR), "123");
+    }
+
+    @Test
+    public void testGetLeastUsedLRU() {
         
-        ramCache.getObject("728146445");
-//        ramCache.getObject("993550896");
+        Repository repository = Repository.getInstance();
+        repository.setCacheKind(Repository.cacheKindEnum.LRU);
         
-        // The least used here is "789".
-        assertEquals(ramCache.getLeastUsed(), "275171652");
+        RAMCache ramCache = new RAMCache();
+        ramCache.addObject("123", new Object());
+        ramCache.addObject("456", new Object());
+        ramCache.addObject("789", new Object());
+        ramCache.getObject("123");
+        ramCache.getObject("123");
+        ramCache.getObject("456");
+        
+        // The least recently used here is "789".
+        assertEquals(ramCache.getLeastUsed(Repository.cacheKindEnum.LRU), "789");
+    }
+    
+    @Test
+    public void testGetLeastUsedLRR() {
+        
+        Repository repository = Repository.getInstance();
+        repository.setCacheKind(Repository.cacheKindEnum.LRR);
+        
+        RAMCache ramCache = new RAMCache();
+        ramCache.addObject("123", new Object());
+        ramCache.addObject("456", new Object());
+        ramCache.addObject("789", new Object());
+        ramCache.getObject("123");
+        ramCache.getObject("123");
+        ramCache.getObject("456");
+        
+        // The least recently replaced here is "123".
+        assertEquals(ramCache.getLeastUsed(Repository.cacheKindEnum.LRR), "123");
+    }
+    
+    @Test
+    public void testGetLeastUsedMRU() {
+        
+        Repository repository = Repository.getInstance();
+        repository.setCacheKind(Repository.cacheKindEnum.LRR);
+        
+        RAMCache ramCache = new RAMCache();
+        ramCache.addObject("123", new Object());
+        ramCache.addObject("456", new Object());
+        ramCache.addObject("789", new Object());
+        ramCache.getObject("123");
+        ramCache.getObject("123");
+        ramCache.getObject("456");
+        
+        // The most recently used here is "456".
+        assertEquals(ramCache.getLeastUsed(Repository.cacheKindEnum.MRU), "456");
     }
 
 }

@@ -169,18 +169,11 @@ public class CacheProcessor {
 
         System.out.print("--- RAM cache: ");
         if (ramCache.mapObjects != null) {
-//            if (ramCache.mapObjects instanceof LinkedHashMap) {
-//                Iterator iterator = ramCache.mapObjects.values().iterator();
-//                while (iterator.hasNext()) {
-//                    System.out.print(iterator);
-//                }
-//            } else {
-                for (Map.Entry<String, Object> entrySet : ramCache.mapObjects.entrySet()) {
-                    Object key = entrySet.getKey();
-                    Object value = entrySet.getValue();
-                    System.out.print("key=" + key + "(" + (int) ramCache.frequency.get(key) + "), ");
-                }
-//            }
+            for (Map.Entry<String, Object> entrySet : ramCache.mapObjects.entrySet()) {
+                Object key = entrySet.getKey();
+                Object value = entrySet.getValue();
+                System.out.print("key=" + key + "(" + (int) ramCache.frequency.get(key) + "), ");
+            }
             System.out.println("");
             System.out.print("--- HDD cache: ");
             if (hddCache.mapFiles instanceof LinkedHashMap) {

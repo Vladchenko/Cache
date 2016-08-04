@@ -39,7 +39,7 @@ public class HDDCache implements Serializable, ICache {
                 break;
             }
             case LRU: {
-                mapFiles = new HashMap();
+                mapFiles = new LinkedHashMap();
                 break;
             }
             case LRR: {
@@ -105,8 +105,10 @@ public class HDDCache implements Serializable, ICache {
                     break;
                 }
                 case LRR: {
-                    return null;
-//                    break;
+                    obj = mapFiles.get(key);
+                    mapFiles.remove(key);
+                    mapFiles.put(key, obj);
+                    break;
                 }
                 case MRU: {
                     keyLastAccessed = key;
@@ -173,22 +175,26 @@ public class HDDCache implements Serializable, ICache {
             case LFU: {
                 break;
             }
-            case LRU: {
-                break;
-            }
             case LRR: {
                 /**
-                 * Getting the last key from a map of objects, i.e. the first 
+                 * Getting the first key from a map of objects, i.e. the first
                  * downloaded object.
                  */
-                String theLastKey = new ArrayList<>(
-                        mapFiles.keySet()).get(mapFiles.size() - 1);
-                return theLastKey;
+//                String theLastKey = new ArrayList<>(
+//                        mapObjects.keySet()).get(mapObjects.size() - 1);
+//                return theLastKey;
+                return mapFiles.entrySet().iterator().next().getKey();
+            }
+            case LRU: {
+                /**
+                 * Getting the first key from a map of objects, since first is
+                 * the one that was used least recently.
+                 */
+                return mapFiles.entrySet().iterator().next().getKey();
             }
             case MRU: {
                 return keyLastAccessed;
             }
-            // mapFiles.entrySet().iterator().next().getKey();
         }
         return null;
     }

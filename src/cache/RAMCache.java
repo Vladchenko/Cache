@@ -62,10 +62,11 @@ public class RAMCache implements Serializable, ICache {
             }
             case LRU: {
                 /**
-                 * Since "lru" states that object to be moved is the one that 
-                 * was least recently used, then we should put every requested 
-                 * object to the end of the LinkedHashMap. Finally, we will have 
-                 * a list of an objects from least used, to most used.
+                 * Since "lru" states that object to be moved is the one that
+                 * was least recently used, then we should put every requested
+                 * object to the end of the LinkedHashMap. Finally, we will have
+                 * a list of an objects beginning with least used, an ending
+                 * with most used.
                  */
                 obj = mapObjects.get(key);
                 mapObjects.remove(key);
@@ -76,7 +77,8 @@ public class RAMCache implements Serializable, ICache {
                 break;
             }
             case MRU: {
-                break;
+                keyLastAccessed = key;
+                return keyLastAccessed;
             }
         }
         return mapObjects.get(key);
@@ -123,21 +125,22 @@ public class RAMCache implements Serializable, ICache {
             case LFU: {
                 break;
             }
-            case LRU: {
-                /**
-                 * Getting the first key from a map of objects, since first is 
-                 * the one that was used least recently/
-                 */
-                return mapObjects.entrySet().iterator().next().getKey();
-            }
             case LRR: {
                 /**
-                 * Getting the last key from a map of objects, i.e. the first 
+                 * Getting the first key from a map of objects, i.e. the first
                  * downloaded object.
                  */
-                String theLastKey = new ArrayList<>(
-                        mapObjects.keySet()).get(mapObjects.size() - 1);
-                return theLastKey;
+//                String theLastKey = new ArrayList<>(
+//                        mapObjects.keySet()).get(mapObjects.size() - 1);
+//                return theLastKey;
+                return mapObjects.entrySet().iterator().next().getKey();
+            }
+            case LRU: {
+                /**
+                 * Getting the first key from a map of objects, since first is
+                 * the one that was used least recently.
+                 */
+                return mapObjects.entrySet().iterator().next().getKey();
             }
             case MRU: {
                 return keyLastAccessed;
