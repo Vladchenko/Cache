@@ -25,7 +25,7 @@ public class Repository {
 
 //    private String cacheKind;
     public enum cacheKindEnum {NONE, LFU, LRU, MRU, LRR};
-    private cacheKindEnum cacheKind;
+    cacheKindEnum cacheKind;
 
     private Repository() {
         cacheKind = cacheKindEnum.NONE;

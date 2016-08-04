@@ -5,10 +5,9 @@
  */
 package cache;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +17,9 @@ import java.util.logging.Logger;
  * @author v.yanchenko
  */
 public class CacheProcessor {
+
+    int cacheHits = 0;
+    int cacheMisses = 0;
 
     RAMCache ramCache;
     HDDCache hddCache;
@@ -34,7 +36,7 @@ public class CacheProcessor {
         cacheFeeder = new CacheFeeder();
     }
 
-    // Retrieving an entry from a cache to allegedly pass it to CPU.
+    // Retrieving an entry from a cache or mock source, to allegedly pass it to CPU.
     private Object processRequest(String key) {
 
 //        Map.Entry<String, Integer> entry;
@@ -78,7 +80,7 @@ public class CacheProcessor {
                     System.out.print("\nRAM cache is full, performing an extrusion.");
                     if (hddCache.size < repository.getLevel2CacheSize()) {
                         // Getting the least used entry in a RAM cache.
-                        String key_ = ramCache.findLeastUsed();
+                        String key_ = ramCache.getLeastUsed(repository.cacheKind);
                         // Moving a least used RAM entry to an HDD cache.
                         try {
                             hddCache.addObject(key_, ramCache.getObject(key_));
@@ -97,14 +99,14 @@ public class CacheProcessor {
                         }
                     } else {
                         /**
-                         * When all the caches are full and new entry is 
+                         * When all the caches are full and new entry is
                          * downloaded, remove least used entry from an HDD cache
-                         * , then move least used RAM cache entry to an HDD 
+                         * , then move least used RAM cache entry to an HDD
                          * cache and write a new entry to RAM cache.
                          */
                         System.out.print("\nHDD cache is full, removing a least used entry.");
                         // Getting the least used entry in an HDD cache 
-                        String key_ = hddCache.findLeastUsed();
+                        String key_ = hddCache.getLeastUsed(repository.cacheKind);
                         try {
                             // and removing this entry.
                             hddCache.removeObject(key_);
@@ -113,12 +115,12 @@ public class CacheProcessor {
                             Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         // Getting the least used entry in a RAM cache.
-                        key_ = ramCache.findLeastUsed();
+                        key_ = ramCache.getLeastUsed(repository.cacheKind);
                         try {
                             // Moving a least used RAM entry to a HDD cache.
                             hddCache.addObject(key_, ramCache.getObject(key_));
                             hddCache.mapFrequency.put(key_, 0);
-                            System.out.println("Least used entry in RAM cache with key=" 
+                            System.out.println("Least used entry in RAM cache with key="
                                     + key_ + " is moved to an HDD cache. ");
                         } catch (IOException ex) {
                             System.out.println("Cannot move to HDD cache !");
@@ -126,12 +128,12 @@ public class CacheProcessor {
                         }
                         // Removing a least used entry from a RAM cache.
                         ramCache.removeObject(key_);
-                        System.out.println("Least used in RAM cache entry with key=" 
-                                    + key_ + " is removed.");
+                        System.out.println("Least used in RAM cache entry with key="
+                                + key_ + " is removed.");
                         // Adding a newly downloaded entry to a RAM cache.
                         ramCache.addObject(key, cacheFeeder.feed(key));
-                        System.out.println("New entry with key=" 
-                                    + key + " is added to a RAM cache.\n");
+                        System.out.println("New entry with key="
+                                + key + " is added to a RAM cache.\n");
                     }
                 }
             }
@@ -140,26 +142,58 @@ public class CacheProcessor {
         // Retrieving a requested entry to a CPU.
         return obj;
     }
-    
+
     private void recache() {
-        
+        switch (repository.getCacheKind()) {
+            case LFU: {
+                break;
+            }
+            case LRR: {
+                break;
+            }
+            case LRU: {
+                break;
+            }
+            case MRU: {
+                break;
+            } // I suppose there is no sense in this
+        }
+
     }
 
     private void printCaches() {
+
+        if (ramCache.mapObjects instanceof LinkedHashMap) {
+
+        }
+
         System.out.print("--- RAM cache: ");
-        for (Map.Entry<String, Object> entrySet : ramCache.objects.entrySet()) {
-            Object key = entrySet.getKey();
-            Object value = entrySet.getValue();
-            System.out.print("key=" + key + "(" + (int) ramCache.frequency.get(key) + "), ");
+        if (ramCache.mapObjects != null) {
+//            if (ramCache.mapObjects instanceof LinkedHashMap) {
+//                Iterator iterator = ramCache.mapObjects.values().iterator();
+//                while (iterator.hasNext()) {
+//                    System.out.print(iterator);
+//                }
+//            } else {
+                for (Map.Entry<String, Object> entrySet : ramCache.mapObjects.entrySet()) {
+                    Object key = entrySet.getKey();
+                    Object value = entrySet.getValue();
+                    System.out.print("key=" + key + "(" + (int) ramCache.frequency.get(key) + "), ");
+                }
+//            }
+            System.out.println("");
+            System.out.print("--- HDD cache: ");
+            if (hddCache.mapFiles instanceof LinkedHashMap) {
+
+            } else {
+                for (Map.Entry<String, Object> entrySet : hddCache.mapFiles.entrySet()) {
+                    Object key = entrySet.getKey();
+                    Object value = entrySet.getValue();
+                    System.out.print("file=" + ((String) value).split("[\\\\]+")[1] + "(" + (int) hddCache.mapFrequency.get(key) + "), ");
+                }
+            }
+            System.out.println("");
         }
-        System.out.println("");
-        System.out.print("--- HDD cache: ");
-        for (Map.Entry<String, Object> entrySet : hddCache.mapFiles.entrySet()) {
-            Object key = entrySet.getKey();
-            Object value = entrySet.getValue();
-            System.out.print("file=" + ((String)value).split("[\\\\]+")[1] + "(" + (int) hddCache.mapFrequency.get(key) + "), ");
-        }
-        System.out.println("");
     }
 
     public void performCachingProcess() {

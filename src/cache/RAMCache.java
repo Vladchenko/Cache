@@ -61,6 +61,12 @@ public class RAMCache implements Serializable, ICache {
                 break;
             }
             case LRU: {
+                /**
+                 * Since "lru" states that object to be moved is the one that 
+                 * was least recently used, then we should put every requested 
+                 * object to the end of the LinkedHashMap. Finally, we will have 
+                 * a list of an objects from least used, to most used.
+                 */
                 obj = mapObjects.get(key);
                 mapObjects.remove(key);
                 mapObjects.put(key, obj);

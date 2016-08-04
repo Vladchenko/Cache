@@ -30,8 +30,8 @@ public class RAMCacheTest {
     }
 
     @Test
-    public void testFindLeastUsed() {
-        System.out.println("findLeastUsed");
+    public void testgetLeastUsed() {
+        System.out.println("getLeastUsed");
         RAMCache ramCache = new RAMCache();
 //        ramCache.addObject("123", new Object());
 //        ramCache.addObject("456", new Object());
@@ -48,7 +48,7 @@ public class RAMCacheTest {
 //        ramCache.getObject("993550896");
         
         // The least used here is "789".
-        assertEquals(ramCache.findLeastUsed(), "275171652");
+        assertEquals(ramCache.getLeastUsed(), "275171652");
     }
 
 }

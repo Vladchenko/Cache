@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,14 +26,31 @@ import java.util.logging.Logger;
  */
 public class HDDCache implements Serializable, ICache {
 
+    public static Repository repository = Repository.getInstance();
     Map<String, Object> mapFiles;
     Map<String, Integer> mapFrequency;
     String keyLastAccessed;
     int size = 0;
-//    public static Repository oRepository = Repository.getInstance();
 
     public HDDCache() {
-        mapFiles = new HashMap();
+        switch (repository.cacheKind) {
+            case LFU: {
+                mapFiles = new HashMap();
+                break;
+            }
+            case LRU: {
+                mapFiles = new HashMap();
+                break;
+            }
+            case LRR: {
+                mapFiles = new LinkedHashMap();
+                break;
+            }
+            case MRU: {
+                mapFiles = new HashMap();
+                break;
+            }
+        }
         mapFrequency = new LinkedHashMap();
         createFilesFolder();    // Makes a folder, when there is no such
         clearCache();           // Clear a cache before run a caching loop
@@ -68,7 +86,7 @@ public class HDDCache implements Serializable, ICache {
         ObjectInputStream ous = null;
         // Serialize object
 //        try {
-            fos = new FileInputStream((String) mapFiles.get(key));
+        fos = new FileInputStream((String) mapFiles.get(key));
 //        } catch (Exception ex) {
 //            // No such file, means HDD cache has no such entry.
 //            return null;
@@ -79,6 +97,22 @@ public class HDDCache implements Serializable, ICache {
             // Increasing a call count for this entry.
             mapFrequency.put(key, mapFrequency.get(key) + 1);
             keyLastAccessed = key;
+            switch (repository.cacheKind) {
+                case LFU: {
+                    break;
+                }
+                case LRU: {
+                    break;
+                }
+                case LRR: {
+                    return null;
+//                    break;
+                }
+                case MRU: {
+                    keyLastAccessed = key;
+                    return keyLastAccessed;
+                }
+            }
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(HDDCache.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -133,9 +167,30 @@ public class HDDCache implements Serializable, ICache {
     }
 
     @Override
-    public String findLeastUsed() {
+    public String getLeastUsed(Repository.cacheKindEnum cacheKind) {
 //        return mapFrequency.lastKey();
-        return keyLastAccessed;
+        switch (cacheKind) {
+            case LFU: {
+                break;
+            }
+            case LRU: {
+                break;
+            }
+            case LRR: {
+                /**
+                 * Getting the last key from a map of objects, i.e. the first 
+                 * downloaded object.
+                 */
+                String theLastKey = new ArrayList<>(
+                        mapFiles.keySet()).get(mapFiles.size() - 1);
+                return theLastKey;
+            }
+            case MRU: {
+                return keyLastAccessed;
+            }
+            // mapFiles.entrySet().iterator().next().getKey();
+        }
+        return null;
     }
 
 }

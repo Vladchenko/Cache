@@ -15,8 +15,9 @@ public class Cache {
     private CacheProcessor cacheProcessor;
     private Repository repository = Repository.getInstance();
     
-    public Cache() {
+    public Cache(String[] args) {
         prc = new ProcessArguments(repository);
+        prc.processArgs(args);
         cacheProcessor = new CacheProcessor(repository);
     }
 
@@ -25,8 +26,7 @@ public class Cache {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        Cache cache = new Cache();
-        cache.prc.processArgs(args);
+        Cache cache = new Cache(args);
         cache.cacheProcessor.performCachingProcess();
     }
     

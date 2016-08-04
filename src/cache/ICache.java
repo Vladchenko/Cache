@@ -16,7 +16,7 @@ public interface ICache {
     public void clearCache();
     public void addObject(String key, Object obj) throws IOException, 
             FileNotFoundException;
-    public String findLeastUsed();
+    public String getLeastUsed(Repository.cacheKindEnum cacheKind);
     public Object getObject(String key)  throws IOException,
             FileNotFoundException, ClassNotFoundException;
     public int getSize();
