@@ -5,6 +5,8 @@
  */
 package cache;
 
+import ru.cache.vlad.yanchenko.RAMCache;
+import ru.cache.vlad.yanchenko.Repository;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
