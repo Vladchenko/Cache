@@ -13,7 +13,7 @@ import java.util.Map;
  * @author v.yanchenko
  */
 public class CacheFeeder {
-    
+
     private int i = 0;
     // Number of an entries that a data map is to have. 
     private int entryNumber = 0;
@@ -21,41 +21,51 @@ public class CacheFeeder {
 //    Map<String, Object> dataMap = new HashMap();
     private String[] values;
     private Map<Object, Object> mapObjectsFed;
-    
-    CacheFeeder(int enrtyNumber) { 
+
+    CacheFeeder(int enrtyNumber) {
         this.entryNumber = enrtyNumber;
-        values = new String [entryNumber];
+        values = new String[entryNumber];
         mapObjectsFed = new HashMap();
         populateData();
     }
-    
+
     public CacheFeeder(Map<Object, Object> map) {
         mapObjectsFed = map;
     }
-    
+
     // Adding entry to a map that holds the data to be fed to a cacheProcessor.
     private void addEntry(Map<Object, Object> map) {
-        map.put(Integer.toString((int)(Math.random() * 1000000000)), 
-                Integer.toString((int)(Math.random() * 1000000000)));
+        map.put(Integer.toString((int) (Math.random() * 1000000000)),
+                Integer.toString((int) (Math.random() * 1000000000)));
     }
-    
+
     // Populating data that is going to be fed to a cacheProcessor.
     private void populateData() {
         for (int i = 0; i < entryNumber; i++) {
-            values[i] = Integer.toString((int)(Math.random() * 1000000000));
+            values[i] = Integer.toString((int) (Math.random() * 1000000000));
             addEntry(mapObjectsFed);
         }
     }
-    
+
+    /**
+     * This is an alleged source where object are downloaded from.
+     * @param key
+     * @return 
+     */
     public Object deliverObject(String key) {
-        i = (int)(Math.random() * entryNumber); 
+        i = (int) (Math.random() * entryNumber);
         return values[i];
     }
-    
+
+    /**
+     * Randomly picks a key and further gives it to a cacheProcessor, for it
+     * could get it from its caches or download from alleged source and 
+     * finally, retrieve to alleged CPU.
+     */
     public String requestObject() {
-        // Should randomly pick a 
-        i = (int)(Math.random() * entryNumber); 
+
+        i = (int) (Math.random() * entryNumber);
         return values[i];
     }
-    
+
 }
