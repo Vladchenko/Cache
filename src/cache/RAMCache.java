@@ -6,51 +6,87 @@
 package cache;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.NavigableMap;
-import java.util.TreeMap;
 
 /**
  *
  * @author v.yanchenko
  */
 public class RAMCache implements Serializable, ICache {
-    
-    Map<String,Object> objects;
-    Map<String,Integer> frequency;
+
+    public static Repository repository = Repository.getInstance();
+    Map<String, Object> mapObjects;
+//    Map.Entry<String, Object> mapObject;
+    Object obj;
+    Map<String, Integer> frequency;
     String keyLastAccessed;
     int size = 0;
-    
+
     public RAMCache() {
-        objects = new HashMap();
+        switch (repository.cacheKind) {
+            case LFU: {
+                mapObjects = new HashMap();
+                break;
+            }
+            case LRU: {
+                mapObjects = new LinkedHashMap();
+                break;
+            }
+            case LRR: {
+                mapObjects = new LinkedHashMap();
+                break;
+            }
+            case MRU: {
+                mapObjects = new HashMap();
+                break;
+            }
+        }
         frequency = new LinkedHashMap();
     }
 
     @Override
     public void clearCache() {
-        objects.clear();
+        mapObjects.clear();
     }
 
     @Override
     public Object getObject(String key) {
         frequency.put(key, frequency.get(key) + 1);
         keyLastAccessed = key;
-        return objects.get(key);
+        switch (repository.cacheKind) {
+            case LFU: {
+                break;
+            }
+            case LRU: {
+                obj = mapObjects.get(key);
+                mapObjects.remove(key);
+                mapObjects.put(key, obj);
+                break;
+            }
+            case LRR: {
+                break;
+            }
+            case MRU: {
+                break;
+            }
+        }
+        return mapObjects.get(key);
     }
 
     @Override
     public void addObject(String key, Object obj) {
         keyLastAccessed = key;
-        objects.put(key, obj);
+        mapObjects.put(key, obj);
         frequency.put(key, 1);
         size++;
     }
 
     @Override
     public void removeObject(String key) {
-        objects.remove(key);
+        mapObjects.remove(key);
         frequency.remove(key);
         size--;
 //        if (lfu) {
@@ -66,18 +102,42 @@ public class RAMCache implements Serializable, ICache {
 
     @Override
     public int getSize() {
-        return objects.size();
+        return mapObjects.size();
     }
 
     @Override
     public boolean hasObject(String key) {
-        return objects.containsKey(key);
+        return mapObjects.containsKey(key);
     }
 
     @Override
-    public String findLeastUsed() {
+    public String getLeastUsed(Repository.cacheKindEnum cacheKind) {
 //        return frequency.lastKey();
-        return keyLastAccessed;
+        switch (cacheKind) {
+            case LFU: {
+                break;
+            }
+            case LRU: {
+                /**
+                 * Getting the first key from a map of objects, since first is 
+                 * the one that was used least recently/
+                 */
+                return mapObjects.entrySet().iterator().next().getKey();
+            }
+            case LRR: {
+                /**
+                 * Getting the last key from a map of objects, i.e. the first 
+                 * downloaded object.
+                 */
+                String theLastKey = new ArrayList<>(
+                        mapObjects.keySet()).get(mapObjects.size() - 1);
+                return theLastKey;
+            }
+            case MRU: {
+                return keyLastAccessed;
+            }
+        }
+        return null;
     }
 
 }
