@@ -13,12 +13,14 @@ public class Cache {
     
     private ProcessArguments prc;
     private CacheProcessor cacheProcessor;
+    private Testing test;
     private Repository repository = Repository.getInstance();
     
     public Cache(String[] args) {
         prc = new ProcessArguments(repository);
         prc.processArgs(args);
         cacheProcessor = new CacheProcessor(repository);
+        test = new Testing();
     }
 
     /**
@@ -27,7 +29,8 @@ public class Cache {
     public static void main(String[] args) {
         // TODO code application logic here
         Cache cache = new Cache(args);
-        cache.cacheProcessor.performCachingProcess();
+//        cache.cacheProcessor.performCachingProcess();
+        cache.test.runTesting();
     }
     
 }

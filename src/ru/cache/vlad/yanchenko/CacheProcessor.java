@@ -35,10 +35,11 @@ public class CacheProcessor {
         ramCache = new RAMCache();
         hddCache = new HDDCache();
         this.repository = repository;
+        cacheFeeder = new CacheFeeder(20);
     }
 
     /**
-     * Retrieving an entry from a cache or mock source, to allegedly pass it to 
+     * Retrieving an entry from a cache or mock source, to allegedly pass it to
      * a requestor.
      */
     public Object processRequest(String key) {
@@ -198,12 +199,18 @@ public class CacheProcessor {
     }
 
     public void performCachingProcess() {
-        cacheFeeder = new CacheFeeder(20);
         Object obj;
         System.out.println("\n\n<<<--- Data retrieval/caching loop begun --->>>\n");
         for (int i = 0; i < number; i++) {
             obj = processRequest(cacheFeeder.requestObject());
         }
+    }
+
+    public void resetCachingInfo() {
+        hitsRAMCache = 0;
+        missesRAMCache = 0;
+        hitsHDDCache = 0;
+        missesHDDCache = 0;
     }
 
 }

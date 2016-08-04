@@ -17,7 +17,7 @@ public class Testing {
     Map<Object, Object> mapTesting;
     private Repository repository;
     CacheProcessor cacheProcessor;
-    int cachingProcessRunTimes = 10000000;
+    int pipelineRunTimes = 100;
 
     public Testing() {
         mapTesting = new HashMap<>();
@@ -34,10 +34,38 @@ public class Testing {
         return map;
     }
 
-    private void runTesting() {
+    public void runTesting() {
         repository.setCacheKind(Repository.cacheKindEnum.LRR);
-        for (int i = 0; i < cachingProcessRunTimes; i++) {
-            cacheProcessor.processRequest(null);
+        for (int i = 0; i < pipelineRunTimes; i++) {
+            cacheProcessor.processRequest(
+                    cacheProcessor.cacheFeeder.requestObject());
         }
+        printSummary();
+        cacheProcessor.resetCachingInfo();
+        repository.setCacheKind(Repository.cacheKindEnum.LRU);
+        for (int i = 0; i < pipelineRunTimes; i++) {
+            cacheProcessor.processRequest(
+                    cacheProcessor.cacheFeeder.requestObject());
+        }
+        printSummary();
+        cacheProcessor.resetCachingInfo();
+        repository.setCacheKind(Repository.cacheKindEnum.MRU);
+        for (int i = 0; i < pipelineRunTimes; i++) {
+            cacheProcessor.processRequest(
+                    cacheProcessor.cacheFeeder.requestObject());
+        }
+        printSummary();
+        cacheProcessor.resetCachingInfo();
+    }
+    
+    public void printSummary() {
+        System.out.println("--- Summary ---------------------------------------");
+        System.out.println("| Cache algorithm " + repository.getCacheKind());
+        System.out.println("| Pipeline ran for: " + pipelineRunTimes + " times");
+        System.out.println("| RAM cache hits: " + cacheProcessor.hitsRAMCache);
+        System.out.println("| HDD cache hits: " + cacheProcessor.hitsHDDCache);
+        System.out.println("| RAM cache misses: " + cacheProcessor.missesRAMCache);
+        System.out.println("| HDD cache misses: " + cacheProcessor.missesHDDCache);
+        System.out.println("---------------------------------------------------");
     }
 }
