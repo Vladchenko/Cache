@@ -64,4 +64,7 @@ public class CacheFeeder {
         return (String)arrValues[i];
     }
 
+    public void runAllegedPipeline() {
+        
+    }
 }
