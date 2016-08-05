@@ -147,7 +147,7 @@ public class CacheProcessor {
                 }
             }
         }
-//        recache();
+        recache();
         // Retrieving a requested entry to a CPU.
         return obj;
     }
@@ -164,8 +164,9 @@ public class CacheProcessor {
                 break;
             }
             case MRU: {
+                // If there was an HDDCache hit, then move this entry to a RAMCache.
                 break;
-            } // I suppose there is no sense in this
+            } 
         }
 
     }
