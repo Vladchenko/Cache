@@ -18,14 +18,15 @@ import java.util.Map;
 public class RAMCache implements Serializable, ICache {
 
     public static Repository repository = Repository.getInstance();
-    Map<String, Object> mapObjects;
+    Map<Object, Object> mapObjects;
 //    Map.Entry<String, Object> mapObject;
     Object obj;
-    Map<String, Integer> frequency;
-    String keyLastAccessed;
+    Map<Object, Integer> frequency;
+    Object keyLastAccessed;
     int size = 0;
 
     public RAMCache() {
+        // Defining which kind of a map to be used, depending on a cache kind.
         switch (repository.cacheKind) {
             case LFU: {
                 mapObjects = new HashMap();
@@ -53,7 +54,7 @@ public class RAMCache implements Serializable, ICache {
     }
 
     @Override
-    public Object getObject(String key) {
+    public Object getObject(Object key) {
         frequency.put(key, frequency.get(key) + 1);
         keyLastAccessed = key;
         switch (repository.cacheKind) {
@@ -85,7 +86,7 @@ public class RAMCache implements Serializable, ICache {
     }
 
     @Override
-    public void addObject(String key, Object obj) {
+    public void addObject(Object key, Object obj) {
         keyLastAccessed = key;
         mapObjects.put(key, obj);
         frequency.put(key, 1);
@@ -93,7 +94,7 @@ public class RAMCache implements Serializable, ICache {
     }
 
     @Override
-    public void removeObject(String key) {
+    public void removeObject(Object key) {
         mapObjects.remove(key);
         frequency.remove(key);
         size--;
@@ -114,12 +115,12 @@ public class RAMCache implements Serializable, ICache {
     }
 
     @Override
-    public boolean hasObject(String key) {
+    public boolean hasObject(Object key) {
         return mapObjects.containsKey(key);
     }
 
     @Override
-    public String getLeastUsed(Repository.cacheKindEnum cacheKind) {
+    public Object getLeastUsed(Repository.cacheKindEnum cacheKind) {
 //        return frequency.lastKey();
         switch (cacheKind) {
             case LFU: {

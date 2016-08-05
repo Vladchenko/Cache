@@ -27,9 +27,9 @@ import java.util.logging.Logger;
 public class HDDCache implements Serializable, ICache {
 
     public static Repository repository = Repository.getInstance();
-    Map<String, Object> mapFiles;
-    Map<String, Integer> mapFrequency;
-    String keyLastAccessed;
+    Map<Object, Object> mapFiles;
+    Map<Object, Integer> mapFrequency;
+    Object keyLastAccessed;
     int size = 0;
 
     public HDDCache() {
@@ -79,7 +79,7 @@ public class HDDCache implements Serializable, ICache {
 
     // Uploads file to RAM. Checked for correct performance.
     @Override
-    public Object getObject(String key) throws IOException,
+    public Object getObject(Object key) throws IOException,
             FileNotFoundException, ClassNotFoundException {
         Object obj = null;
         FileInputStream fos = null;
@@ -123,7 +123,7 @@ public class HDDCache implements Serializable, ICache {
 
     // Saves file to disk. Checked for correct performance.
     @Override
-    public void addObject(String key, Object obj) throws IOException,
+    public void addObject(Object key, Object obj) throws IOException,
             FileNotFoundException {
         String fullFileName = Repository.FILESFOLDER
                 + Repository.FILEPREFIX + key + Repository.FILEEXT;
@@ -144,7 +144,7 @@ public class HDDCache implements Serializable, ICache {
     }
 
     @Override
-    public void removeObject(String key) throws NotPresentException {
+    public void removeObject(Object key) throws NotPresentException {
         File file = new File(Repository.FILESFOLDER
                 + Repository.FILEPREFIX + key + Repository.FILEEXT);
         if (file.exists()) {
@@ -162,14 +162,14 @@ public class HDDCache implements Serializable, ICache {
     }
 
     @Override
-    public boolean hasObject(String key) {
+    public boolean hasObject(Object key) {
         File file = new File(Repository.FILESFOLDER
                 + Repository.FILEPREFIX + key + Repository.FILEEXT);
         return file.exists();
     }
 
     @Override
-    public String getLeastUsed(Repository.cacheKindEnum cacheKind) {
+    public Object getLeastUsed(Repository.cacheKindEnum cacheKind) {
 //        return mapFrequency.lastKey();
         switch (cacheKind) {
             case LFU: {

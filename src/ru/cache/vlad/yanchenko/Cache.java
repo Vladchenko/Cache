@@ -27,10 +27,9 @@ public class Cache {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
         Cache cache = new Cache(args);
-//        cache.cacheProcessor.performCachingProcess();
-        cache.test.runTesting();
+        cache.cacheProcessor.performCachingProcess();
+//        cache.test.runTesting();
     }
     
 }

@@ -22,6 +22,8 @@ public class CacheProcessor {
     int missesRAMCache = 0;
     int hitsHDDCache = 0;
     int missesHDDCache = 0;
+    
+//    boolean HDDCacheHit = false;
 
     RAMCache ramCache;
     HDDCache hddCache;
@@ -65,6 +67,8 @@ public class CacheProcessor {
                 obj = hddCache.getObject(key);
                 hitsHDDCache++;
                 System.out.println("HDD cache hit, key=" + key + "\n");
+//                HDDCacheHit = true;
+                recache(key);
                 return obj;
             } catch (NullPointerException | IOException | ClassNotFoundException ex) {
             }
@@ -89,7 +93,7 @@ public class CacheProcessor {
                     System.out.print("\nRAM cache is full, performing an extrusion.");
                     if (hddCache.size < repository.getLevel2CacheSize()) {
                         // Getting the least used entry in a RAM cache.
-                        String key_ = ramCache.getLeastUsed(repository.cacheKind);
+                        Object key_ = ramCache.getLeastUsed(repository.cacheKind);
                         // Moving a least used RAM entry to an HDD cache.
                         try {
                             hddCache.addObject(key_, ramCache.getObject(key_));
@@ -109,13 +113,13 @@ public class CacheProcessor {
                     } else {
                         /**
                          * When all the caches are full and new entry is
-                         * downloaded, remove least used entry from an HDD cache
-                         * , then move least used RAM cache entry to an HDD
-                         * cache and write a new entry to RAM cache.
+                         * downloaded, remove least used entry from an HDD 
+                         * cache, then move least used RAM cache entry to an 
+                         * HDD cache and write a new entry to RAM cache.
                          */
                         System.out.print("\nHDD cache is full, removing a least used entry.");
                         // Getting the least used entry in an HDD cache 
-                        String key_ = hddCache.getLeastUsed(repository.cacheKind);
+                        Object key_ = hddCache.getLeastUsed(repository.cacheKind);
                         try {
                             // and removing this entry.
                             hddCache.removeObject(key_);
@@ -147,28 +151,66 @@ public class CacheProcessor {
                 }
             }
         }
-        recache();
+        
         // Retrieving a requested entry to a CPU.
         return obj;
     }
 
-    private void recache() {
+    private void recache(Object key) {
         switch (repository.getCacheKind()) {
             case LFU: {
+                /**
+                 * If there was an HDD cache hit, then check if there is any 
+                 * object that was requested more times than any of the RAM 
+                 * cache object. If so, replace them.
+                 * 
+                 * RAM cache - defined key.
+                 * HDD cache - defined key.
+                 */
                 break;
             }
             case LRR: {
+                /**
+                 * Same as LRU
+                 * 
+                 * RAM cache - first key in a map;
+                 * HDD cache - requested key;
+                 */
                 break;
             }
             case LRU: {
+                /**
+                 * If there was an HDD cache hit, then move this entry to a RAM 
+                 * cache, and before that, define the least used one in a RAM 
+                 * cache and move it back to HDD cache.
+                 * 
+                 * RAM cache - first key in a map;
+                 * HDD cache - requested key;
+                 */
                 break;
             }
             case MRU: {
-                // If there was an HDDCache hit, then move this entry to a RAMCache.
+                /**
+                 * If there was an HDD cache hit, then move this entry to a RAM 
+                 * cache, and before that, define the least used one in a RAM 
+                 * cache and move it back to HDD cache.
+                 * 
+                 * RAM cache - keyLastAccessed;
+                 * HDD cache - requested key;
+                 */
                 break;
             } 
         }
-
+    }
+    
+    /**
+     * Swaps least used object in a RAM cache with a most used object in an HDD 
+     * cache.
+     */
+    private void replaceEntries(Object keyRAMCache, Object keyHDDCache) {
+        Object keyTemp = keyRAMCache;
+//        ramCache.removeObject(keyRAMCache);
+        
     }
 
     private void printCaches() {
@@ -179,7 +221,7 @@ public class CacheProcessor {
 
         System.out.print("--- RAM cache: ");
         if (ramCache.mapObjects != null) {
-            for (Map.Entry<String, Object> entrySet : ramCache.mapObjects.entrySet()) {
+            for (Map.Entry<Object, Object> entrySet : ramCache.mapObjects.entrySet()) {
                 Object key = entrySet.getKey();
                 Object value = entrySet.getValue();
                 System.out.print("key=" + key + "(" + (int) ramCache.frequency.get(key) + "), ");
@@ -189,7 +231,7 @@ public class CacheProcessor {
             if (hddCache.mapFiles instanceof LinkedHashMap) {
 
             } else {
-                for (Map.Entry<String, Object> entrySet : hddCache.mapFiles.entrySet()) {
+                for (Map.Entry<Object, Object> entrySet : hddCache.mapFiles.entrySet()) {
                     Object key = entrySet.getKey();
                     Object value = entrySet.getValue();
                     System.out.print("file=" + ((String) value).split("[\\\\]+")[1] + "(" + (int) hddCache.mapFrequency.get(key) + "), ");
