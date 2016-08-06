@@ -23,9 +23,8 @@ public class CacheProcessor {
     int missesRAMCache = 0;
     int hitsHDDCache = 0;
     int missesHDDCache = 0;
-    
-//    boolean HDDCacheHit = false;
 
+//    boolean HDDCacheHit = false;
     RAMCache ramCache;
     HDDCache hddCache;
     Repository repository;
@@ -128,9 +127,9 @@ public class CacheProcessor {
                     } else {
                         /**
                          * When all the caches are full and new entry is
-                         * downloaded, remove least used entry from an HDD 
-                         * cache, then move least used RAM cache entry to an 
-                         * HDD cache and write a new entry to RAM cache.
+                         * downloaded, remove least used entry from an HDD
+                         * cache, then move least used RAM cache entry to an HDD
+                         * cache and write a new entry to RAM cache.
                          */
 //                        System.out.print("\nHDD cache is full, removing a least used entry.");
                         repository.logger.info("");
@@ -177,7 +176,7 @@ public class CacheProcessor {
                 }
             }
         }
-        
+
         // Retrieving a requested entry to a CPU.
         return obj;
     }
@@ -186,21 +185,19 @@ public class CacheProcessor {
         switch (repository.getCacheKind()) {
             case LFU: {
                 /**
-                 * If there was an HDD cache hit, then check if there is any 
-                 * object that was requested more times than any of the RAM 
+                 * If there was an HDD cache hit, then check if there is any
+                 * object that was requested more times than any of the RAM
                  * cache object. If so, replace them.
-                 * 
-                 * RAM cache - defined key.
-                 * HDD cache - defined key.
+                 *
+                 * RAM cache - defined key. HDD cache - defined key.
                  */
                 break;
             }
             case LRR: {
                 /**
                  * Same as LRU
-                 * 
-                 * RAM cache - first key in a map;
-                 * HDD cache - requested key;
+                 *
+                 * RAM cache - first key in a map; HDD cache - requested key;
                  */
                 replaceEntries(ramCache.mapObjects.entrySet().iterator().
                         next().getKey(), key);
@@ -208,12 +205,11 @@ public class CacheProcessor {
             }
             case LRU: {
                 /**
-                 * If there was an HDD cache hit, then move this entry to a RAM 
-                 * cache, and before that, define the least used one in a RAM 
+                 * If there was an HDD cache hit, then move this entry to a RAM
+                 * cache, and before that, define the least used one in a RAM
                  * cache and move it back to HDD cache.
-                 * 
-                 * RAM cache - first key in a map;
-                 * HDD cache - requested key;
+                 *
+                 * RAM cache - first key in a map; HDD cache - requested key;
                  */
                 replaceEntries(ramCache.mapObjects.entrySet().iterator().
                         next().getKey(), key);
@@ -221,57 +217,59 @@ public class CacheProcessor {
             }
             case MRU: {
                 /**
-                 * If there was an HDD cache hit, then move this entry to a RAM 
-                 * cache, and before that, define the least used one in a RAM 
+                 * If there was an HDD cache hit, then move this entry to a RAM
+                 * cache, and before that, define the least used one in a RAM
                  * cache and move it back to HDD cache.
-                 * 
-                 * RAM cache - keyLastAccessed;
-                 * HDD cache - requested key;
+                 *
+                 * RAM cache - keyLastAccessed; HDD cache - requested key;
                  */
                 replaceEntries(ramCache.keyLastAccessed, key);
                 break;
-            } 
+            }
         }
     }
-    
+
     /**
-     * Swaps least used object in a RAM cache with a most used object in an HDD 
+     * Swaps least used object in a RAM cache with a most used object in an HDD
      * cache.
      */
     private void replaceEntries(Object keyRAMCache, Object keyHDDCache) {
-        
+
         // If ram cache object is absent, no sense in replacement.
         if (!ramCache.hasObject(keyRAMCache)) {
 //            System.out.println("RAM cache has no such object. Cache integrity is broken.");
             repository.logger.info("RAM cache has no such object. Cache integrity is broken.");
             return;
         }
-        
+
         // If hdd cache object is absent, no sense in replacement.
         if (!hddCache.hasObject(keyHDDCache)) {
 //            System.out.println("HDD cache has no such object. Cache integrity is broken.");
             repository.logger.info("HDD cache has no such object. Cache integrity is broken.");
             return;
         }
-        
+
         try {
             hddCache.addObject(keyRAMCache, ramCache.getObject(keyRAMCache));
             ramCache.removeObject(keyRAMCache);
-            try {
-                ramCache.addObject(keyHDDCache, hddCache.getObject(keyHDDCache));
-            } catch (FileNotFoundException | ClassNotFoundException ex) {
-                Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            ramCache.addObject(keyHDDCache, hddCache.getObject(keyHDDCache));
+            hddCache.removeObject(keyHDDCache);
+        } catch (NotPresentException ex) {
+//            Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
+            repository.logger.info("Cannot recache, such entry is absent. Cache integrity is broken.");
+        } catch (FileNotFoundException | ClassNotFoundException ex) {
+            repository.logger.info("Cannot recache, file or class not found. Cache integrity is broken.");
+//            Logger.getLogger(CacheProcessor.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
 //            System.out.println("Cannot recache ! Some IO problem. Cache integrity is broken.");
-            repository.logger.info("Cannot recache ! Some IO problem. Cache integrity is broken.");
+            repository.logger.info("Cannot recache, some IO problem. Cache integrity is broken.");
         }
-        
+
 //        System.out.println("Recaching has been done. Object in RAM cache key=" 
 //                + keyRAMCache + " has been moved to an HDD cache. Object in HDD cache key=" 
 //                + keyHDDCache + " has been moved to a RAM cache.");
-        repository.logger.info("Recaching has been done. Object in RAM cache key=" 
-                + keyRAMCache + " has been moved to an HDD cache. Object in HDD cache key=" 
+        repository.logger.info("Recaching has been done. Object in RAM cache key="
+                + keyRAMCache + " has been moved to an HDD cache. Object in HDD cache key="
                 + keyHDDCache + " has been moved to a RAM cache.");
         repository.logger.info("");
     }
@@ -303,8 +301,8 @@ public class CacheProcessor {
 //                    System.out.print("file=" + ((String) value).split("[\\\\]+")[1] 
 //                            + "(" + (int) hddCache.mapFrequency.get(key) + "), ");
                     repository.logger.info("file=" + ((String) value).
-                            split("[\\\\]+")[1] + "(" + 
-                            (int) hddCache.mapFrequency.get(key) + "), ");
+                            split("[\\\\]+")[1] + "("
+                            + (int) hddCache.mapFrequency.get(key) + "), ");
                 }
             }
 //            System.out.println("");
