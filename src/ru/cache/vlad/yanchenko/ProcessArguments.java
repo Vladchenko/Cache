@@ -38,35 +38,52 @@ public class ProcessArguments {
         }
         System.out.println("");
 
-        // Processing arguments for level1 cache
+        // Processing arguments for level1 cache.
         number = arguments.get("level1cache");
         try {
             repository.setLevel1CacheSize(Integer.parseInt(number));
             if (repository.getLevel1CacheSize() < Repository.LEVEL1CACHEMINIMUMVALUE) {
                 throw new NumberFormatException();
             }
-            System.out.println("Level 1 cache size is set to "
+//            System.out.println("Level 1 cache size is set to "
+//                    + repository.getLevel1CacheSize());
+            repository.logger.info("Level 1 cache size is set to "
                     + repository.getLevel1CacheSize());
         } catch (NumberFormatException nfe) {
-            System.out.println("Level 1 cache size is specified in a wrong way ! Used by default.");
+//            System.out.println("Level 1 cache size is specified in a wrong way !"
+//                    + " Used by default.");
+            repository.logger.info("Level 1 cache size is specified in a wrong "
+                    + "way ! Used by default.");
             repository.setLevel1CacheSize(Repository.LEVEL1CACHECSIZEDEFAULT);
         }
 
-        // Processing arguments for level2 cache
+        // Processing arguments for level2 cache.
         number = arguments.get("level2cache");
         try {
             repository.setLevel2CacheSize(Integer.parseInt(number));
             if (repository.getLevel2CacheSize() < Repository.LEVEL2CACHEMINIMUMVALUE) {
                 throw new NumberFormatException();
             }
-            System.out.println("Level 2 cache size is set to "
+//            System.out.println("Level 2 cache size is set to "
+//                    + repository.getLevel2CacheSize());
+            repository.logger.info("Level 2 cache size is set to "
                     + repository.getLevel2CacheSize());
         } catch (NumberFormatException nfe) {
-            System.out.println("Level 2 cache size is specified in a wrong way ! Used by default.");
+//            System.out.println("Level 2 cache size is specified in a wrong way !"
+//                    + " Used by default.");
+            repository.logger.info("Level 2 cache size is specified in a wrong "
+                    + "way ! Used by default.");
             repository.setLevel2CacheSize(Repository.LEVEL2CACHECSIZEDEFAULT);
         }
+        if (arguments.get("detailedreport") == null) {
+//            System.out.println("Caching process report is not set. Set to be ");
+            repository.logger.info("Caching process report is not set. "
+                    + "Set to be ");
+        }
         if (arguments.get("cachekind") == null) {
-            System.out.println("cachekind is not set, used default - Most Recently Used.");
+//            System.out.println("cachekind is not set, used default - Most Recently Used.");
+            repository.logger.info("cachekind is not set, used default - "
+                    + "Most Recently Used.");
             repository.setCacheKind(Repository.cacheKindEnum.MRU);
         } else {
             switch (arguments.get("cachekind")) {
@@ -95,7 +112,11 @@ public class ProcessArguments {
                     break;
                 }
             }
-            System.out.println("cachekind is set to - " + repository.getCacheKind());
+//            System.out.println("cachekind is set to - " 
+//                    + repository.getCacheKind());
+            repository.logger.info("cachekind is set to - " 
+                    + repository.getCacheKind());
+            repository.logger.info("");
         }
         
 

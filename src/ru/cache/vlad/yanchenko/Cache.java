@@ -5,6 +5,11 @@
  */
 package ru.cache.vlad.yanchenko;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
 /**
  *
  * @author v.yanchenko
@@ -27,6 +32,7 @@ public class Cache {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+             
         Cache cache = new Cache(args);
         cache.cacheProcessor.performCachingProcess();
 //        cache.test.runTesting();

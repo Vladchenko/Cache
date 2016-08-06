@@ -18,10 +18,13 @@ import java.util.Map;
 public class RAMCache implements Serializable, ICache {
 
     public static Repository repository = Repository.getInstance();
-    Map<Object, Object> mapObjects;
-//    Map.Entry<String, Object> mapObject;
-    Object obj;
+    
+    // Only for LFU algorithm
+    LinkedHashMap<Integer, HashMap<Object, Object>> mapObjectsLFU;
     Map<Object, Integer> frequency;
+
+    Map<Object, Object> mapObjects;
+    Object obj;
     Object keyLastAccessed;
     int size = 0;
 
@@ -29,7 +32,8 @@ public class RAMCache implements Serializable, ICache {
         // Defining which kind of a map to be used, depending on a cache kind.
         switch (repository.cacheKind) {
             case LFU: {
-                mapObjects = new HashMap();
+                mapObjectsLFU = new LinkedHashMap();
+                frequency = new HashMap();
                 break;
             }
             case LRU: {
