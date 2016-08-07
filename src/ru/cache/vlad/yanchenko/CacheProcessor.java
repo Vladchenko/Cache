@@ -29,7 +29,11 @@ public class CacheProcessor {
         ramCache = new RAMCache();
         hddCache = new HDDCache();
         this.repository = repository;
-        cacheFeeder = new CacheFeeder(2000);
+        /**
+         * Setting how many entries will a cacheFeeder have to request from a 
+         * cacheProcessor.
+         */
+        cacheFeeder = new CacheFeeder(repository.getEntriesNumber());
     }
 
     /**
@@ -199,16 +203,6 @@ public class CacheProcessor {
                  */
                 break;
             }
-            case LRR: {
-                /**
-                 * In this case, it is the same as LRU.
-                 *
-                 * RAM cache - first key in a map; HDD cache - requested key;
-                 */
-                replaceEntries(ramCache.getMapObjects().entrySet().iterator().
-                        next().getKey(), key);
-                break;
-            }
             case LRU: {
                 /**
                  * If there was an HDD cache hit, then move this entry to a RAM
@@ -292,8 +286,10 @@ public class CacheProcessor {
             for (Map.Entry<Object, Object> entrySet : ramCache.getMapObjects().entrySet()) {
                 Object key = entrySet.getKey();
                 Object value = entrySet.getValue();
-                repository.getLogger().info("\tkey=" + key + "("
-                        + (int) ramCache.mapFrequency.get(key) + "), ");
+                repository.getLogger().info("\tkey=" + key + ", value="
+                        + "Object@" + Integer.toHexString(
+                                System.identityHashCode(
+                                        ramCache.getMapObjects().get(key))) );
             }
             repository.getLogger().info("--- HDD cache contents ---");
             if (hddCache.getMapFiles().size() == 0) {
@@ -303,8 +299,7 @@ public class CacheProcessor {
                 Object key = entrySet.getKey();
                 Object value = entrySet.getValue();
                 repository.getLogger().info("\tfile=" + ((String) value).
-                        split("[\\\\]+")[1] + "("
-                        + (int) hddCache.getMapFrequency().get(key) + "), ");
+                        split("[\\\\]+")[1] );
             }
         }
     }
