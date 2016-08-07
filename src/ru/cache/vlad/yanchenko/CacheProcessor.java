@@ -29,7 +29,7 @@ public class CacheProcessor {
         ramCache = new RAMCache();
         hddCache = new HDDCache();
         this.repository = repository;
-        cacheFeeder = new CacheFeeder(20);
+        cacheFeeder = new CacheFeeder(2000);
     }
 
     /**

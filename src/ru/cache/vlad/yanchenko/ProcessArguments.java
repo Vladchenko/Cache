@@ -90,6 +90,7 @@ public class ProcessArguments {
                     + " specified in a wrong way ! Used by default.");
             repository.setHDDCacheEntriesNumber(Repository.HDD_CACHE_ENTRIES_DEFAULT);
         }
+        
         if (repository.isDetailedReport()) {
             repository.getLogger().info("Caching process report is set to be "
                     + "detailed.");
@@ -97,6 +98,7 @@ public class ProcessArguments {
             repository.getLogger().info("Caching process report is set to be "
                     + "not detailed.");
         }
+        
         if (arguments.get("cachekind") == null
                 && arguments.get("ck") == null) {
             repository.getLogger().info("Cache kind is not set, used default - "
@@ -139,23 +141,29 @@ public class ProcessArguments {
             repository.getLogger().info("");
         }
         
+        /**
+         * Defining a pipeline run times, i.e. how many times a caching process 
+         * is to run.
+         */
         try {
             number = arguments.get("n");
             repository.setPipelineRunTimes(Integer.parseInt(number));
-            repository.getLogger().info("Cache process cycles number is set to" 
+            repository.getLogger().info("Cache process cycles number is set to " 
                     + repository.getPipelineRunTimes());
         } catch (Exception ex) {
             repository.getLogger().info("Cache process cycles number is not set"
                     + " - using default value = " + repository.getPipelineRunTimes());
             repository.setCacheKind(Repository.cacheKindEnum.MRU);
-            repository.getLogger().info("");
+            
         }
-
-        // Uncomment in case want to see a full list of key-value pairs
+        
+        repository.getLogger().info("");
+        
+        // Uncomment in case of willing to see a full list of key-value pairs.
 //        printArgs(arguments);
     }
 
-    // Pringting the command line arguments
+    // Printing the command line arguments
     private void printArgs(Map<String, String> map) {
         if (map != null) {
             for (Map.Entry<String, String> entrySet : map.entrySet()) {

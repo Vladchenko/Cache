@@ -53,9 +53,9 @@ public class Repository {
     // Number of entries to be present in a HDD cache.
     private int HDDCacheEntriesNumber;
     
-    // Memory size for a RAM cache.
+    // Memory size for a RAM cache, in kilobytes.
     private int RAMCacheSize;
-    // Memory size for an HDD cache.
+    // Memory size for an HDD cache, in kilobytes.
     private int HDDCacheSize;
 
     // Checks if a detailed report to be shown in a log file.

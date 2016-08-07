@@ -33,7 +33,8 @@ public class HDDCache implements Serializable, ICache {
     private Map<Object, Object> mapFiles;
     private Map<Object, Integer> mapFrequency;
     private Object keyLastAccessed;
-    private int size = 0;
+    private int filesNumber = 0;
+//    private int cacheSize = 0;
 
     HDDCache() {
         switch (repository.getCacheKind()) {
@@ -84,10 +85,10 @@ public class HDDCache implements Serializable, ICache {
         }
         mapFiles.clear();
         mapFrequency.clear();
-        size = 0;
+        filesNumber = 0;
     }
 
-    // Uploading file to RAM. Checked for correct performance.
+    // Uploading file to RAM.
     @Override
     public Object getObject(Object key) throws IOException,
             FileNotFoundException, ClassNotFoundException {
@@ -126,7 +127,7 @@ public class HDDCache implements Serializable, ICache {
         return obj;
     }
 
-    // Saves file to disk. Checked for correct performance.
+    // Saves file to disk.
     @Override
     public void addObject(Object key, Object obj) throws IOException,
             FileNotFoundException {
@@ -142,7 +143,9 @@ public class HDDCache implements Serializable, ICache {
         ous.close();
         fos.flush();
         fos.close();
-        size++;
+//        File file = new File(fullFileName);
+//        cacheSize += file.length();
+        filesNumber++;
         mapFrequency.put(key, 1);
         mapFiles.put(key, fullFileName);
         keyLastAccessed = key;
@@ -163,7 +166,7 @@ public class HDDCache implements Serializable, ICache {
 
     @Override
     public int getSize() {
-        return size;
+        return filesNumber;
     }
 
     @Override
@@ -186,7 +189,7 @@ public class HDDCache implements Serializable, ICache {
                  * downloaded object.
                  */
 //                String theLastKey = new ArrayList<>(
-//                        mapObjects.keySet()).get(mapObjects.size() - 1);
+//                        mapObjects.keySet()).get(mapObjects.filesNumber() - 1);
 //                return theLastKey;
                 return mapFiles.entrySet().iterator().next().getKey();
             }
@@ -248,10 +251,10 @@ public class HDDCache implements Serializable, ICache {
     }
     
     /**
-     * @param size the size to set
+     * @param size the filesNumber to set
      */
     public void setSize(int size) {
-        this.size = size;
+        this.filesNumber = size;
     }
     //</editor-fold>
 }
