@@ -32,7 +32,7 @@ public class RAMCache implements Serializable, ICache {
     private Object keyLastAccessed;
     private int size = 0;
 
-    RAMCache() {
+    public RAMCache() {
         // Defining which kind of a map to be used, depending on a cache kind.
         switch (repository.getCacheKind()) {
             case LFU: {
@@ -41,10 +41,6 @@ public class RAMCache implements Serializable, ICache {
                 break;
             }
             case LRU: {
-                mapObjects = new LinkedHashMap();
-                break;
-            }
-            case LRR: {
                 mapObjects = new LinkedHashMap();
                 break;
             }
@@ -81,9 +77,6 @@ public class RAMCache implements Serializable, ICache {
                 object = mapObjects.get(key);
                 mapObjects.remove(key);
                 mapObjects.put(key, object);
-                break;
-            }
-            case LRR: {
                 break;
             }
             case MRU: {
@@ -134,16 +127,6 @@ public class RAMCache implements Serializable, ICache {
         switch (cacheKind) {
             case LFU: {
                 break;
-            }
-            case LRR: {
-                /**
-                 * Getting the first key from a map of objects, i.e. the first
-                 * downloaded object.
-                 */
-//                String theLastKey = new ArrayList<>(
-//                        mapObjects.keySet()).get(mapObjects.size() - 1);
-//                return theLastKey;
-                return mapObjects.entrySet().iterator().next().getKey();
             }
             case LRU: {
                 /**

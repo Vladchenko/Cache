@@ -30,24 +30,6 @@ public class RAMCacheTest {
     }
 
     @Test
-    public void testGetLeastUsedLFU() {
-        
-//        Repository repository = Repository.getInstance();
-//        repository.setCacheKind(Repository.cacheKindEnum.LRR);
-//        
-//        RAMCache ramCache = new RAMCache();
-//        ramCache.addObject("123", new Object());
-//        ramCache.addObject("456", new Object());
-//        ramCache.addObject("789", new Object());
-//        ramCache.getObject("123");
-//        ramCache.getObject("123");
-//        ramCache.getObject("456");
-//        
-//        // The least used here is "123".
-//        assertEquals(ramCache.getLeastUsed(Repository.cacheKindEnum.LRR), "123");
-    }
-
-    @Test
     public void testGetLeastUsedLRU() {
         
         Repository repository = Repository.getInstance();
@@ -64,30 +46,12 @@ public class RAMCacheTest {
         // The least recently used here is "789".
         assertEquals(ramCache.getLeastUsed(Repository.cacheKindEnum.LRU), "789");
     }
-    
-    @Test
-    public void testGetLeastUsedLRR() {
-        
-        Repository repository = Repository.getInstance();
-        repository.setCacheKind(Repository.cacheKindEnum.LRR);
-        
-        RAMCache ramCache = new RAMCache();
-        ramCache.addObject("123", new Object());
-        ramCache.addObject("456", new Object());
-        ramCache.addObject("789", new Object());
-        ramCache.getObject("123");
-        ramCache.getObject("123");
-        ramCache.getObject("456");
-        
-        // The least recently replaced here is "123".
-        assertEquals(ramCache.getLeastUsed(Repository.cacheKindEnum.LRR), "123");
-    }
-    
+
     @Test
     public void testGetLeastUsedMRU() {
         
         Repository repository = Repository.getInstance();
-        repository.setCacheKind(Repository.cacheKindEnum.LRR);
+        repository.setCacheKind(Repository.cacheKindEnum.MRU);
         
         RAMCache ramCache = new RAMCache();
         ramCache.addObject("123", new Object());

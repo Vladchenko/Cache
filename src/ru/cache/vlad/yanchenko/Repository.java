@@ -33,6 +33,8 @@ public class Repository {
     public static final int HDD_CACHE_ENTRIES_MINIMUM = 1;
 //    public static final int RAM_CACHE_SIZE_DEFAULT = ;
 //    public static final int HDD_CACHE_SIZE_DEFAULT;
+    // Number of entries to be fed to a cache processor.
+    public static final int ENTRIES_NUMBER_DEFAULT = 10;
     public static final String FILE_PREFIX = "cache_file_";
     // File extention.
     public static final String FILE_EXTENTION = ".cache";
@@ -47,6 +49,8 @@ public class Repository {
     private int missesHDDCache = 0;
     // How many times the caching process is run.
     private int pipelineRunTimes = 100;
+    // Number of entries to be fed to a cache processor.
+    private int entriesNumber = 100;
 
     // Number of entries to be present in a RAM cache.
     private int RAMCacheEntriesNumber;
@@ -67,10 +71,10 @@ public class Repository {
     // Singleton.
     public static Repository repository = Repository.getInstance();
 
-    // Defines a cache kind - lrr / mru / lru.
+    // Defines a cache kind - mru / lru.
     public enum cacheKindEnum {
 
-        NONE, LFU, LRU, MRU, LRR
+        NONE, LFU, LRU, MRU
     };
     private cacheKindEnum cacheKind;
 
@@ -125,6 +129,14 @@ public class Repository {
     }
 
     //<editor-fold defaultstate="collapsed" desc="getters & setters">
+
+    public int getEntriesNumber() {
+        return entriesNumber;
+    }
+
+    public void setEntriesNumber(int entriesNumber) {
+        this.entriesNumber = entriesNumber;
+    }
 
     /**
      * @return the testing

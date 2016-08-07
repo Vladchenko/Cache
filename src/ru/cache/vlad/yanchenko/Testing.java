@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class runs a test on all the present cache algorythms.
+ * Class runs a test on all the present cache algorithms.
  * 
  * @author v.yanchenko
  */
@@ -24,6 +24,11 @@ public class Testing {
         mapTesting = new HashMap<>();
         repository = Repository.getInstance();
         cacheProcessor = new CacheProcessor(repository);
+        /**
+         * Populating a map for further using it as a template entry set for 
+         * all caching the algorithms.
+         */
+        mapTesting = cacheProcessor.getCacheFeeder().populateData();
     }
 
     /**
@@ -32,21 +37,21 @@ public class Testing {
      */
     public void runTesting() {
         
-//        cacheProcessor.cacheFeeder.arrValues
+        /** 
+         * Putting all the entries from a testing map to a msp that's gonna be 
+         * fed to a caching algorithm.
+         */
+        cacheProcessor.getCacheFeeder().setMapObjectsFed(
+                cacheProcessor.getCacheFeeder().copyData(
+                mapTesting));
         
-        // Setting a cache kind.
-        repository.setCacheKind(Repository.cacheKindEnum.LRR);
-        for (int i = 0; i < repository.getPipelineRunTimes(); i++) {
-            cacheProcessor.processRequest(
-                    cacheProcessor.getCacheFeeder().requestObject());
-        }
-        // Printing a summary for a current caching process.
-        repository.printSummary();
-        cacheProcessor.getHddCache().clearCache();
-        cacheProcessor.getRamCache().clearCache();
-        repository.resetCachingInfo();
-        repository.getLogger().info("");
-        repository.getLogger().info("");
+        /** 
+         * Putting all the entries from a testing msp to a map that's gonna be 
+         * fed to a caching algorithm.
+         */
+        cacheProcessor.getCacheFeeder().setMapObjectsFed(
+                cacheProcessor.getCacheFeeder().copyData(
+                mapTesting));
         
         // Setting a cache kind.
         repository.setCacheKind(Repository.cacheKindEnum.LRU);
@@ -61,6 +66,14 @@ public class Testing {
         repository.resetCachingInfo();
         repository.getLogger().info("");
         repository.getLogger().info("");
+        
+        /** 
+         * Putting all the entries from a testing msp to a map that's gonna be 
+         * fed to a caching algorithm.
+         */
+        cacheProcessor.getCacheFeeder().setMapObjectsFed(
+                cacheProcessor.getCacheFeeder().copyData(
+                mapTesting));
         
         // Setting a cache kind.
         repository.setCacheKind(Repository.cacheKindEnum.MRU);

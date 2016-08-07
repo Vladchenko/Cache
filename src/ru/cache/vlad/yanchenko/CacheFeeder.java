@@ -33,19 +33,31 @@ public class CacheFeeder {
         // random key out of it, that will be requested from cacheProcessor.
         arrValues = new Object[entryNumber];
         mapObjectsFed = new HashMap();
-        mapObjectsFed = populateData(mapObjectsFed);
+        mapObjectsFed = populateData();
 //        arrValues = (new ArrayList<Object>(mapObjectsFed.keySet())).toArray();
         
     }
 
     // Populating data that is going to be fed to a cacheProcessor.
-    private Map<Object, Object> populateData(Map<Object, Object> map) {
+    public Map<Object, Object> populateData() {
+        Map<Object, Object> map = new HashMap();
         for (int i = 0; i < getEntryNumber(); i++) {
             arrValues[i] = Integer.toString((int) (Math.random() * 1000000000));
             String key = arrValues[i].toString();
             map.put(key, Integer.toString((int) (Math.random() * 1000000000)));
         }
         return map;
+    }
+    
+    // Copying one map into another
+    public Map<Object, Object> copyData(Map<Object, Object> map) {
+        Map<Object, Object> newMap = new HashMap<>();
+        for (Map.Entry<Object, Object> entrySet : map.entrySet()) {
+            Object key = entrySet.getKey();
+            Object value = entrySet.getValue();
+            newMap.put(key, value);
+        }
+        return newMap;
     }
 
     /**

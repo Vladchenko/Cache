@@ -23,13 +23,13 @@ import java.util.logging.Logger;
 /**
  *
  * In charge of an operations made with a RAM cache.
- * 
+ *
  * @author v.yanchenko
  */
 public class HDDCache implements Serializable, ICache {
 
     public static Repository repository = Repository.getInstance();
-    
+
     private Map<Object, Object> mapFiles;
     private Map<Object, Integer> mapFrequency;
     private Object keyLastAccessed;
@@ -46,10 +46,6 @@ public class HDDCache implements Serializable, ICache {
                 mapFiles = new LinkedHashMap();
                 break;
             }
-            case LRR: {
-                mapFiles = new LinkedHashMap();
-                break;
-            }
             case MRU: {
                 mapFiles = new HashMap();
                 break;
@@ -61,8 +57,8 @@ public class HDDCache implements Serializable, ICache {
     }
 
     /**
-     * Creating a folder (in case its absent) for a files that constitute an 
-     * HDD cache.
+     * Creating a folder (in case its absent) for a files that constitute an HDD
+     * cache.
      */
     private void createFilesFolder() {
 //        Path pth = Paths.get(Repository.FILES_FOLDER);
@@ -108,9 +104,6 @@ public class HDDCache implements Serializable, ICache {
                     break;
                 }
                 case LRU: {
-                    break;
-                }
-                case LRR: {
                     obj = mapFiles.get(key);
                     mapFiles.remove(key);
                     mapFiles.put(key, obj);
@@ -183,16 +176,6 @@ public class HDDCache implements Serializable, ICache {
             case LFU: {
                 break;
             }
-            case LRR: {
-                /**
-                 * Getting the first key from a map of objects, i.e. the first
-                 * downloaded object.
-                 */
-//                String theLastKey = new ArrayList<>(
-//                        mapObjects.keySet()).get(mapObjects.filesNumber() - 1);
-//                return theLastKey;
-                return mapFiles.entrySet().iterator().next().getKey();
-            }
             case LRU: {
                 /**
                  * Getting the first key from a map of objects, since first is
@@ -214,42 +197,42 @@ public class HDDCache implements Serializable, ICache {
     public Map<Object, Object> getMapFiles() {
         return mapFiles;
     }
-    
+
     /**
      * @param mapFiles the mapFiles to set
      */
     public void setMapFiles(Map<Object, Object> mapFiles) {
         this.mapFiles = mapFiles;
     }
-    
+
     /**
      * @return the mapFrequency
      */
     public Map<Object, Integer> getMapFrequency() {
         return mapFrequency;
     }
-    
+
     /**
      * @param mapFrequency the mapFrequency to set
      */
     public void setMapFrequency(Map<Object, Integer> mapFrequency) {
         this.mapFrequency = mapFrequency;
     }
-    
+
     /**
      * @return the keyLastAccessed
      */
     public Object getKeyLastAccessed() {
         return keyLastAccessed;
     }
-    
+
     /**
      * @param keyLastAccessed the keyLastAccessed to set
      */
     public void setKeyLastAccessed(Object keyLastAccessed) {
         this.keyLastAccessed = keyLastAccessed;
     }
-    
+
     /**
      * @param size the filesNumber to set
      */

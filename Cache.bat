@@ -1,1 +1,1 @@
-cache.jar cachekind=LRU l1ce=-10 l2ce=100 dp n=50
+cache.jar ck=LRU L1ce=10 L2ce=20 dr n=500 m=10
