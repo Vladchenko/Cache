@@ -5,25 +5,21 @@
  */
 package ru.cache.vlad.yanchenko;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
 /**
+ * Initial class.
  *
  * @author v.yanchenko
  */
 public class Cache {
-    
-    private ProcessArguments prc;
+
+    private ProcessArguments processArguments;
     private CacheProcessor cacheProcessor;
     private Testing test;
     private Repository repository = Repository.getInstance();
-    
-    public Cache(String[] args) {
-        prc = new ProcessArguments(repository);
-        prc.processArgs(args);
+
+    private Cache(String[] args) {
+        processArguments = new ProcessArguments(repository);
+        processArguments.processArgs(args);
         cacheProcessor = new CacheProcessor(repository);
         test = new Testing();
     }
@@ -32,10 +28,17 @@ public class Cache {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-             
+
         Cache cache = new Cache(args);
-        cache.cacheProcessor.performCachingProcess();
-//        cache.test.runTesting();
+        
+        // Run a test, if a specific command line argum,ents says so.
+        if (cache.repository.isTesting()) {
+            cache.test.runTesting();
+        // Else run a single cache algorythm.
+        } else {
+            cache.cacheProcessor.performCachingProcess();
+        }
+
     }
-    
+
 }

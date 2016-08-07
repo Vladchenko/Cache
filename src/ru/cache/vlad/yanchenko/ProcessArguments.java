@@ -10,6 +10,8 @@ import java.util.Map;
 
 /**
  *
+ * Processing of a command line arguments.
+ * 
  * @author v.yanchenko
  */
 public class ProcessArguments {
@@ -20,73 +22,93 @@ public class ProcessArguments {
         this.repository = repository;
     }
 
-    // Putting a couples of "value=key" to a map
+    // Putting an args and couples of "value=key" to a map
     public void processArgs(String[] args) {
-        String number;
+        String number = "";
         String delims = "[=]+";    // Use = as a delimiter
-        String[] tokens1 = new String[args.length];
+//        String[] tokens1 = new String[args.length];
         Map<String, String> arguments = new HashMap();
         for (String arg : args) {
+            // Checking if a detailed report is enabled.
+            if (arg.equals("dr")) {
+                repository.setDetailedReport(true);
+            }
+            // Checking if a testing is enabled.
+            if (arg.equals("test")) {
+                repository.setTesting(true);
+            }
             String[] map = arg.split(delims);
             try {
                 if (!map[0].isEmpty()) {
                     arguments.put(map[0].toLowerCase(), map[1].toLowerCase());
                 }
             } catch (Exception ex) {
-                System.out.print("Wrong argument present... ");
+                /** 
+                 * Some wrong argument is present, but there is no sense in 
+                 * notifying a user about it.
+                 */
             }
         }
-        System.out.println("");
 
         // Processing arguments for level1 cache.
-        number = arguments.get("level1cache");
+        if (arguments.containsKey("level1cacheentries")) {
+            number = arguments.get("level1cacheentries");
+        }
+        if (arguments.containsKey("l1ce")) {
+            number = arguments.get("l1ce");
+        }
         try {
-            repository.setLevel1CacheSize(Integer.parseInt(number));
-            if (repository.getLevel1CacheSize() < Repository.LEVEL1CACHEMINIMUMVALUE) {
+            repository.setRAMCacheEntriesNumber(Integer.parseInt(number));
+            if (repository.getRAMCacheEntriesNumber() < Repository.RAM_CACHE_ENTRIES_MINIMUM) {
                 throw new NumberFormatException();
             }
-//            System.out.println("Level 1 cache size is set to "
-//                    + repository.getLevel1CacheSize());
-            repository.logger.info("Level 1 cache size is set to "
-                    + repository.getLevel1CacheSize());
+            repository.getLogger().info("Level 1 cache entries maximum number "
+                    + "is set to " + repository.getRAMCacheEntriesNumber());
         } catch (NumberFormatException nfe) {
-//            System.out.println("Level 1 cache size is specified in a wrong way !"
-//                    + " Used by default.");
-            repository.logger.info("Level 1 cache size is specified in a wrong "
-                    + "way ! Used by default.");
-            repository.setLevel1CacheSize(Repository.LEVEL1CACHECSIZEDEFAULT);
+            repository.getLogger().info("Level 1 cache entries maximum number is"
+                    + " specified in a wrong way ! Used by default - " 
+                    + Repository.RAM_CACHE_ENTRIES_DEFAULT);
+            repository.setRAMCacheEntriesNumber(Repository.RAM_CACHE_ENTRIES_DEFAULT);
         }
 
         // Processing arguments for level2 cache.
-        number = arguments.get("level2cache");
+        if (arguments.containsKey("level2cacheentries")) {
+            number = arguments.get("level2cacheentries");
+        }
+        if (arguments.containsKey("l2ce")) {
+            number = arguments.get("l2ce");
+        }
         try {
-            repository.setLevel2CacheSize(Integer.parseInt(number));
-            if (repository.getLevel2CacheSize() < Repository.LEVEL2CACHEMINIMUMVALUE) {
+            repository.setHDDCacheEntriesNumber(Integer.parseInt(number));
+            if (repository.getHDDCacheEntriesNumber() < Repository.HDD_CACHE_ENTRIES_MINIMUM) {
                 throw new NumberFormatException();
             }
-//            System.out.println("Level 2 cache size is set to "
-//                    + repository.getLevel2CacheSize());
-            repository.logger.info("Level 2 cache size is set to "
-                    + repository.getLevel2CacheSize());
+            repository.getLogger().info("Level 2 cache entries maximum number "
+                    + "is set to " + repository.getHDDCacheEntriesNumber());
         } catch (NumberFormatException nfe) {
-//            System.out.println("Level 2 cache size is specified in a wrong way !"
-//                    + " Used by default.");
-            repository.logger.info("Level 2 cache size is specified in a wrong "
-                    + "way ! Used by default.");
-            repository.setLevel2CacheSize(Repository.LEVEL2CACHECSIZEDEFAULT);
+            repository.getLogger().info("Level 2 cache entries maximum number is"
+                    + " specified in a wrong way ! Used by default.");
+            repository.setHDDCacheEntriesNumber(Repository.HDD_CACHE_ENTRIES_DEFAULT);
         }
-        if (arguments.get("detailedreport") == null) {
-//            System.out.println("Caching process report is not set. Set to be ");
-            repository.logger.info("Caching process report is not set. "
-                    + "Set to be ");
+        if (repository.isDetailedReport()) {
+            repository.getLogger().info("Caching process report is set to be "
+                    + "detailed.");
+        } else {
+            repository.getLogger().info("Caching process report is set to be "
+                    + "not detailed.");
         }
-        if (arguments.get("cachekind") == null) {
-//            System.out.println("cachekind is not set, used default - Most Recently Used.");
-            repository.logger.info("cachekind is not set, used default - "
+        if (arguments.get("cachekind") == null
+                && arguments.get("ck") == null) {
+            repository.getLogger().info("Cache kind is not set, used default - "
                     + "Most Recently Used.");
             repository.setCacheKind(Repository.cacheKindEnum.MRU);
+            repository.getLogger().info("");
         } else {
-            switch (arguments.get("cachekind")) {
+            String ck = arguments.get("cachekind");
+            if (ck == null) {
+                ck = arguments.get("ck");
+            }
+            switch (ck) {
                 case "lfu": {
                 }
                 case "LFU": {
@@ -112,13 +134,22 @@ public class ProcessArguments {
                     break;
                 }
             }
-//            System.out.println("cachekind is set to - " 
-//                    + repository.getCacheKind());
-            repository.logger.info("cachekind is set to - " 
+            repository.getLogger().info("cachekind is set to - "
                     + repository.getCacheKind());
-            repository.logger.info("");
+            repository.getLogger().info("");
         }
         
+        try {
+            number = arguments.get("n");
+            repository.setPipelineRunTimes(Integer.parseInt(number));
+            repository.getLogger().info("Cache process cycles number is set to" 
+                    + repository.getPipelineRunTimes());
+        } catch (Exception ex) {
+            repository.getLogger().info("Cache process cycles number is not set"
+                    + " - using default value = " + repository.getPipelineRunTimes());
+            repository.setCacheKind(Repository.cacheKindEnum.MRU);
+            repository.getLogger().info("");
+        }
 
         // Uncomment in case want to see a full list of key-value pairs
 //        printArgs(arguments);

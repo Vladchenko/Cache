@@ -22,18 +22,21 @@ import java.util.logging.Logger;
 
 /**
  *
+ * In charge of an operations made with a RAM cache.
+ * 
  * @author v.yanchenko
  */
 public class HDDCache implements Serializable, ICache {
 
     public static Repository repository = Repository.getInstance();
-    Map<Object, Object> mapFiles;
-    Map<Object, Integer> mapFrequency;
-    Object keyLastAccessed;
-    int size = 0;
+    
+    private Map<Object, Object> mapFiles;
+    private Map<Object, Integer> mapFrequency;
+    private Object keyLastAccessed;
+    private int size = 0;
 
-    public HDDCache() {
-        switch (repository.cacheKind) {
+    HDDCache() {
+        switch (repository.getCacheKind()) {
             case LFU: {
                 mapFiles = new HashMap();
                 break;
@@ -56,48 +59,50 @@ public class HDDCache implements Serializable, ICache {
         clearCache();           // Clear a cache before run a caching loop
     }
 
+    /**
+     * Creating a folder (in case its absent) for a files that constitute an 
+     * HDD cache.
+     */
     private void createFilesFolder() {
-//        Path pth = Paths.get(Repository.FILESFOLDER);
-        File theDir = new File(Repository.FILESFOLDER);
+//        Path pth = Paths.get(Repository.FILES_FOLDER);
+        File theDir = new File(Repository.FILES_FOLDER);
         // Checking if directory exists
 //        if (!Files.exists(pth)) {
         if (!theDir.exists()) {
             // And if not, makу ше
-            new File(Repository.FILESFOLDER).mkdir();
+            new File(Repository.FILES_FOLDER).mkdir();
         }
     }
 
     @Override
     public void clearCache() {
-        File dir = new File(Repository.FILESFOLDER);
+        File dir = new File(Repository.FILES_FOLDER);
         for (File file : dir.listFiles()) {
             if (!file.isDirectory()) {
                 file.delete();
             }
         }
+        mapFiles.clear();
+        mapFrequency.clear();
+        size = 0;
     }
 
-    // Uploads file to RAM. Checked for correct performance.
+    // Uploading file to RAM. Checked for correct performance.
     @Override
     public Object getObject(Object key) throws IOException,
             FileNotFoundException, ClassNotFoundException {
         Object obj = null;
         FileInputStream fos = null;
         ObjectInputStream ous = null;
-        // Serialize object
-//        try {
+        // Serializing object
         fos = new FileInputStream((String) mapFiles.get(key));
-//        } catch (Exception ex) {
-//            // No such file, means HDD cache has no such entry.
-//            return null;
-//        }
         ous = new ObjectInputStream(fos);
         try {
             obj = ous.readObject();
             // Increasing a call count for this entry.
             mapFrequency.put(key, mapFrequency.get(key) + 1);
             keyLastAccessed = key;
-            switch (repository.cacheKind) {
+            switch (repository.getCacheKind()) {
                 case LFU: {
                     break;
                 }
@@ -116,7 +121,7 @@ public class HDDCache implements Serializable, ICache {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(HDDCache.class.getName()).log(Level.SEVERE, null, ex);
+            repository.getLogger().info("Class not found !");
         }
         return obj;
     }
@@ -125,11 +130,11 @@ public class HDDCache implements Serializable, ICache {
     @Override
     public void addObject(Object key, Object obj) throws IOException,
             FileNotFoundException {
-        String fullFileName = Repository.FILESFOLDER
-                + Repository.FILEPREFIX + key + Repository.FILEEXT;
+        String fullFileName = Repository.FILES_FOLDER
+                + Repository.FILE_PREFIX + key + Repository.FILE_EXTENTION;
         FileOutputStream fos = null;
         ObjectOutputStream ous = null;
-        // Deserialize object
+        // Deserializing object
         fos = new FileOutputStream(fullFileName);
         ous = new ObjectOutputStream(fos);
         ous.writeObject(obj);
@@ -145,8 +150,8 @@ public class HDDCache implements Serializable, ICache {
 
     @Override
     public void removeObject(Object key) throws NotPresentException {
-        File file = new File(Repository.FILESFOLDER
-                + Repository.FILEPREFIX + key + Repository.FILEEXT);
+        File file = new File(Repository.FILES_FOLDER
+                + Repository.FILE_PREFIX + key + Repository.FILE_EXTENTION);
         if (file.exists()) {
             file.delete();
             mapFrequency.remove(key);
@@ -158,13 +163,13 @@ public class HDDCache implements Serializable, ICache {
 
     @Override
     public int getSize() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return size;
     }
 
     @Override
     public boolean hasObject(Object key) {
-        File file = new File(Repository.FILESFOLDER
-                + Repository.FILEPREFIX + key + Repository.FILEEXT);
+        File file = new File(Repository.FILES_FOLDER
+                + Repository.FILE_PREFIX + key + Repository.FILE_EXTENTION);
         return file.exists();
     }
 
@@ -199,4 +204,54 @@ public class HDDCache implements Serializable, ICache {
         return null;
     }
 
+    //<editor-fold defaultstate="collapsed" desc="getters & setters">
+    /**
+     * @return the mapFiles
+     */
+    public Map<Object, Object> getMapFiles() {
+        return mapFiles;
+    }
+    
+    /**
+     * @param mapFiles the mapFiles to set
+     */
+    public void setMapFiles(Map<Object, Object> mapFiles) {
+        this.mapFiles = mapFiles;
+    }
+    
+    /**
+     * @return the mapFrequency
+     */
+    public Map<Object, Integer> getMapFrequency() {
+        return mapFrequency;
+    }
+    
+    /**
+     * @param mapFrequency the mapFrequency to set
+     */
+    public void setMapFrequency(Map<Object, Integer> mapFrequency) {
+        this.mapFrequency = mapFrequency;
+    }
+    
+    /**
+     * @return the keyLastAccessed
+     */
+    public Object getKeyLastAccessed() {
+        return keyLastAccessed;
+    }
+    
+    /**
+     * @param keyLastAccessed the keyLastAccessed to set
+     */
+    public void setKeyLastAccessed(Object keyLastAccessed) {
+        this.keyLastAccessed = keyLastAccessed;
+    }
+    
+    /**
+     * @param size the size to set
+     */
+    public void setSize(int size) {
+        this.size = size;
+    }
+    //</editor-fold>
 }

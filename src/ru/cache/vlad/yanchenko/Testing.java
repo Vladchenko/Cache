@@ -9,63 +9,112 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Class runs a test on all the present cache algorythms.
+ * 
  * @author v.yanchenko
  */
 public class Testing {
 
-    Map<Object, Object> mapTesting;
+    // Map of objects that is going to be fed to a caching algorithm.
+    private Map<Object, Object> mapTesting;
     private Repository repository;
-    CacheProcessor cacheProcessor;
-    int pipelineRunTimes = 100;
+    private CacheProcessor cacheProcessor;
 
-    public Testing() {
+    Testing() {
         mapTesting = new HashMap<>();
         repository = Repository.getInstance();
         cacheProcessor = new CacheProcessor(repository);
     }
 
-    private Map<Object, Object> populateMap(Map<Object, Object> map) {
-        for (int i = 0; i < 100000; i++) {
-            map.put(Integer.toString((int) (Math.random() * 1000000000)),
-                    Integer.toString((int) (Math.random() * 1000000000)));
+    /**
+     * Runs a test on a several test algorythms. Process information is written 
+     * to a log file.
+     */
+    public void runTesting() {
+        
+//        cacheProcessor.cacheFeeder.arrValues
+        
+        // Setting a cache kind.
+        repository.setCacheKind(Repository.cacheKindEnum.LRR);
+        for (int i = 0; i < repository.getPipelineRunTimes(); i++) {
+            cacheProcessor.processRequest(
+                    cacheProcessor.getCacheFeeder().requestObject());
         }
-        System.out.println("Data, that is to be fed to cacheProcessor is populated");
-        return map;
+        // Printing a summary for a current caching process.
+        repository.printSummary();
+        cacheProcessor.getHddCache().clearCache();
+        cacheProcessor.getRamCache().clearCache();
+        repository.resetCachingInfo();
+        repository.getLogger().info("");
+        repository.getLogger().info("");
+        
+        // Setting a cache kind.
+        repository.setCacheKind(Repository.cacheKindEnum.LRU);
+        for (int i = 0; i < repository.getPipelineRunTimes(); i++) {
+            cacheProcessor.processRequest(
+                    cacheProcessor.getCacheFeeder().requestObject());
+        }
+        // Printing a summary for a current caching process.
+        repository.printSummary();
+        cacheProcessor.getHddCache().clearCache();
+        cacheProcessor.getRamCache().clearCache();
+        repository.resetCachingInfo();
+        repository.getLogger().info("");
+        repository.getLogger().info("");
+        
+        // Setting a cache kind.
+        repository.setCacheKind(Repository.cacheKindEnum.MRU);
+        for (int i = 0; i < repository.getPipelineRunTimes(); i++) {
+            cacheProcessor.processRequest(
+                    cacheProcessor.getCacheFeeder().requestObject());
+        }
+        // Printing a summary for a current caching process.
+        repository.printSummary();
     }
 
-    public void runTesting() {
-        repository.setCacheKind(Repository.cacheKindEnum.LRR);
-        for (int i = 0; i < pipelineRunTimes; i++) {
-            cacheProcessor.processRequest(
-                    cacheProcessor.cacheFeeder.requestObject());
-        }
-        printSummary();
-        cacheProcessor.resetCachingInfo();
-        repository.setCacheKind(Repository.cacheKindEnum.LRU);
-        for (int i = 0; i < pipelineRunTimes; i++) {
-            cacheProcessor.processRequest(
-                    cacheProcessor.cacheFeeder.requestObject());
-        }
-        printSummary();
-        cacheProcessor.resetCachingInfo();
-        repository.setCacheKind(Repository.cacheKindEnum.MRU);
-        for (int i = 0; i < pipelineRunTimes; i++) {
-            cacheProcessor.processRequest(
-                    cacheProcessor.cacheFeeder.requestObject());
-        }
-        printSummary();
-        cacheProcessor.resetCachingInfo();
+    //<editor-fold defaultstate="collapsed" desc="getters and setters">
+    /**
+     * @return the mapTesting
+     */
+    public Map<Object, Object> getMapTesting() {
+        return mapTesting;
     }
     
-    public void printSummary() {
-        System.out.println("--- Summary ---------------------------------------");
-        System.out.println("| Cache algorithm " + repository.getCacheKind());
-        System.out.println("| Pipeline ran for: " + pipelineRunTimes + " times");
-        System.out.println("| RAM cache hits: " + cacheProcessor.hitsRAMCache);
-        System.out.println("| HDD cache hits: " + cacheProcessor.hitsHDDCache);
-        System.out.println("| RAM cache misses: " + cacheProcessor.missesRAMCache);
-        System.out.println("| HDD cache misses: " + cacheProcessor.missesHDDCache);
-        System.out.println("---------------------------------------------------");
+    /**
+     * @param mapTesting the mapTesting to set
+     */
+    public void setMapTesting(Map<Object, Object> mapTesting) {
+        this.mapTesting = mapTesting;
     }
+    
+    /**
+     * @return the repository
+     */
+    public Repository getRepository() {
+        return repository;
+    }
+    
+    /**
+     * @param repository the repository to set
+     */
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+    
+    /**
+     * @return the cacheProcessor
+     */
+    public CacheProcessor getCacheProcessor() {
+        return cacheProcessor;
+    }
+    
+    /**
+     * @param cacheProcessor the cacheProcessor to set
+     */
+    public void setCacheProcessor(CacheProcessor cacheProcessor) {
+        this.cacheProcessor = cacheProcessor;
+    }
+    
+//</editor-fold>
+    
 }

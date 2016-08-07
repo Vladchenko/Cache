@@ -1,0 +1,1 @@
+cache.jar cachekind=LRU l1ce=10 l2ce=100 dp

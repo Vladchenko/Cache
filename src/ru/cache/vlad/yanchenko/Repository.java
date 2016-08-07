@@ -14,41 +14,79 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 /**
- *
+ * 
+ * Keeps a data that is used throught the application. Made to have only 
+ * one instance.
+ * 
  * @author v.yanchenko
  */
 public class Repository {
 
-    public static Repository oRepository = Repository.getInstance();
-    public static final int LEVEL1CACHECSIZEDEFAULT = 10;
-    public static final int LEVEL2CACHECSIZEDEFAULT = 10;
-    public static final int LEVEL1CACHEMINIMUMVALUE = 1;
-    public static final int LEVEL2CACHEMINIMUMVALUE = 1;
-    public static final String FILEPREFIX = "cache_file_";
-    public static final String FILEEXT = ".cache";
-    public static final String FILESFOLDER = "Cached Data\\";
+    /**
+     * Number of an entries that a cache can hold. This value is set, when a 
+     * comand line number is set in a wrong way.
+     */
+    public static final int RAM_CACHE_ENTRIES_DEFAULT = 10;
+    public static final int HDD_CACHE_ENTRIES_DEFAULT = 10;
+    // Minimum cache entries present in a cache.
+    public static final int RAM_CACHE_ENTRIES_MINIMUM = 1;
+    public static final int HDD_CACHE_ENTRIES_MINIMUM = 1;
+//    public static final int RAM_CACHE_SIZE_DEFAULT = ;
+//    public static final int HDD_CACHE_SIZE_DEFAULT;
+    public static final String FILE_PREFIX = "cache_file_";
+    // File extention.
+    public static final String FILE_EXTENTION = ".cache";
+    // Folder for a file that represents a level 2 cache (HDD cache)
+    public static final String FILES_FOLDER = "Cached Data\\";
 
-    private int level1CacheSize;
-    private int level2CacheSize;
+    // Number of hits to a RAM cache done during one caching process.
+    private int hitsRAMCache = 0;
+    // Number of missess to a RAM cache done during one caching process.
+    private int missesRAMCache = 0;
+    private int hitsHDDCache = 0;
+    private int missesHDDCache = 0;
+    // How many times the caching process is run.
+    private int pipelineRunTimes = 100;
 
+    // Number of entries to be present in a RAM cache.
+    private int RAMCacheEntriesNumber;
+    // Number of entries to be present in a HDD cache.
+    private int HDDCacheEntriesNumber;
+    
+    // Memory size for a RAM cache.
+    private int RAMCacheSize;
+    // Memory size for an HDD cache.
+    private int HDDCacheSize;
+
+    // Checks if a detailed report to be shown in a log file.
     private boolean detailedReport = false;
+    
+    // Defines if a testing of all the testing algorythms is done.
+    private boolean testing = false;
+    
+    // Singleton.
+    public static Repository repository = Repository.getInstance();
 
-//    private String cacheKind;
+    // Defines a cache kind - lrr / mru / lru.
     public enum cacheKindEnum {
+
         NONE, LFU, LRU, MRU, LRR
     };
-    cacheKindEnum cacheKind;
+    private cacheKindEnum cacheKind;
 
-    Logger logger = Logger.getLogger("myLog");
+    // Establishing a log for a cache process.
+    private Logger logger = Logger.getLogger("myLog");
     FileHandler fileHandler;
 
+    // Hidden constructor, for no one and nowhere in a program could make 
+    // another instance of this class.
     private Repository() {
-        
+
         cacheKind = cacheKindEnum.NONE;
 
         // Setting up a logging
         try {
-            fileHandler = new FileHandler("Cache_log.log", 100000, 1);
+            fileHandler = new FileHandler("Cache_log.log", 1000000, 1);
             MyFormatter formatter = new MyFormatter();
             fileHandler.setFormatter(formatter);
             logger.addHandler(fileHandler);
@@ -58,14 +96,148 @@ public class Repository {
 
     }
 
+    // Public method that always returns the same instance of repository.
     public static Repository getInstance() {
-        if (oRepository == null) {
-            oRepository = new Repository();
+        if (repository == null) {
+            repository = new Repository();
         }
-        return oRepository;
+        return repository;
+    }
+
+    // Writing a summary about a current caching process to a log file.
+    public void printSummary() {
+        logger.info("--- Summary ---------------------------------------");
+        logger.info("| Cache algorithm: " + getCacheKind());
+        logger.info("| Pipeline ran for: " + getPipelineRunTimes() + " times");
+        logger.info("| RAM cache hits: " + getHitsRAMCache());
+        logger.info("| HDD cache hits: " + getHitsHDDCache());
+        logger.info("| RAM cache misses: " + getMissesRAMCache());
+        logger.info("| HDD cache misses: " + getMissesHDDCache());
+        logger.info("---------------------------------------------------");
+    }
+
+    // Resetting an info about a current caching process.
+    public void resetCachingInfo() {
+        setHitsRAMCache(0);
+        setMissesRAMCache(0);
+        setHitsHDDCache(0);
+        setMissesHDDCache(0);
     }
 
     //<editor-fold defaultstate="collapsed" desc="getters & setters">
+
+    /**
+     * @return the testing
+     */
+    public boolean isTesting() {
+        return testing;
+    }
+
+    /**
+     * @param testing the testing to set
+     */
+    public void setTesting(boolean testing) {
+        this.testing = testing;
+    }
+
+    /**
+     * @return the logger
+     */
+    public Logger getLogger() {
+        return logger;
+    }
+
+    /**
+     * @param logger the logger to set
+     */
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+
+    /**
+     * @return the hitsRAMCache
+     */
+    public int getHitsRAMCache() {
+        return hitsRAMCache;
+    }
+
+    /**
+     * @param hitsRAMCache the hitsRAMCache to set
+     */
+    public void setHitsRAMCache(int hitsRAMCache) {
+        this.hitsRAMCache = hitsRAMCache;
+    }
+
+    /**
+     * @return the missesRAMCache
+     */
+    public int getMissesRAMCache() {
+        return missesRAMCache;
+    }
+
+    /**
+     * @param missesRAMCache the missesRAMCache to set
+     */
+    public void setMissesRAMCache(int missesRAMCache) {
+        this.missesRAMCache = missesRAMCache;
+    }
+
+    /**
+     * @return the hitsHDDCache
+     */
+    public int getHitsHDDCache() {
+        return hitsHDDCache;
+    }
+
+    /**
+     * @param hitsHDDCache the hitsHDDCache to set
+     */
+    public void setHitsHDDCache(int hitsHDDCache) {
+        this.hitsHDDCache = hitsHDDCache;
+    }
+
+    /**
+     * @return the missesHDDCache
+     */
+    public int getMissesHDDCache() {
+        return missesHDDCache;
+    }
+
+    /**
+     * @param missesHDDCache the missesHDDCache to set
+     */
+    public void setMissesHDDCache(int missesHDDCache) {
+        this.missesHDDCache = missesHDDCache;
+    }
+
+    /**
+     * @return the pipelineRunTimes
+     */
+    public int getPipelineRunTimes() {
+        return pipelineRunTimes;
+    }
+
+    /**
+     * @param pipelineRunTimes the pipelineRunTimes to set
+     */
+    public void setPipelineRunTimes(int pipelineRunTimes) {
+        this.pipelineRunTimes = pipelineRunTimes;
+    }
+
+    /**
+     * @return the detailedReport
+     */
+    public boolean isDetailedReport() {
+        return detailedReport;
+    }
+
+    /**
+     * @param detailedReport the detailedReport to set
+     */
+    public void setDetailedReport(boolean detailedReport) {
+        this.detailedReport = detailedReport;
+    }    
+    
     /**
      * @return the cacheKind
      */
@@ -80,31 +252,33 @@ public class Repository {
         this.cacheKind = cacheKind;
     }
 
-    public int getLevel1CacheSize() {
-        return level1CacheSize;
+    public int getRAMCacheEntriesNumber() {
+        return RAMCacheEntriesNumber;
     }
 
-    public void setLevel1CacheSize(int level1CacheSize) {
-        this.level1CacheSize = level1CacheSize;
+    public void setRAMCacheEntriesNumber(int RAMCacheEntriesNumber) {
+        this.RAMCacheEntriesNumber = RAMCacheEntriesNumber;
     }
 
-    public int getLevel2CacheSize() {
-        return level2CacheSize;
+    public int getHDDCacheEntriesNumber() {
+        return HDDCacheEntriesNumber;
     }
 
-    public void setLevel2CacheSize(int level2CacheSize) {
-        this.level2CacheSize = level2CacheSize;
+    public void setHDDCacheEntriesNumber(int HDDCacheEntriesNumber) {
+        this.HDDCacheEntriesNumber = HDDCacheEntriesNumber;
     }
 //</editor-fold>
 
 }
 
     // Overriding an implementation of a standard formatter.
+    // It's done to remove an excess information that is put to log.
 class MyFormatter extends SimpleFormatter {
 
+    // Changing a string that is going to be put to a log file.
     @Override
     public synchronized String format(LogRecord record) {
         return record.getMessage() + System.getProperty("line.separator");
     }
-    
+
 }

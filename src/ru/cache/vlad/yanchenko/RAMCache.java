@@ -13,6 +13,8 @@ import java.util.Map;
 
 /**
  *
+ * In charge of an operations made with a RAM cache.
+ * 
  * @author v.yanchenko
  */
 public class RAMCache implements Serializable, ICache {
@@ -21,19 +23,21 @@ public class RAMCache implements Serializable, ICache {
     
     // Only for LFU algorithm
     LinkedHashMap<Integer, HashMap<Object, Object>> mapObjectsLFU;
-    Map<Object, Integer> frequency;
+    Map<Object, Integer> mapFrequency;
 
-    Map<Object, Object> mapObjects;
-    Object obj;
-    Object keyLastAccessed;
-    int size = 0;
+    // Map of objects that incoporate a cache.
+    private Map<Object, Object> mapObjects;
+    private Object object;
+    // Key to a last accessed object.
+    private Object keyLastAccessed;
+    private int size = 0;
 
-    public RAMCache() {
+    RAMCache() {
         // Defining which kind of a map to be used, depending on a cache kind.
-        switch (repository.cacheKind) {
+        switch (repository.getCacheKind()) {
             case LFU: {
                 mapObjectsLFU = new LinkedHashMap();
-                frequency = new HashMap();
+                mapFrequency = new HashMap();
                 break;
             }
             case LRU: {
@@ -49,19 +53,20 @@ public class RAMCache implements Serializable, ICache {
                 break;
             }
         }
-        frequency = new LinkedHashMap();
+        mapFrequency = new LinkedHashMap();
     }
 
     @Override
     public void clearCache() {
         mapObjects.clear();
+        mapFrequency.clear();
     }
 
     @Override
     public Object getObject(Object key) {
-        frequency.put(key, frequency.get(key) + 1);
+        mapFrequency.put(key, mapFrequency.get(key) + 1);
         keyLastAccessed = key;
-        switch (repository.cacheKind) {
+        switch (repository.getCacheKind()) {
             case LFU: {
                 break;
             }
@@ -73,9 +78,9 @@ public class RAMCache implements Serializable, ICache {
                  * a list of an objects beginning with least used, an ending
                  * with most used.
                  */
-                obj = mapObjects.get(key);
+                object = mapObjects.get(key);
                 mapObjects.remove(key);
-                mapObjects.put(key, obj);
+                mapObjects.put(key, object);
                 break;
             }
             case LRR: {
@@ -93,17 +98,17 @@ public class RAMCache implements Serializable, ICache {
     public void addObject(Object key, Object obj) {
         keyLastAccessed = key;
         mapObjects.put(key, obj);
-        frequency.put(key, 1);
+        mapFrequency.put(key, 1);
         size++;
     }
 
     @Override
     public void removeObject(Object key) {
         mapObjects.remove(key);
-        frequency.remove(key);
+        mapFrequency.remove(key);
         size--;
 //        if (lfu) {
-//            remove the one with a least frequency
+//            remove the one with a least mapFrequency
 //        }
 //        if (lru) {
 //            remove the one that used a long time ago
@@ -125,7 +130,7 @@ public class RAMCache implements Serializable, ICache {
 
     @Override
     public Object getLeastUsed(Repository.cacheKindEnum cacheKind) {
-//        return frequency.lastKey();
+//        return mapFrequency.lastKey();
         switch (cacheKind) {
             case LFU: {
                 break;
@@ -153,5 +158,38 @@ public class RAMCache implements Serializable, ICache {
         }
         return null;
     }
+
+    //<editor-fold defaultstate="collapsed" desc="getters & setters">
+    public Map<Object, Object> getMapObjects() {
+        return mapObjects;
+    }
+    
+    public void setMapObjects(Map<Object, Object> mapObjects) {
+        this.mapObjects = mapObjects;
+    }
+    
+    public Object getObject() {
+        return object;
+    }
+    
+    public void setObject(Object object) {
+        this.object = object;
+    }
+    
+    public Object getKeyLastAccessed() {
+        return keyLastAccessed;
+    }
+    
+    public void setKeyLastAccessed(Object keyLastAccessed) {
+        this.keyLastAccessed = keyLastAccessed;
+    }
+    
+    /**
+     * @param size the size to set
+     */
+    public void setSize(int size) {
+        this.size = size;
+    }
+    //</editor-fold>
 
 }
