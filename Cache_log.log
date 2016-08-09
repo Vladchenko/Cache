@@ -1,33 +1,26 @@
-Level 1 cache entries maximum number is specified in a wrong way ! Used by default.
-Level 2 cache entries maximum number is specified in a wrong way ! Used by default.
+Level 1 cache entries maximum number is specified in a wrong way ! Used by default = 10
+Level 2 cache entries maximum number is specified in a wrong way ! Used by default = 10
 Caching process report is set to be not detailed.
 cachekind is set to - MRU
+Cache process run times is not set - using default = 100
+Entries number is not set properly, set by default
 
---- Summary ---------------------------------------
-| Cache algorithm: LRR
-| Pipeline ran for: 100 times
-| RAM cache hits: 49
-| HDD cache hits: 27
-| RAM cache misses: 51
-| HDD cache misses: 24
----------------------------------------------------
-
-
+Caches have been populated.
 --- Summary ---------------------------------------
 | Cache algorithm: LRU
 | Pipeline ran for: 100 times
-| RAM cache hits: 43
-| HDD cache hits: 27
-| RAM cache misses: 57
-| HDD cache misses: 30
+| RAM cache hits: 6
+| HDD cache hits: 6
+| RAM cache misses: 94
+| HDD cache misses: 88
 ---------------------------------------------------
 
 
 --- Summary ---------------------------------------
 | Cache algorithm: MRU
 | Pipeline ran for: 100 times
-| RAM cache hits: 49
-| HDD cache hits: 30
-| RAM cache misses: 51
-| HDD cache misses: 21
+| RAM cache hits: 3
+| HDD cache hits: 13
+| RAM cache misses: 97
+| HDD cache misses: 84
 ---------------------------------------------------
