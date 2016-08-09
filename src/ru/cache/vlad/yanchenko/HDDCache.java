@@ -31,7 +31,7 @@ public class HDDCache implements Serializable, ICache {
     public static Repository repository = Repository.getInstance();
 
     private Map<Object, Object> mapFiles;
-    private Map<Object, Integer> mapFrequency;
+//    private Map<Object, Integer> mapFrequency;
     private Object keyLastAccessed;
     private int filesNumber = 0;
 //    private int cacheSize = 0;
@@ -51,7 +51,7 @@ public class HDDCache implements Serializable, ICache {
                 break;
             }
         }
-        mapFrequency = new LinkedHashMap();
+//        mapFrequency = new LinkedHashMap();
         createFilesFolder();    // Makes a folder, when there is no such
         clearCache();           // Clear a cache before run a caching loop
     }
@@ -80,7 +80,7 @@ public class HDDCache implements Serializable, ICache {
             }
         }
         mapFiles.clear();
-        mapFrequency.clear();
+//        mapFrequency.clear();
         filesNumber = 0;
     }
 
@@ -97,7 +97,7 @@ public class HDDCache implements Serializable, ICache {
         try {
             obj = ous.readObject();
             // Increasing a call count for this entry.
-            mapFrequency.put(key, mapFrequency.get(key) + 1);
+//            mapFrequency.put(key, mapFrequency.get(key) + 1);
             keyLastAccessed = key;
             switch (repository.getCacheKind()) {
                 case LFU: {
@@ -139,7 +139,7 @@ public class HDDCache implements Serializable, ICache {
 //        File file = new File(fullFileName);
 //        cacheSize += file.length();
         filesNumber++;
-        mapFrequency.put(key, 1);
+//        mapFrequency.put(key, 1);
         mapFiles.put(key, fullFileName);
         keyLastAccessed = key;
     }
@@ -150,7 +150,7 @@ public class HDDCache implements Serializable, ICache {
                 + Repository.FILE_PREFIX + key + Repository.FILE_EXTENTION);
         if (file.exists()) {
             file.delete();
-            mapFrequency.remove(key);
+//            mapFrequency.remove(key);
             mapFiles.remove(key);
         } else {
             throw new NotPresentException();
@@ -205,19 +205,19 @@ public class HDDCache implements Serializable, ICache {
         this.mapFiles = mapFiles;
     }
 
-    /**
-     * @return the mapFrequency
-     */
-    public Map<Object, Integer> getMapFrequency() {
-        return mapFrequency;
-    }
-
-    /**
-     * @param mapFrequency the mapFrequency to set
-     */
-    public void setMapFrequency(Map<Object, Integer> mapFrequency) {
-        this.mapFrequency = mapFrequency;
-    }
+//    /**
+//     * @return the mapFrequency
+//     */
+//    public Map<Object, Integer> getMapFrequency() {
+//        return mapFrequency;
+//    }
+//
+//    /**
+//     * @param mapFrequency the mapFrequency to set
+//     */
+//    public void setMapFrequency(Map<Object, Integer> mapFrequency) {
+//        this.mapFrequency = mapFrequency;
+//    }
 
     /**
      * @return the keyLastAccessed

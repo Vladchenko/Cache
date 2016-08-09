@@ -100,13 +100,13 @@ public class Repository {
 
     }
 
-    // Public method that always returns the same instance of repository.
-    public static Repository getInstance() {
-        if (repository == null) {
-            repository = new Repository();
+        // Public method that always returns the same instance of repository.
+        public static Repository getInstance() {
+            if (repository == null) {
+                repository = new Repository();
+            }
+            return repository;
         }
-        return repository;
-    }
 
     // Writing a summary about a current caching process to a log file.
     public void printSummary() {

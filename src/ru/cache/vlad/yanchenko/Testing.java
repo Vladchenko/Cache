@@ -23,7 +23,7 @@ public class Testing {
     Testing() {
         mapTesting = new HashMap<>();
         repository = Repository.getInstance();
-        cacheProcessor = new CacheProcessor(repository);
+        cacheProcessor = CacheProcessor.getInstance();
         /**
          * Populating a map for further using it as a template entry set for 
          * all caching the algorithms.

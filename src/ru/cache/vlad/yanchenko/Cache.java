@@ -20,7 +20,7 @@ public class Cache {
     private Cache(String[] args) {
         processArguments = new ProcessArguments(repository);
         processArguments.processArgs(args);
-        cacheProcessor = new CacheProcessor(repository);
+        cacheProcessor = CacheProcessor.getInstance();
         test = new Testing();
     }
 

@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static ru.cache.vlad.yanchenko.Repository.repository;
 
 /**
  * Class is in charge of an operations done while a cahign process is running.
@@ -22,10 +23,11 @@ public class CacheProcessor {
 
     private RAMCache ramCache;
     private HDDCache hddCache;
-    private Repository repository;
+    private static Repository repository = Repository.getInstance();
+    private static CacheProcessor cacheProcessor = CacheProcessor.getInstance();
     private CacheFeeder cacheFeeder;
 
-    CacheProcessor(Repository repository) {
+    private CacheProcessor(Repository repository) {
         ramCache = new RAMCache();
         hddCache = new HDDCache();
         this.repository = repository;
@@ -34,6 +36,15 @@ public class CacheProcessor {
          * cacheProcessor.
          */
         cacheFeeder = new CacheFeeder(repository.getEntriesNumber());
+        populateCaches();
+    }
+    
+    // Public method that always returns the same instance of repository.
+    public static CacheProcessor getInstance() {
+        if (cacheProcessor == null) {
+            cacheProcessor = new CacheProcessor(repository);
+        }
+        return cacheProcessor;
     }
 
     /**
@@ -107,7 +118,7 @@ public class CacheProcessor {
                         // Moving a least used RAM entry to an HDD cache.
                         try {
                             hddCache.addObject(key_, ramCache.getObject(key_));
-                            hddCache.getMapFrequency().put(key_, 0);
+//                            hddCache.getMapFrequency().put(key_, 0);
                             if (repository.isDetailedReport()) {
                                 repository.getLogger().info("An entry with key="
                                         + key_ + " is moved to an HDD cache.");
@@ -153,7 +164,7 @@ public class CacheProcessor {
                         try {
                             // Moving a least used RAM entry to a HDD cache.
                             hddCache.addObject(key_, ramCache.getObject(key_));
-                            hddCache.getMapFrequency().put(key_, 0);
+//                            hddCache.getMapFrequency().put(key_, 0);
                             if (repository.isDetailedReport()) {
                                 repository.getLogger().info("Least used entry in RAM"
                                         + " cache with key=" + key_
@@ -315,6 +326,24 @@ public class CacheProcessor {
             obj = processRequest(cacheFeeder.requestObject());
         }
         repository.printSummary();
+    }
+    
+    // Populating caches before running a caching-retrieval process.
+    private void populateCaches() {
+        while (ramCache.getSize() < repository.getRAMCacheEntriesNumber()) {
+            ramCache.addObject(cacheFeeder.requestObject(),
+                    cacheFeeder.deliverObject(cacheFeeder.requestObject()));
+        }
+        while (hddCache.getSize() < repository.getHDDCacheEntriesNumber()) {
+            try {
+                hddCache.addObject(cacheFeeder.requestObject(),
+                        cacheFeeder.deliverObject(cacheFeeder.requestObject()));
+            } catch (IOException ex) {
+                repository.getLogger().info("Cannot populate HDD cache, some IO "
+                        + "problem.");
+            }
+        }
+        repository.getLogger().info("Caches have been populated.");
     }
 
     //<editor-fold defaultstate="collapsed" desc="getters & setters">
