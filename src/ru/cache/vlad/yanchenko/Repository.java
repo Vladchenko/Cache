@@ -24,7 +24,7 @@ public class Repository {
 
     /**
      * Number of an entries that a cache can hold. This value is set, when a 
-     * comand line number is set in a wrong way.
+     * command line number is set in a wrong way.
      */
     public static final int RAM_CACHE_ENTRIES_DEFAULT = 10;
     public static final int HDD_CACHE_ENTRIES_DEFAULT = 10;
@@ -34,7 +34,7 @@ public class Repository {
 //    public static final int RAM_CACHE_SIZE_DEFAULT = ;
 //    public static final int HDD_CACHE_SIZE_DEFAULT;
     // Number of entries to be fed to a cache processor.
-    public static final int ENTRIES_NUMBER_DEFAULT = 10;
+    public static final int ENTRIES_NUMBER_DEFAULT = 25;
     public static final String FILE_PREFIX = "cache_file_";
     // File extention.
     public static final String FILE_EXTENTION = ".cache";
@@ -111,12 +111,12 @@ public class Repository {
     // Writing a summary about a current caching process to a log file.
     public void printSummary() {
         logger.info("--- Summary ---------------------------------------");
-        logger.info("| Cache algorithm: " + getCacheKind());
+        logger.info("| Cache algorithm : " + getCacheKind());
         logger.info("| Pipeline ran for: " + getPipelineRunTimes() + " times");
-        logger.info("| RAM cache hits: " + getHitsRAMCache());
-        logger.info("| HDD cache hits: " + getHitsHDDCache());
-        logger.info("| RAM cache misses: " + getMissesRAMCache());
-        logger.info("| HDD cache misses: " + getMissesHDDCache());
+        logger.info("| RAM cache hits  : " + getHitsRAMCache() + " times");
+        logger.info("| HDD cache hits  : " + getHitsHDDCache() + " times");
+        logger.info("| RAM cache misses: " + getMissesRAMCache() + " times");
+        logger.info("| HDD cache misses: " + getMissesHDDCache() + " times");
         logger.info("---------------------------------------------------");
     }
 

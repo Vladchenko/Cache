@@ -1,17 +1,16 @@
-Level 1 cache entries maximum number is specified in a wrong way ! Used by default = 10
-Level 2 cache entries maximum number is specified in a wrong way ! Used by default = 10
+Entries number is not set, using default - 25
+Level 1 cache size is not set, using default - 10
+Level 2 cache size is not set, using default - 10
 Caching process report is set to be not detailed.
 Cache kind is not set, used default - Most Recently Used.
-
-Cache process run times is not set - using default = 100
-Entries number is not set properly, set by default
+Cache process run times is not set, using default - 100
 
 Caches have been populated.
 --- Summary ---------------------------------------
-| Cache algorithm: MRU
+| Cache algorithm : MRU
 | Pipeline ran for: 100 times
-| RAM cache hits: 1
-| HDD cache hits: 4
-| RAM cache misses: 99
-| HDD cache misses: 95
+| RAM cache hits  : 45 times
+| HDD cache hits  : 37 times
+| RAM cache misses: 55 times
+| HDD cache misses: 18 times
 ---------------------------------------------------

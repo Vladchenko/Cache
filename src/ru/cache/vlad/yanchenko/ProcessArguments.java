@@ -50,6 +50,19 @@ public class ProcessArguments {
             }
         }
 
+        /**
+         * Defining how many entries will be fed to a caching process.
+         */
+        try {
+            repository.setEntriesNumber(Integer.parseInt(arguments.get("m")));
+            repository.getLogger().info("Entries number is set to "
+                    + repository.getEntriesNumber());
+        } catch (Exception nfe) {
+            repository.getLogger().info("Entries number is not set, using default - "
+                    + Repository.ENTRIES_NUMBER_DEFAULT);
+            repository.setEntriesNumber(Repository.ENTRIES_NUMBER_DEFAULT);
+        }
+
         // Processing arguments for level1 cache.
         if (arguments.containsKey("level1cacheentries")) {
             number = arguments.get("level1cacheentries");
@@ -62,11 +75,10 @@ public class ProcessArguments {
             if (repository.getRAMCacheEntriesNumber() < Repository.RAM_CACHE_ENTRIES_MINIMUM) {
                 throw new NumberFormatException();
             }
-            repository.getLogger().info("Level 1 cache entries maximum number "
-                    + "is set to " + repository.getRAMCacheEntriesNumber());
+            repository.getLogger().info("Level 1 cache size is set to "
+                    + repository.getRAMCacheEntriesNumber());
         } catch (NumberFormatException nfe) {
-            repository.getLogger().info("Level 1 cache entries maximum number is"
-                    + " specified in a wrong way ! Used by default = " 
+            repository.getLogger().info("Level 1 cache size is not set, using default - "
                     + Repository.RAM_CACHE_ENTRIES_DEFAULT);
             repository.setRAMCacheEntriesNumber(Repository.RAM_CACHE_ENTRIES_DEFAULT);
         }
@@ -83,11 +95,10 @@ public class ProcessArguments {
             if (repository.getHDDCacheEntriesNumber() < Repository.HDD_CACHE_ENTRIES_MINIMUM) {
                 throw new NumberFormatException();
             }
-            repository.getLogger().info("Level 2 cache entries maximum number "
-                    + "is set to " + repository.getHDDCacheEntriesNumber());
+            repository.getLogger().info("Level 2 cache size is set to "
+                    + repository.getHDDCacheEntriesNumber());
         } catch (NumberFormatException nfe) {
-            repository.getLogger().info("Level 2 cache entries maximum number is"
-                    + " specified in a wrong way ! Used by default = " 
+            repository.getLogger().info("Level 2 cache size is not set, using default - "
                     + Repository.HDD_CACHE_ENTRIES_DEFAULT);
             repository.setHDDCacheEntriesNumber(Repository.HDD_CACHE_ENTRIES_DEFAULT);
         }
@@ -105,7 +116,7 @@ public class ProcessArguments {
             repository.getLogger().info("Cache kind is not set, used default - "
                     + "Most Recently Used.");
             repository.setCacheKind(Repository.cacheKindEnum.MRU);
-            repository.getLogger().info("");
+//            repository.getLogger().info("");
         } else {
             String ck = arguments.get("cachekind");
             if (ck == null) {
@@ -146,22 +157,11 @@ public class ProcessArguments {
             repository.getLogger().info("Cache process will run for " 
                     + repository.getPipelineRunTimes() + " times");
         } catch (Exception ex) {
-            repository.getLogger().info("Cache process run times is not set"
-                    + " - using default = " + repository.getPipelineRunTimes());
+            repository.getLogger().info("Cache process run times is not set, "
+                    + "using default - " + repository.getPipelineRunTimes());
             repository.setCacheKind(Repository.cacheKindEnum.MRU);
         }
-             
-        /** 
-         * Defining how many entries will be fed to a caching process.
-         */
-        try {
-            repository.setEntriesNumber(Integer.parseInt(arguments.get("m")));
-            repository.getLogger().info("Entries number is set to " 
-                    + repository.getEntriesNumber());
-        } catch (Exception nfe) {
-            repository.getLogger().info("Entries number is not set properly, "
-                    + "set by default");
-        }
+
         
         repository.getLogger().info("");
         
