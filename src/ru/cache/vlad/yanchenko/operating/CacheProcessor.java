@@ -83,6 +83,7 @@ public class CacheProcessor {
                 recache(key);
                 return obj;
             } catch (NullPointerException | IOException | ClassNotFoundException ignored) {
+                repository.getLogger().info("!!! No such entry in HDD cache (" + key + ")");
             }
             // When both caches miss,
             if (obj == null) {
@@ -131,7 +132,8 @@ public class CacheProcessor {
                             ramCache.addObject(key, obj);
                             return obj;
                         } catch (IOException ex) {
-//                            System.out.println();
+                            repository.getLogger().info("!!! Some major trouble with " +
+                                    "displacement a least used and addition of a new entry.");
                         }
                     } else {
                         /**
@@ -155,6 +157,7 @@ public class CacheProcessor {
                                         + " is removed from an HDD cache. ");
                             }
                         } catch (NotPresentException ex) {
+                            repository.getLogger().info("!!! HDD cache entry failed to be removed, it is absent.");
                         }
                         // Getting the least used entry in a RAM cache.
                         key_ = ramCache.getLeastUsed(repository.getCacheKind());
@@ -169,7 +172,7 @@ public class CacheProcessor {
                             }
                         } catch (IOException ex) {
                             if (repository.isDetailedReport()) {
-                                repository.getLogger().info("Cannot move to HDD cache"
+                                repository.getLogger().info("!!! Cannot move to HDD cache"
                                         + " ! Disk drive might be corrupt");
                             }
                         }
