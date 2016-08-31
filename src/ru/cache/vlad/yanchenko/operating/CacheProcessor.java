@@ -57,8 +57,6 @@ public class CacheProcessor {
 
         if (repository.isDetailedReport()) {
             printCaches();
-        }
-        if (repository.isDetailedReport()) {
             repository.getLogger().info(">>> Requested key=" + key);
         }
 
