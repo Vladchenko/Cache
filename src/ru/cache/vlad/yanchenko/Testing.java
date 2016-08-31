@@ -18,12 +18,12 @@ public class Testing {
     // Map of objects that is going to be fed to a caching algorithm.
     private Map<Object, Object> mapTesting;
     private Repository repository;
-    private CacheProcessor cacheProcessor;
+    private ru.cache.vlad.yanchenko.operating.CacheProcessor cacheProcessor;
 
     Testing() {
         mapTesting = new HashMap<>();
         repository = Repository.getInstance();
-        cacheProcessor = CacheProcessor.getInstance();
+        cacheProcessor = ru.cache.vlad.yanchenko.operating.CacheProcessor.getInstance();
         /**
          * Populating a map for further using it as a template entry set for 
          * all caching the algorithms.
@@ -117,14 +117,14 @@ public class Testing {
     /**
      * @return the cacheProcessor
      */
-    public CacheProcessor getCacheProcessor() {
+    public ru.cache.vlad.yanchenko.operating.CacheProcessor getCacheProcessor() {
         return cacheProcessor;
     }
     
     /**
      * @param cacheProcessor the cacheProcessor to set
      */
-    public void setCacheProcessor(CacheProcessor cacheProcessor) {
+    public void setCacheProcessor(ru.cache.vlad.yanchenko.operating.CacheProcessor cacheProcessor) {
         this.cacheProcessor = cacheProcessor;
     }
     

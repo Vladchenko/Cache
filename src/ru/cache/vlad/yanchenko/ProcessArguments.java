@@ -43,8 +43,8 @@ public class ProcessArguments {
                     arguments.put(map[0].toLowerCase(), map[1].toLowerCase());
                 }
             } catch (Exception ex) {
-                /** 
-                 * Some wrong argument is present, but there is no sense in 
+                /**
+                 * Some wrong argument is present, but there is no sense in
                  * notifying a user about it.
                  */
             }

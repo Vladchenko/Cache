@@ -21,7 +21,6 @@ public class Cache {
         processArguments = new ProcessArguments(repository);
         processArguments.processArgs(args);
         cacheProcessor = CacheProcessor.getInstance();
-        test = new Testing();
     }
 
     /**
@@ -31,10 +30,11 @@ public class Cache {
 
         Cache cache = new Cache(args);
         
-        // Run a test, if a specific command line argum,ents says so.
+        // Run a test, if a specific command line arguments says so.
         if (cache.repository.isTesting()) {
+            cache.test = new Testing();
             cache.test.runTesting();
-        // Else run a single cache algorythm.
+        // Else run a single cache algorithm.
         } else {
             cache.cacheProcessor.performCachingProcess();
         }
