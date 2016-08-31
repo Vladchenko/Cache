@@ -90,7 +90,7 @@ public class Repository {
 
         // Setting up a logging
         try {
-            fileHandler = new FileHandler("Cache_log.log", 1000000, 1);
+            fileHandler = new FileHandler("Cache.log", 1000000, 1);
             MyFormatter formatter = new MyFormatter();
             fileHandler.setFormatter(formatter);
             logger.addHandler(fileHandler);

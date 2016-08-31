@@ -43,10 +43,7 @@ public class ProcessArguments {
                     arguments.put(map[0].toLowerCase(), map[1].toLowerCase());
                 }
             } catch (Exception ex) {
-                /**
-                 * Some wrong argument is present, but there is no sense in
-                 * notifying a user about it.
-                 */
+                repository.getLogger().info("Some bad argument present, check it.");
             }
         }
 
@@ -64,11 +61,9 @@ public class ProcessArguments {
         }
 
         // Processing arguments for level1 cache.
-        if (arguments.containsKey("level1cacheentries")) {
-            number = arguments.get("level1cacheentries");
-        }
-        if (arguments.containsKey("l1ce")) {
-            number = arguments.get("l1ce");
+        if (arguments.containsKey("level1size")
+                || arguments.containsKey("l1s")) {
+            number = arguments.get("level1size");
         }
         try {
             repository.setRAMCacheEntriesNumber(Integer.parseInt(number));
@@ -84,11 +79,9 @@ public class ProcessArguments {
         }
 
         // Processing arguments for level2 cache.
-        if (arguments.containsKey("level2cacheentries")) {
-            number = arguments.get("level2cacheentries");
-        }
-        if (arguments.containsKey("l2ce")) {
-            number = arguments.get("l2ce");
+        if (arguments.containsKey("level2size")
+                || arguments.containsKey("l2s")) {
+            number = arguments.get("level2size");
         }
         try {
             repository.setHDDCacheEntriesNumber(Integer.parseInt(number));
