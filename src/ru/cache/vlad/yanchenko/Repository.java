@@ -39,7 +39,7 @@ public class Repository {
     // File extention.
     public static final String FILE_EXTENTION = ".cache";
     // Folder for a file that represents a level 2 cache (HDD cache)
-    public static final String FILES_FOLDER = "Cached Data\\";
+    public static final String FILES_FOLDER = "Cached#:\\";
 
     // Number of hits to a RAM cache done during one caching process.
     private int hitsRAMCache = 0;

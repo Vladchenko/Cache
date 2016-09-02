@@ -5,9 +5,11 @@
  */
 package ru.cache.vlad.yanchenko.operating;
 
+import ru.cache.vlad.yanchenko.caches.HDDCache;
 import ru.cache.vlad.yanchenko.caches.NotPresentException;
 import ru.cache.vlad.yanchenko.Repository;
 import ru.cache.vlad.yanchenko.caches.RAMCache;
+import ru.cache.vlad.yanchenko.caches.WrongDirectoryException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,21 +22,21 @@ import java.util.Map;
  */
 public class CacheProcessor {
 
-    private ru.cache.vlad.yanchenko.caches.RAMCache ramCache;
-    private ru.cache.vlad.yanchenko.caches.HDDCache hddCache;
+    private RAMCache ramCache;
+    private HDDCache hddCache;
     private static Repository repository = Repository.getInstance();
     private static CacheProcessor cacheProcessor = CacheProcessor.getInstance();
-    private ru.cache.vlad.yanchenko.operating.CacheFeeder cacheFeeder;
+    private CacheFeeder cacheFeeder;
 
     private CacheProcessor(Repository repository) {
-        ramCache = new ru.cache.vlad.yanchenko.caches.RAMCache();
-        hddCache = new ru.cache.vlad.yanchenko.caches.HDDCache();
+        ramCache = new RAMCache();
+        hddCache = new HDDCache();
         this.repository = repository;
         /**
          * Setting how many entries will a cacheFeeder have to request from a 
          * cacheProcessor.
          */
-        cacheFeeder = new ru.cache.vlad.yanchenko.operating.CacheFeeder(repository.getEntriesNumber());
+        cacheFeeder = new CacheFeeder(repository.getEntriesNumber());
         populateCaches();
     }
     
@@ -173,7 +175,7 @@ public class CacheProcessor {
                         } catch (IOException ex) {
                             if (repository.isDetailedReport()) {
                                 repository.getLogger().info("!!! Cannot move to HDD cache"
-                                        + " ! Disk drive might be corrupt");
+                                        + " ! Disk drive might be corrupt.");
                             }
                         }
                         // Removing a least used entry from a RAM cache.

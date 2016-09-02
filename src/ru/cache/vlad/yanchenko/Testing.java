@@ -7,6 +7,7 @@ package ru.cache.vlad.yanchenko;
 
 import java.util.HashMap;
 import java.util.Map;
+import ru.cache.vlad.yanchenko.operating.CacheProcessor;
 
 /**
  * Class runs a test on all the present cache algorithms.
@@ -18,12 +19,12 @@ public class Testing {
     // Map of objects that is going to be fed to a caching algorithm.
     private Map<Object, Object> mapTesting;
     private Repository repository;
-    private ru.cache.vlad.yanchenko.operating.CacheProcessor cacheProcessor;
+    private CacheProcessor cacheProcessor;
 
     Testing() {
         mapTesting = new HashMap<>();
         repository = Repository.getInstance();
-        cacheProcessor = ru.cache.vlad.yanchenko.operating.CacheProcessor.getInstance();
+        cacheProcessor = CacheProcessor.getInstance();
         /**
          * Populating a map for further using it as a template entry set for 
          * all caching the algorithms.
@@ -117,14 +118,14 @@ public class Testing {
     /**
      * @return the cacheProcessor
      */
-    public ru.cache.vlad.yanchenko.operating.CacheProcessor getCacheProcessor() {
+    public CacheProcessor getCacheProcessor() {
         return cacheProcessor;
     }
     
     /**
      * @param cacheProcessor the cacheProcessor to set
      */
-    public void setCacheProcessor(ru.cache.vlad.yanchenko.operating.CacheProcessor cacheProcessor) {
+    public void setCacheProcessor(CacheProcessor cacheProcessor) {
         this.cacheProcessor = cacheProcessor;
     }
     

@@ -5,6 +5,7 @@
  */
 package ru.cache.vlad.yanchenko;
 
+import ru.cache.vlad.yanchenko.operating.CacheProcessor;
 /**
  * Initial class.
  *

@@ -18,6 +18,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -45,22 +47,36 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
             }
         }
 //        mapFrequency = new LinkedHashMap();
-        createFilesFolder();    // Makes a folder, when there is no such
+        try {
+            createFilesFolder(Repository.FILES_FOLDER);    // Makes a folder, when there is no such
+        } catch (WrongDirectoryException e) {
+            e.printStackTrace();
+        }
         clearCache();           // Clear a cache before run a caching loop
+    }
+
+    // Cheking if a directory path have no special characters. These are :"\/|?<>
+    private boolean isPath (String path) {
+        Pattern p = Pattern.compile("[\\\\:<>|*/?\\s]");
+        Matcher m = p.matcher(path);
+        boolean b = !m.find();
+        return b;
     }
 
     /**
      * Creating a folder (in case its absent) for a files that constitute an HDD
      * cache.
      */
-    private void createFilesFolder() {
-//        Path pth = Paths.get(Repository.FILES_FOLDER);
-        File theDir = new File(Repository.FILES_FOLDER);
-        // Checking if directory exists
-//        if (!Files.exists(pth)) {
-        if (!theDir.exists()) {
+    private void createFilesFolder(String path) throws WrongDirectoryException {
+        File directory = new File(path);
+        // Checking if a directory keep the real path on a disk.
+        if (!isPath(path)) {
+            throw new WrongDirectoryException(directory.getPath());
+        }
+        // Checking if directory exists.
+        if (!directory.exists()) {
             // And if not, make it
-            new File(Repository.FILES_FOLDER).mkdir();
+            new File(path).mkdir();
         }
     }
 
