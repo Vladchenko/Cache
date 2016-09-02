@@ -35,11 +35,14 @@ public class Repository {
 //    public static final int HDD_CACHE_SIZE_DEFAULT;
     // Number of entries to be fed to a cache processor.
     public static final int ENTRIES_NUMBER_DEFAULT = 25;
-    public static String FILE_PREFIX = "cache_file_";
+    public static final String FILE_PREFIX = "cache_file_";
+    public static String filePrefix;
     // File extention.
-    public static String FILE_EXTENTION = ".cache";
+    public static final String FILE_EXTENTION = ".cache";
+    public static String fileExtention;
     // Folder for a file that represents a level 2 cache (HDD cache)
-    public static String FILES_FOLDER = "Cached Data\\";
+    public static final String FILES_FOLDER = "Cache Data\\";
+    public static String filesFolder;
 
     // Number of hits to a RAM cache done during one caching process.
     private int hitsRAMCache = 0;
