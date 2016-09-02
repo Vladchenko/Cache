@@ -56,11 +56,15 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     }
 
     // Cheking if a directory path have no special characters. These are :"\/|?<>
-    private boolean isPath (String path) {
-        Pattern p = Pattern.compile("[\\\\:<>|*/?\\s]");
+    private boolean isPath (String path) throws WrongDirectoryException {
+        Pattern p = Pattern.compile("[:<>|*/?]");
         Matcher m = p.matcher(path);
-        boolean b = !m.find();
-        return b;
+//        System.out.println(path);
+        if (path.lastIndexOf('\\') != path.length() - 1) {
+            path += "\\";
+            System.out.println(path);
+        }
+        return !m.find();
     }
 
     /**
@@ -71,7 +75,9 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         File directory = new File(path);
         // Checking if a directory keep the real path on a disk.
         if (!isPath(path)) {
-            throw new WrongDirectoryException(directory.getPath());
+            throw new WrongDirectoryException("\"" + path + "\"" +
+                    " is not a valid pathname. Change and rerun an app. Program exits.",
+                    repository.getLogger());
         }
         // Checking if directory exists.
         if (!directory.exists()) {

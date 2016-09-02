@@ -43,7 +43,7 @@ public class ProcessArguments {
                     arguments.put(map[0].toLowerCase(), map[1].toLowerCase());
                 }
             } catch (Exception ex) {
-                repository.getLogger().info("Some bad argument present, check it.");
+                repository.getLogger().info("Some wrong argument present, check it.");
             }
         }
 
