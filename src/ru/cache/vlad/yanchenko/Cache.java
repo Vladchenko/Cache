@@ -5,6 +5,10 @@
  */
 package ru.cache.vlad.yanchenko;
 
+import ru.cache.vlad.yanchenko.arguments.ValidateLayout;
+import ru.cache.vlad.yanchenko.caches.DirectoryException;
+import ru.cache.vlad.yanchenko.caches.FileExtensionException;
+import ru.cache.vlad.yanchenko.caches.FilePrefixException;
 import ru.cache.vlad.yanchenko.operating.CacheProcessor;
 /**
  * Initial class.
@@ -13,15 +17,43 @@ import ru.cache.vlad.yanchenko.operating.CacheProcessor;
  */
 public class Cache {
 
-    private ProcessArguments processArguments;
+    private ru.cache.vlad.yanchenko.arguments.ProcessArguments processArguments;
     private CacheProcessor cacheProcessor;
     private Testing test;
     private Repository repository = Repository.getInstance();
 
     private Cache(String[] args) {
-        processArguments = new ProcessArguments(repository);
-        processArguments.processArgs(args);
+        // Processing command line arguments.
+        new ru.cache.vlad.yanchenko.arguments.ProcessArguments(repository).processArguments(args);
+        // Validating some command line arguments.
+        runValidation();
         cacheProcessor = CacheProcessor.getInstance();
+    }
+
+    // Validating some command line arguments.
+    private void runValidation() {
+        ValidateLayout validateLayout = new ValidateLayout(repository.getLogger());
+        try {
+            validateLayout.validatePath(Repository.FILES_FOLDER);
+        } catch (DirectoryException e) {
+            repository.getLogger().info(Repository.FILES_FOLDER
+                    + " is not a valid folder. Program exits.");
+            System.exit(1);
+        }
+        try {
+            validateLayout.validateFilePrefix(Repository.FILE_PREFIX);
+        } catch (FilePrefixException e) {
+            repository.getLogger().info(Repository.FILE_PREFIX
+                    + " is not a valid file prefix. Program exits.");
+            System.exit(1);
+        }
+        try {
+            validateLayout.validateFileExtension(Repository.FILE_EXTENTION);
+        } catch (FileExtensionException e) {
+            repository.getLogger().info(Repository.FILE_EXTENTION
+                    + " is not a valid file extension. Program exits.");
+            System.exit(1);
+        }
     }
 
     /**

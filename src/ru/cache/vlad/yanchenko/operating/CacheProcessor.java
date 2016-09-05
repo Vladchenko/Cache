@@ -9,7 +9,6 @@ import ru.cache.vlad.yanchenko.caches.HDDCache;
 import ru.cache.vlad.yanchenko.caches.NotPresentException;
 import ru.cache.vlad.yanchenko.Repository;
 import ru.cache.vlad.yanchenko.caches.RAMCache;
-import ru.cache.vlad.yanchenko.caches.WrongDirectoryException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -282,7 +281,7 @@ public class CacheProcessor {
 
         if (repository.isDetailedReport()) {
             repository.getLogger().info("Recaching has been done. Object in RAM "
-                    + "cache key=" + keyRAMCache + " has been moved to an HDD "
+                    + "cache key=" + keyRAMCache + " have been moved to an HDD "
                     + "cache. Object in HDD cache key=" + keyHDDCache + " has "
                     + "been moved to a RAM cache.");
             repository.getLogger().info("");

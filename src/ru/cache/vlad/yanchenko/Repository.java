@@ -5,7 +5,10 @@
  */
 package ru.cache.vlad.yanchenko;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Formatter;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -37,7 +40,7 @@ public class Repository {
     public static final int ENTRIES_NUMBER_DEFAULT = 25;
     public static final String FILE_PREFIX = "cache_file_";
     public static String filePrefix;
-    // File extention.
+    // File extension.
     public static final String FILE_EXTENTION = ".cache";
     public static String fileExtention;
     // Folder for a file that represents a level 2 cache (HDD cache)
@@ -68,7 +71,7 @@ public class Repository {
     // Checks if a detailed report to be shown in a log file.
     private boolean detailedReport = false;
     
-    // Defines if a testing of all the testing algorythms is done.
+    // Defines if a testing of all the testing algorithms is done.
     private boolean testing = false;
     
     // Singleton.
@@ -103,8 +106,8 @@ public class Repository {
 
     }
 
-        // Public method that always returns the same instance of repository.
-        public static Repository getInstance() {
+    // Public method that always returns the same instance of repository.
+    public static Repository getInstance() {
             if (repository == null) {
                 repository = new Repository();
             }
@@ -288,12 +291,12 @@ public class Repository {
 
     // Overriding an implementation of a standard formatter.
     // It's done to remove an excess information that is put to log.
-class MyFormatter extends SimpleFormatter {
-
-    // Changing a string that is going to be put to a log file.
-    @Override
-    public synchronized String format(LogRecord record) {
-        return record.getMessage() + System.getProperty("line.separator");
-    }
-
-}
+//class MyFormatter extends SimpleFormatter {
+//
+//    // Changing a string that is going to be put to a log file.
+//    @Override
+//    public synchronized String format(LogRecord record) {
+//        return record.getMessage() + System.getProperty("line.separator");
+//    }
+//
+//}

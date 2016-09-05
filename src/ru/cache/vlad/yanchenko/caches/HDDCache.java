@@ -17,7 +17,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,14 +48,14 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 //        mapFrequency = new LinkedHashMap();
         try {
             createFilesFolder(Repository.FILES_FOLDER);    // Makes a folder, when there is no such
-        } catch (WrongDirectoryException e) {
+        } catch (DirectoryException e) {
             e.printStackTrace();
         }
         clearCache();           // Clear a cache before run a caching loop
     }
 
-    // Cheking if a directory path have no special characters. These are :"\/|?<>
-    private boolean isPath (String path) throws WrongDirectoryException {
+    // Cheking if a directory path have no special characters, such as :"\/|?<>
+    private boolean isPath (String path) throws DirectoryException {
         Pattern p = Pattern.compile("[:<>|*/?]");
         Matcher m = p.matcher(path);
 //        System.out.println(path);
@@ -71,17 +70,17 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
      * Creating a folder (in case its absent) for a files that constitute an HDD
      * cache.
      */
-    private void createFilesFolder(String path) throws WrongDirectoryException {
+    private void createFilesFolder(String path) throws DirectoryException {
         File directory = new File(path);
         // Checking if a directory keep the real path on a disk.
         if (!isPath(path)) {
-            throw new WrongDirectoryException("\"" + path + "\"" +
+            throw new DirectoryException("\"" + path + "\"" +
                     " is not a valid pathname. Change and rerun an app. Program exits.",
                     repository.getLogger());
         }
         // Checking if directory exists.
         if (!directory.exists()) {
-            // And if not, make it
+            // And if not, make it.
             new File(path).mkdir();
         }
     }
