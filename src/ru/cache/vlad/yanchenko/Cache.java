@@ -19,7 +19,7 @@ public class Cache {
 
     private ru.cache.vlad.yanchenko.arguments.ProcessArguments processArguments;
     private CacheProcessor cacheProcessor;
-    private Testing test;
+    private ru.cache.vlad.yanchenko.test.Testing test;
     private Repository repository = Repository.getInstance();
 
     private Cache(String[] args) {
@@ -65,7 +65,7 @@ public class Cache {
         
         // Run a test, if a specific command line arguments says so.
         if (cache.repository.isTesting()) {
-            cache.test = new Testing();
+            cache.test = new ru.cache.vlad.yanchenko.test.Testing();
             cache.test.runTesting();
         // Else run a single cache algorithm.
         } else {
