@@ -4,6 +4,7 @@ import ru.cache.vlad.yanchenko.caches.DirectoryException;
 import ru.cache.vlad.yanchenko.caches.FileExtensionException;
 import ru.cache.vlad.yanchenko.caches.FilePrefixException;
 
+import java.io.File;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,5 +78,20 @@ public class ValidateLayout {
         }
         return fileExtension;
     }
+
+//    private void createFilesFolder(String path) throws DirectoryException {
+//        File directory = new File(path);
+//        // Checking if a directory keep the real path on a disk.
+//        if (!isPath(path)) {
+//            throw new DirectoryException("\"" + path + "\"" +
+//                    " is not a valid pathname. Change and rerun an app. Program exits.",
+//                    repository.getLogger());
+//        }
+//        // Checking if directory exists.
+//        if (!directory.exists()) {
+//            // And if not, make it.
+//            new File(path).mkdir();
+//        }
+//    }
 
 }
