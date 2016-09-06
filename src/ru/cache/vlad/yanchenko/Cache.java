@@ -6,6 +6,7 @@
 package ru.cache.vlad.yanchenko;
 
 import ru.cache.vlad.yanchenko.arguments.ValidateLayout;
+import ru.cache.vlad.yanchenko.arguments.ProcessArguments;
 import ru.cache.vlad.yanchenko.caches.DirectoryException;
 import ru.cache.vlad.yanchenko.caches.FileExtensionException;
 import ru.cache.vlad.yanchenko.caches.FilePrefixException;
@@ -17,14 +18,14 @@ import ru.cache.vlad.yanchenko.operating.CacheProcessor;
  */
 public class Cache {
 
-    private ru.cache.vlad.yanchenko.arguments.ProcessArguments processArguments;
+    private ProcessArguments processArguments;
     private CacheProcessor cacheProcessor;
     private Testing test;
     private Repository repository = Repository.getInstance();
 
     private Cache(String[] args) {
         // Processing command line arguments.
-        new ru.cache.vlad.yanchenko.arguments.ProcessArguments(repository).processArguments(args);
+        new ProcessArguments(repository).processArguments(args);
         // Validating some command line arguments.
         runValidation();
         cacheProcessor = CacheProcessor.getInstance();
