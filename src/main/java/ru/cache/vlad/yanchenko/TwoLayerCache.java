@@ -25,10 +25,16 @@ public class TwoLayerCache {
         mRepository = Repository.getInstance();
         // Processing command line arguments.
         CacheArgumentsProcessor argumentsProcessor =
-                new CacheArgumentsProcessor(mLogger, mRepository, new CacheArgumentsReader(mLogger, mRepository));
-        argumentsProcessor.processArguments(args);
+                new CacheArgumentsProcessor(mLogger, mRepository);
+        argumentsProcessor.processArguments(
+                new CacheArgumentsReader(mLogger, mRepository).readArguments(args)
+        );
         argumentsProcessor.validateArguments();
-        mCacheProcessor = CacheProcessor.getInstance(mLogger, mRepository, new CacheFeeder(mRepository.getEntriesNumber()));
+        mCacheProcessor = CacheProcessor.getInstance(
+                mLogger,
+                mRepository,
+                new CacheFeeder(mRepository.getEntriesNumber())
+        );
     }
 
     /**

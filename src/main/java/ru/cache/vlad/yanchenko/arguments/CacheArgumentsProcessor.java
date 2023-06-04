@@ -15,6 +15,7 @@ import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 
 import java.util.Locale;
 import java.util.Map;
+
 import org.apache.logging.log4j.Logger;
 
 import static ru.cache.vlad.yanchenko.Repository.cacheKindEnum.*;
@@ -28,21 +29,17 @@ public class CacheArgumentsProcessor {
 
     private final Logger mLogger;
     private final Repository mRepository;
-    private final CacheArgumentsReader mArgumentsReader;
 
     /**
      * Public constructor - creates an instance of class
      *
      * @param logger     logger to log the events
      * @param repository that holds a settings for program.
-     * @param argumentsReader   reads command line argument
      */
     public CacheArgumentsProcessor(@NonNull Logger logger,
-                                   @NonNull Repository repository,
-                                   @NonNull CacheArgumentsReader argumentsReader) {
+                                   @NonNull Repository repository) {
         mLogger = logger;
         mRepository = repository;
-        mArgumentsReader = argumentsReader;
     }
 
     /**
@@ -50,15 +47,14 @@ public class CacheArgumentsProcessor {
      *
      * @param args command line arguments
      */
-    public void processArguments(@NonNull String[] args) {
-        Map<String, String> arguments = mArgumentsReader.readArguments(args);
+    public void processArguments(@NonNull Map<String, String> args) {
         if (mRepository.isDetailedReport()) {
-            CacheLoggingUtils.printArgs(arguments);
+            CacheLoggingUtils.printArgs(args);
         }
-        processRamCacheSizeArgument(arguments);
-        processHddCacheSize(arguments);
-        processCacheKind(arguments);
-        processAccompanyingArguments(arguments);
+        processRamCacheSizeArgument(args);
+        processHddCacheSize(args);
+        processCacheKind(args);
+        processAccompanyingArguments(args);
     }
 
     /**
