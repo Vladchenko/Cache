@@ -13,6 +13,8 @@ public class CacheConstants {
     public static final int HDD_CACHE_ENTRIES_MINIMUM = 1;
     /** Number of entries to be fed to a cache processor. */
     public static final int ENTRIES_NUMBER_DEFAULT = 25;
+    /** Number of runs, cache pipeline is run. */
+    public static final int PIPELINE_RUNS_NUMBER_DEFAULT = 100;
     /** File prefix for files to be cached */
     public static final String FILE_PREFIX = "cache_file_";
     /** File extension for files to be cached */

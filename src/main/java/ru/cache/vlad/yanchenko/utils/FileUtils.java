@@ -1,4 +1,4 @@
-package ru.cache.vlad.yanchenko.arguments;
+package ru.cache.vlad.yanchenko.utils;
 
 import android.support.annotation.NonNull;
 import ru.cache.vlad.yanchenko.exceptions.DirectoryException;

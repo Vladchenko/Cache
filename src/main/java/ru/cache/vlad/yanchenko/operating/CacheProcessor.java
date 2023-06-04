@@ -6,16 +6,16 @@
 package ru.cache.vlad.yanchenko.operating;
 
 import android.support.annotation.NonNull;
-import ru.cache.vlad.yanchenko.caches.HDDCache;
-import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
+import org.apache.logging.log4j.Logger;
 import ru.cache.vlad.yanchenko.Repository;
-import ru.cache.vlad.yanchenko.caches.RAMCache;
+import ru.cache.vlad.yanchenko.caches.ICache;
+import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
-import org.apache.logging.log4j.Logger;
 
 /**
  * Class is in charge of an operations done while a caching process is running.
@@ -25,18 +25,22 @@ import org.apache.logging.log4j.Logger;
 public class CacheProcessor {
 
     private final Logger mLogger;
-    private final RAMCache mRamCache;
-    private final HDDCache mHddCache;
-    private final Repository mRepository;
+    private final ICache mRamCache;
+    private final ICache mHddCache;
     private final CacheFeeder mCacheFeeder;
+    private final Map<String, String> mArguments;
 
     private static CacheProcessor sCacheProcessor;
 
-    private CacheProcessor(@NonNull Logger logger, @NonNull Repository repository, @NonNull CacheFeeder cacheFeeder) {
+    private CacheProcessor(@NonNull Logger logger,
+                           @NonNull ICache ramCache,
+                           @NonNull ICache hddCache,
+                           @NonNull CacheFeeder cacheFeeder,
+                           @NonNull Map<String, String> arguments) throws IOException {
         mLogger = logger;
-        mRepository = repository;
-        mRamCache = new RAMCache(logger, repository);
-        mHddCache = new HDDCache(logger, repository);
+        mRamCache = ramCache;
+        mHddCache = hddCache;
+        mArguments = arguments;
         // Setting how many entries will a cacheFeeder have to request from a cacheProcessor.
         mCacheFeeder = cacheFeeder;
         populateCaches();
@@ -45,10 +49,12 @@ public class CacheProcessor {
     // Public method that always returns the same instance of repository.
     public static CacheProcessor getInstance(
             @NonNull Logger logger,
-            @NonNull Repository repository,
-            @NonNull CacheFeeder cacheFeeder) {
+            @NonNull ICache ramCache,
+            @NonNull ICache hddCache,
+            @NonNull CacheFeeder cacheFeeder,
+            @NonNull Map<String, String> arguments) throws IOException {
         if (sCacheProcessor == null) {
-            sCacheProcessor = new CacheProcessor(logger, repository, cacheFeeder);
+            sCacheProcessor = new CacheProcessor(logger, ramCache, hddCache, cacheFeeder, arguments);
         }
         return sCacheProcessor;
     }
@@ -59,54 +65,51 @@ public class CacheProcessor {
      * @param key to get cached-object by
      * @return cached-object
      */
-    public Object processRequest(@NonNull String key) {
+    public Object processRequest(@NonNull String key) throws IOException, ClassNotFoundException, NotPresentException {
 
-        // Data that is going to be retrieved on a CPU alleged request.
+        // Data that is going to be retrieved on an alleged request.
         Object obj = null;
 
-        if (mRepository.isDetailedReport()) {
+        if (Boolean.parseBoolean(mArguments.get("dr"))) {
             printCaches();
             mLogger.info(">>> Requested key=" + key);
         }
 
         // If RAM cache has a requested entry,
         if (mRamCache.hasCacheEntry(key)) {
-            if (mRepository.isDetailedReport()) {
+            if (Boolean.parseBoolean(mArguments.get("dr"))) {
                 mLogger.info("RAM cache hit, key=" + key);
-                mLogger.info("");
             }
             // return it to CPU.
-            mRepository.setHitsRAMCache(mRepository.getHitsRAMCache() + 1);
+            mRamCache.setCacheHits(mRamCache.getCacheHits() + 1);
             return mRamCache.getCacheEntry(key);
         } else {
             // RAM cache miss, 
-            mRepository.setMissesRAMCache(mRepository.getMissesRAMCache() + 1);
+            mRamCache.setCacheMisses(mRamCache.getCacheMisses() + 1);
+            mLogger.info("! No entry with key=" + key + " in RAM cache");
             try {
                 // trying to retrieve an entry from an HDD cache.
                 obj = mHddCache.getCacheEntry(key);
-                mRepository.setHitsHDDCache(mRepository.getHitsHDDCache() + 1);
-                if (mRepository.isDetailedReport()) {
+                mHddCache.setCacheHits(mHddCache.getCacheHits() + 1);
+                if (Boolean.parseBoolean(mArguments.get("dr"))) {
                     mLogger.info("HDD cache hit, key=" + key);
-                    mLogger.info("");
                 }
                 reCache(key);
                 return obj;
             } catch (NullPointerException | IOException | ClassNotFoundException ignored) {
-                mLogger.info("!!! No such entry in HDD cache (" + key + ")");
+                mLogger.info("! No entry with key=" + key + " in HDD cache");
             }
             // When both caches miss,
             if (obj == null) {
-                mRepository.setMissesHDDCache(mRepository.getMissesHDDCache() + 1);
+                mHddCache.setCacheMisses(mHddCache.getCacheMisses() + 1);
                 // if RAM cache is not full,
-                if (mRamCache.getSize() < mRepository.getRAMCacheEntriesNumber()) {
+                if (mRamCache.getSize() < mRamCache.getEntriesNumber()) {
                     // downloading a requested data from a mock source,
                     obj = mCacheFeeder.deliverObject(key);
                     // try adding a newly downloaded entry to a RAM cache.
                     mRamCache.addCacheEntry(key, obj);
-                    if (mRepository.isDetailedReport()) {
-                        mLogger.info("Cache miss. Entry with key="
-                                + key + " is added to a RAM cache.");
-                        mLogger.info("");
+                    if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                        mLogger.info("Entry with key=" + key + " is added to a RAM cache.");
                     }
                     return obj;
                 } else {    // RAM cache is full, it needs an eviction.
@@ -115,22 +118,20 @@ public class CacheProcessor {
                      * an HDD cache and if HDD cache is full, remove the least
                      * used one. Then write to a RAM cache a new entry.
                      */
-                    if (mRepository.isDetailedReport()) {
-                        mLogger.info("Cache miss. RAM cache is full, "
-                                + "performing an eviction.");
+                    if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                        mLogger.info("Both caches miss. RAM cache is full, performing an eviction.");
                     }
-                    if (mHddCache.getSize() < mRepository.getHDDCacheEntriesNumber()) {
+                    if (mHddCache.getSize() < mHddCache.getEntriesNumber()) {
                         // Getting the least used entry in a RAM cache.
-                        Object key_ = mRamCache.getLeastUsed(mRepository.getCacheKind());
+                        Object key_ = mRamCache.getLeastUsed(
+                                Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT)));
                         // Moving least used RAM entry to an HDD cache.
                         try {
                             mHddCache.addCacheEntry(key_, mRamCache.getCacheEntry(key_));
 //                            hddCache.getMapFrequency().put(key_, 0);
-                            if (mRepository.isDetailedReport()) {
-                                mLogger.info("An entry with key="
-                                        + key_ + " is moved to an HDD cache.");
-                                mLogger.info("Entry with key=" + key
-                                        + " is moved to a RAM cache.");
+                            if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                                mLogger.info("An entry with key=" + key_ + " is moved to an HDD cache.");
+                                mLogger.info("Entry with key=" + key + " is moved to a RAM cache.");
                                 mLogger.info("");
                             }
                             // Removing such entry from a RAM cache.
@@ -140,9 +141,8 @@ public class CacheProcessor {
                             // Adding a newly downloaded entry to a RAM cache.
                             mRamCache.addCacheEntry(key, obj);
                             return obj;
-                        } catch (IOException ex) {
-                            mLogger.info("!!! Some major trouble with " +
-                                    "displacement a least used and addition of a new entry.");
+                        } catch (IOException | NotPresentException ex) {
+                            mLogger.info("!!! Some major trouble with displacement a least used and addition of a new entry.");
                         }
                     } else {
                         /*
@@ -151,51 +151,46 @@ public class CacheProcessor {
                          * cache, then move the least used RAM cache entry to an HDD
                          * cache and write a new entry to RAM cache.
                          */
-                        if (mRepository.isDetailedReport()) {
-                            mLogger.info("");
-                            mLogger.info("HDD cache is full, "
-                                    + "removing a least used entry.");
+                        if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                            mLogger.info("HDD cache is full, removing a least used entry.");
                         }
                         // Getting the least used entry in an HDD cache 
-                        Object key_ = mHddCache.getLeastUsed(mRepository.getCacheKind());
+                        Object key_ = mHddCache.getLeastUsed(Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT)));
                         try {
                             // and removing this entry.
                             mHddCache.removeCacheEntry(key_);
-                            if (mRepository.isDetailedReport()) {
-                                mLogger.info("Entry with key=" + key_
-                                        + " is removed from an HDD cache. ");
+                            if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                                mLogger.info("Entry with key=" + key_ + " is removed from an HDD cache. ");
                             }
                         } catch (NotPresentException ex) {
                             mLogger.info("!!! HDD cache entry failed to be removed, it is absent.");
                         }
                         // Getting the least used entry in a RAM cache.
-                        key_ = mRamCache.getLeastUsed(mRepository.getCacheKind());
+                        key_ = mRamCache.getLeastUsed(Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT)));
                         try {
                             // Moving least used RAM entry to HDD cache.
                             mHddCache.addCacheEntry(key_, mRamCache.getCacheEntry(key_));
 //                            hddCache.getMapFrequency().put(key_, 0);
-                            if (mRepository.isDetailedReport()) {
+                            if (Boolean.parseBoolean(mArguments.get("dr"))) {
                                 mLogger.info("Least used entry in RAM"
                                         + " cache with key=" + key_
                                         + " is moved to an HDD cache. ");
                             }
                         } catch (IOException ex) {
-                            if (mRepository.isDetailedReport()) {
+                            if (Boolean.parseBoolean(mArguments.get("dr"))) {
                                 mLogger.info("!!! Cannot move to HDD cache"
                                         + " ! Disk drive might be corrupt.");
                             }
                         }
                         // Removing least used entry from a RAM cache.
                         mRamCache.removeCacheEntry(key_);
-                        if (mRepository.isDetailedReport()) {
-                            mLogger.info("Least used in RAM cache "
-                                    + "entry with key=" + key_ + " is removed.");
+                        if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                            mLogger.info("Least used RAM cache entry with key=" + key_ + " is removed.");
                         }
                         // Adding a newly downloaded entry to a RAM cache.
                         mRamCache.addCacheEntry(key, mCacheFeeder.deliverObject(key));
-                        if (mRepository.isDetailedReport()) {
-                            mLogger.info("New entry with key="
-                                    + key + " is added to a RAM cache.");
+                        if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                            mLogger.info("New entry with key=" + key + " is added to a RAM cache.");
                             mLogger.info("");
                         }
                     }
@@ -216,7 +211,7 @@ public class CacheProcessor {
      * cache, to a RAM cache.
      */
     private void reCache(@NonNull Object key) {
-        switch (mRepository.getCacheKind()) {
+        switch (Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
             case LFU -> {
                 /*
                  * If there was an HDD cache hit, then check if there is any
@@ -234,7 +229,7 @@ public class CacheProcessor {
                      *
                      * RAM cache - first key in a map; HDD cache - requested key;
                      */
-                    replaceEntries(mRamCache.getMapEntries().entrySet().iterator().
+                    replaceEntries(mRamCache.getCacheEntries().entrySet().iterator().
                             next().getKey(), key);
             case MRU ->
                     /*
@@ -281,7 +276,7 @@ public class CacheProcessor {
                     + "integrity is broken.");
         }
 
-        if (mRepository.isDetailedReport()) {
+        if (Boolean.parseBoolean(mArguments.get("dr"))) {
             mLogger.info("Recaching has been done. Object in RAM "
                     + "cache key=" + keyRAMCache + " have been moved to an HDD "
                     + "cache. Object in HDD cache key=" + keyHDDCache + " has "
@@ -296,28 +291,29 @@ public class CacheProcessor {
 //        if (ramCache.mapObjects instanceof LinkedHashMap) {
 //
 //        }
-        mLogger.info("--- RAM cache contents ---");
-        if (mRamCache.getMapEntries() != null) {
-            if (mRamCache.getMapEntries().size() == 0) {
+        mLogger.info("********    RAM cache contents    ********");
+        if (mRamCache.getCacheEntries() != null) {
+            if (mRamCache.getCacheEntries().size() == 0) {
                 mLogger.info("\tCache is empty");
             }
-            for (Map.Entry<Object, Object> entrySet : mRamCache.getMapEntries().entrySet()) {
+            for (Map.Entry<Object, Object> entrySet : mRamCache.getCacheEntries().entrySet()) {
                 Object key = entrySet.getKey();
                 Object value = entrySet.getValue();
-                mLogger.info("\tkey=" + key + ", value="
-                        + "Object@" + Integer.toHexString(
-                        System.identityHashCode(
-                                mRamCache.getMapEntries().get(key))));
+                mLogger.info("\tkey=" + key + ", value=" + "Object@"
+                                + Integer.toHexString(
+                                System.identityHashCode(
+                                        mRamCache.getCacheEntries().get(key))
+                        )
+                );
             }
-            mLogger.info("--- HDD cache contents ---");
-            if (mHddCache.getMapEntries().size() == 0) {
+            mLogger.info("********    HDD cache contents    ********");
+            if (mHddCache.getCacheEntries().size() == 0) {
                 mLogger.info("\tCache is empty");
             }
-            for (Map.Entry<Object, Object> entrySet : mHddCache.getMapEntries().entrySet()) {
+            for (Map.Entry<Object, Object> entrySet : mHddCache.getCacheEntries().entrySet()) {
                 Object key = entrySet.getKey();
                 Object value = entrySet.getValue();
-                mLogger.info("\tfile=" + ((String) value).
-                        split("[\\\\]+")[1]);
+                mLogger.info("\tkey=" + key + ", value=" + ((String) value).split("[\\\\]+")[1]);
             }
         }
     }
@@ -325,31 +321,29 @@ public class CacheProcessor {
     /**
      * Running a loop that simulates a process of retrieving / caching the data.
      */
-    public void performCachingProcess() {
+    public void performCachingProcess() throws NotPresentException, IOException, ClassNotFoundException {
         Object obj;
-        if (mRepository.isDetailedReport()) {
-            mLogger.info("\n\n<<<--- Data retrieval/caching "
-                    + "loop begun --->>>\n");
+        if (Boolean.parseBoolean(mArguments.get("dr"))) {
+            mLogger.info("\n\n<<<--- Data retrieval/caching loop begun --->>>\n");
         }
-        for (int i = 0; i < mRepository.getPipelineRunTimes(); i++) {
+        for (int i = 0; i < Integer.parseInt(mArguments.get("n")); i++) {
             obj = processRequest(mCacheFeeder.requestObject());
         }
-        CacheLoggingUtils.printSummary(mRepository);
+        CacheLoggingUtils.printSummary(mRamCache, mHddCache, mArguments);
     }
 
     // Populating caches before running a caching-retrieval process.
-    private void populateCaches() {
-        while (mRamCache.getSize() < mRepository.getRAMCacheEntriesNumber()) {
+    private void populateCaches() throws IOException {
+        while (mRamCache.getSize() < mRamCache.getEntriesNumber()) {
             mRamCache.addCacheEntry(mCacheFeeder.requestObject(),
                     mCacheFeeder.deliverObject(mCacheFeeder.requestObject()));
         }
-        while (mHddCache.getSize() < mRepository.getHDDCacheEntriesNumber()) {
+        while (mHddCache.getSize() < mHddCache.getEntriesNumber()) {
             try {
                 mHddCache.addCacheEntry(mCacheFeeder.requestObject(),
                         mCacheFeeder.deliverObject(mCacheFeeder.requestObject()));
             } catch (IOException ex) {
-                mLogger.info("Cannot populate HDD cache, some IO "
-                        + "problem.");
+                mLogger.info("Cannot populate HDD cache, some IO problem.");
             }
         }
         mLogger.info("Caches have been populated.");
@@ -360,14 +354,14 @@ public class CacheProcessor {
     /**
      * @return the ramCache
      */
-    public ru.cache.vlad.yanchenko.caches.RAMCache getRamCache() {
+    public ICache getRamCache() {
         return mRamCache;
     }
 
     /**
      * @return the hddCache
      */
-    public ru.cache.vlad.yanchenko.caches.HDDCache getHddCache() {
+    public ICache getHddCache() {
         return mHddCache;
     }
 

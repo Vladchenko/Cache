@@ -1,23 +1,14 @@
 package ru.cache.vlad.yanchenko.logging;
 
 import android.support.annotation.NonNull;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.builder.api.*;
-import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
-import ru.cache.vlad.yanchenko.Repository;
+import ru.cache.vlad.yanchenko.caches.ICache;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.Map;
-import java.util.logging.FileHandler;
 import java.util.logging.LogRecord;
-import java.util.logging.SimpleFormatter;;
+import java.util.logging.SimpleFormatter;
 
 /** Utils to log the caching events. */
 public class CacheLoggingUtils {
@@ -33,15 +24,17 @@ public class CacheLoggingUtils {
     }
     
     /** Writing a summary about a current caching process to a log file. */
-    public static void printSummary(@NonNull Repository repository) {
+    public static void printSummary(@NonNull ICache ramCache,
+                                    @NonNull ICache hddCache,
+                                    @NonNull Map<String, String> arguments) {
         sLogger.info("");
         sLogger.info("--- Summary ---------------------------------------");
-        sLogger.info("| Cache algorithm : " + repository.getCacheKind());
-        sLogger.info("| Pipeline ran for: " + repository.getPipelineRunTimes() + " times");
-        sLogger.info("| RAM cache hits  : " + repository.getHitsRAMCache() + " times");
-        sLogger.info("| HDD cache hits  : " + repository.getHitsHDDCache() + " times");
-        sLogger.info("| RAM cache misses: " + repository.getMissesRAMCache() + " times");
-        sLogger.info("| HDD cache misses: " + repository.getMissesHDDCache() + " times");
+        sLogger.info("| Cache algorithm : " + arguments.get("cachekind"));
+        sLogger.info("| Pipeline ran for: " + arguments.get("n") + " times");
+        sLogger.info("| RAM cache hits  : " + ramCache.getCacheHits() + " times");
+        sLogger.info("| HDD cache hits  : " + hddCache.getCacheHits() + " times");
+        sLogger.info("| RAM cache misses: " + ramCache.getCacheMisses() + " times");
+        sLogger.info("| HDD cache misses: " + hddCache.getCacheMisses() + " times");
         sLogger.info("---------------------------------------------------");
     }
 

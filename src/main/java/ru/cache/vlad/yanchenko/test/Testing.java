@@ -7,22 +7,25 @@ package ru.cache.vlad.yanchenko.test;
 
 import android.support.annotation.NonNull;
 import ru.cache.vlad.yanchenko.Repository;
+import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 import ru.cache.vlad.yanchenko.operating.CacheProcessor;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.logging.log4j.Logger;
 
 /**
  * Class runs a test on all the present cache algorithms.
- * 
+ *
  * @author v.yanchenko
  */
 public class Testing {
 
     private final Logger mLogger;
-    private final Repository mRepository;
+    private final Map<String, String> mArguments;
     // Map of objects that is going to be fed to a caching algorithm.
     private Map<Object, Object> mTestingObjects;
     private final CacheProcessor mCacheProcessor;
@@ -31,58 +34,64 @@ public class Testing {
      * Public constructor. Provides dependencies and creates an instance of a class.
      *
      * @param logger         to log a testing events
-     * @param repository     that holds a settings for program.
+     * @param arguments      from command line
      * @param cacheProcessor TODO
      */
-    public Testing(@NonNull Logger logger, @NonNull Repository repository, @NonNull CacheProcessor cacheProcessor) {
+    public Testing(@NonNull Logger logger, @NonNull Map<String, String> arguments, @NonNull CacheProcessor cacheProcessor) {
         mLogger = logger;
-        mRepository = repository;
+        mArguments = arguments;
         mTestingObjects = new HashMap<>();
         mCacheProcessor = cacheProcessor;
         // Populating a map for further using it as a template entry set for all the caching algorithms.
         mTestingObjects = cacheProcessor.getCacheFeeder().populateData();
     }
 
-    /** Runs a test on a several test algorithms. Process information is written to a log file. */
-    public void runTesting() {
-        
+    /**
+     * Runs a test on a several test algorithms. Process information is written to a log file.
+     */
+    public void runTesting() throws NotPresentException, IOException, ClassNotFoundException {
+
         // Putting all the entries from a testing map to a msp that's going to be fed to a caching algorithm.
         mCacheProcessor.getCacheFeeder().setMapObjectsFed(
                 mCacheProcessor.getCacheFeeder().copyData(
                         mTestingObjects));
-        
+
         // Putting all the entries from a testing msp to a map that's going to be fed to a caching algorithm.
         mCacheProcessor.getCacheFeeder().setMapObjectsFed(
                 mCacheProcessor.getCacheFeeder().copyData(
                         mTestingObjects));
-        
+
         // Setting a cache kind.
-        mRepository.setCacheKind(Repository.cacheKindEnum.LRU);
-        for (int i = 0; i < mRepository.getPipelineRunTimes(); i++) {
+        mArguments.put("cachekind", Repository.cacheKindEnum.LRU.toString());
+        for (int i = 0; i < Integer.parseInt(mArguments.get("n")); i++) {
             mCacheProcessor.processRequest(
                     mCacheProcessor.getCacheFeeder().requestObject());
         }
         // Printing a summary for a current caching process.
-        CacheLoggingUtils.printSummary(mRepository);
-        mCacheProcessor.getHddCache().clearCache();
+        CacheLoggingUtils.printSummary(mCacheProcessor.getRamCache(), mCacheProcessor.getHddCache(), mArguments);
         mCacheProcessor.getRamCache().clearCache();
-        mRepository.resetCachingInfo();
+        mCacheProcessor.getHddCache().clearCache();
+        mCacheProcessor.getRamCache().resetCacheStatistics();
+        mCacheProcessor.getHddCache().resetCacheStatistics();
         mLogger.info("");
         mLogger.info("");
-        
+
         // Putting all the entries from a testing msp to a map that's going to be fed to a caching algorithm.
         mCacheProcessor.getCacheFeeder().setMapObjectsFed(
                 mCacheProcessor.getCacheFeeder().copyData(
                         mTestingObjects));
-        
+
         // Setting a cache kind.
-        mRepository.setCacheKind(Repository.cacheKindEnum.MRU);
-        for (int i = 0; i < mRepository.getPipelineRunTimes(); i++) {
+        mArguments.put("cachekind", Repository.cacheKindEnum.MRU.toString());
+        for (int i = 0; i < Integer.parseInt(mArguments.get("n")); i++) {
             mCacheProcessor.processRequest(
                     mCacheProcessor.getCacheFeeder().requestObject());
         }
 
         // Printing a summary for a current caching process.
-        CacheLoggingUtils.printSummary(mRepository);
+        CacheLoggingUtils.printSummary(
+                mCacheProcessor.getRamCache(),
+                mCacheProcessor.getHddCache(),
+                mArguments);
     }
 }

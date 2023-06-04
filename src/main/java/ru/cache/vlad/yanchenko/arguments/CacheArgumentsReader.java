@@ -14,17 +14,14 @@ import java.util.Map;
 public class CacheArgumentsReader {
 
     private final Logger mLogger;
-    private final Repository mRepository;
 
     /**
      * Public constructor - creates an instance of class
      *
      * @param logger     logger to log the events
-     * @param repository that holds a settings for program.
      */
-    public CacheArgumentsReader(@NonNull Logger logger, @NonNull Repository repository) {
+    public CacheArgumentsReader(@NonNull Logger logger) {
         mLogger = logger;
-        mRepository = repository;
     }
 
     /**
@@ -43,13 +40,15 @@ public class CacheArgumentsReader {
             currentArg = arg.toLowerCase(Locale.ROOT);
             // Checking if a detailed report is enabled.
             if (currentArg.equals("dr")) {
-                mRepository.setDetailedReport(true);
+//                mRepository.setDetailedReport(true);
+                arguments.put("dr", "true");
                 mLogger.info("'detailed report' argument recognised");
                 continue;
             }
             // Checking if a testing is enabled.
             if (currentArg.equals("test")) {
-                mRepository.setTesting(true);
+//                mRepository.setTesting(true);
+                arguments.put("test", "true");
                 mLogger.info("'test' argument recognized");
                 continue;
             }

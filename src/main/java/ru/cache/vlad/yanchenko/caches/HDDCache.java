@@ -8,7 +8,7 @@ package ru.cache.vlad.yanchenko.caches;
 import android.support.annotation.NonNull;
 import ru.cache.vlad.yanchenko.CacheConstants;
 import ru.cache.vlad.yanchenko.Repository;
-import ru.cache.vlad.yanchenko.arguments.FileUtils;
+import ru.cache.vlad.yanchenko.utils.FileUtils;
 import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
 import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 
@@ -22,6 +22,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,22 +36,29 @@ import java.util.regex.Pattern;
 public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     private final Logger mLogger;
-    private final Repository mRepository;
+    private final Map<String, String> mArguments;
+
+    private int mCacheHits = 0;
+    private int mCacheMisses = 0;
+    // Number of entries to be present in cache.
+    private int mCacheEntriesNumber;
 
     /**
      * Create an instance of this class
      *
      * @param logger     to log the events
-     * @param repository that holds a settings for program.
+     * @param arguments  for define settings of a cache process
      */
-    public HDDCache(@NonNull Logger logger, @NonNull Repository repository) {
+    public HDDCache(@NonNull Logger logger, @NonNull Map<String, String> arguments) {
         mLogger = logger;
-        mRepository = repository;
-        switch (repository.getCacheKind()) {
-            case LFU, MRU -> mMapEntries = new HashMap<>();
-            case LRU -> mMapEntries = new LinkedHashMap<>();
+        mArguments = arguments;
+        mCacheEntriesNumber = Integer.parseInt(mArguments.get("l2s"));
+        switch (Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
+            case LFU, MRU -> mCacheEntries = new HashMap<>();
+            case LRU -> mCacheEntries = new LinkedHashMap<>();
         }
         try {
+            // TODO Move this file creation out
             FileUtils.createFilesFolder(CacheConstants.FILES_FOLDER);    // Makes a folder, when there is no such
         } catch (DirectoryException e) {
             e.printStackTrace();
@@ -62,11 +72,16 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         Matcher m = p.matcher(path);
         if (path.lastIndexOf('\\') != path.length() - 1) {
             path += "\\";
-            if (mRepository.isDetailedReport()) {
+            if (Boolean.parseBoolean(mArguments.get("dr"))) {
                 mLogger.info(path);
             }
         }
         return !m.find();
+    }
+
+    @Override
+    public Map<Object, Object> getCacheEntries() {
+        return mCacheEntries;
     }
 
     @Override
@@ -77,7 +92,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
                 file.delete();
             }
         }
-        mMapEntries.clear();
+        mCacheEntries.clear();
 //        mapFrequency.clear();
         mSize = 0;
     }
@@ -89,20 +104,20 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         FileInputStream fos;
         ObjectInputStream ous;
         // Serializing object
-        fos = new FileInputStream((String) mMapEntries.get(key));
+        fos = new FileInputStream((String) mCacheEntries.get(key));
         ous = new ObjectInputStream(fos);
         try {
             obj = ous.readObject();
             // Increasing a call count for this entry.
 //            mapFrequency.put(key, mapFrequency.get(key) + 1);
             mLastAccessedEntryKey = key;
-            switch (mRepository.getCacheKind()) {
+            switch (Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
                 case LFU -> {
                 }
                 case LRU -> {
-                    obj = mMapEntries.get(key);
-                    mMapEntries.remove(key);
-                    mMapEntries.put(key, obj);
+                    obj = mCacheEntries.get(key);
+                    mCacheEntries.remove(key);
+                    mCacheEntries.put(key, obj);
                 }
                 case MRU -> {
                     mLastAccessedEntryKey = key;
@@ -163,7 +178,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 //        cacheSize += file.length();
         mSize++;
 //        mapFrequency.put(key, 1);
-        mMapEntries.put(key, fullFileName);
+        mCacheEntries.put(key, fullFileName);
         mLastAccessedEntryKey = key;
     }
 
@@ -173,7 +188,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         if (file.exists()) {
             file.delete();
 //            mapFrequency.remove(key);
-            mMapEntries.remove(key);
+            mCacheEntries.remove(key);
         } else {
             throw new NotPresentException(file.getName(), mLogger);
         }
@@ -196,7 +211,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
             }
             case LRU -> {
                 // Getting the first key from a map of objects, since first is the one that was used least recently.
-                return mMapEntries.entrySet().iterator().next().getKey();
+                return mCacheEntries.entrySet().iterator().next().getKey();
             }
             case MRU -> {
                 return mLastAccessedEntryKey;
@@ -205,4 +220,63 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         return null;
     }
 
+    /**
+     * @return the hitsHDDCache
+     */
+    @Override
+    public int getCacheHits() {
+        return mCacheHits;
+    }
+
+    /**
+     * @param hitsHDDCache the hitsHDDCache to set
+     */
+    @Override
+    public void setCacheHits(int hitsHDDCache) {
+        mCacheHits = hitsHDDCache;
+    }
+
+    /**
+     * @return the missesHDDCache
+     */
+    @Override
+    public int getCacheMisses() {
+        return mCacheMisses;
+    }
+
+    /**
+     * @param missesHDDCache the missesHDDCache to set
+     */
+    @Override
+    public void setCacheMisses(int missesHDDCache) {
+        mCacheMisses = missesHDDCache;
+    }
+
+    /**
+     * TODO
+     * @return
+     */
+    @Override
+    public int getEntriesNumber() {
+        return mCacheEntriesNumber;
+    }
+
+    @Override
+    public void setEntriesNumber(int entriesNumber) {
+        mCacheEntriesNumber = entriesNumber;
+    }
+
+    @Override
+    public void resetCacheStatistics() {
+        mCacheMisses = 0;
+        mCacheHits = 0;
+    }
+
+    /**
+     * TODO
+     * @param hddCacheEntriesNumber
+     */
+    public void setHDDCacheEntriesNumber(int hddCacheEntriesNumber) {
+        mCacheEntriesNumber = hddCacheEntriesNumber;
+    }
 }

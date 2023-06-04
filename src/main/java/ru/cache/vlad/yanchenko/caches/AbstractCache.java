@@ -18,11 +18,7 @@ public abstract class AbstractCache implements ICache {
     // Reference to some object needed in a logic of an app.
     protected Object mTempObject;
     // Map that holds the keys to an entries that constitute a cache.
-    protected Map<Object, Object> mMapEntries;
-
-    public Map<Object, Object> getMapEntries() {
-        return mMapEntries;
-    }
+    protected Map<Object, Object> mCacheEntries;
 
 //    protected void setMapEntries(Map<Object, Object> mapEntries) {
 //        this.mapEntries = mapEntries;
@@ -45,7 +41,7 @@ public abstract class AbstractCache implements ICache {
     }
 
     public int getSize() {
-        return mMapEntries.size();
+        return mCacheEntries.size();
     }
 
     public void setSize(int size) {

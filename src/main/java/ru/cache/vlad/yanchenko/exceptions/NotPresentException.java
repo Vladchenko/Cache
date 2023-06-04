@@ -23,6 +23,6 @@ public class NotPresentException extends Exception {
      * @param logger  class to log this exception
      */
     public NotPresentException(@NonNull String message, @NonNull Logger logger) {
-        logger.info("\"" + message + "\"" + " is not a valid file prefix.");
+        logger.info("\"" + message + "\"" + " is not present in cache.");
     }
 }
