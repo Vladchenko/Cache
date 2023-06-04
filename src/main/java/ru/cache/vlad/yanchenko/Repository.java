@@ -12,21 +12,6 @@ package ru.cache.vlad.yanchenko;
  */
 public class Repository {
 
-    // Number of an entries that a cache can hold. This value is set, when a command line number is set in a wrong way.
-    public static final int RAM_CACHE_ENTRIES_DEFAULT = 10;
-    public static final int HDD_CACHE_ENTRIES_DEFAULT = 10;
-    // Minimum cache entries present in a cache.
-    public static final int RAM_CACHE_ENTRIES_MINIMUM = 1;
-    public static final int HDD_CACHE_ENTRIES_MINIMUM = 1;
-    //    public static final int RAM_CACHE_SIZE_DEFAULT = ;
-    //    public static final int HDD_CACHE_SIZE_DEFAULT;
-    // Number of entries to be fed to a cache processor.
-    public static final int ENTRIES_NUMBER_DEFAULT = 25;
-    public static final String FILE_PREFIX = "cache_file_";
-    public static final String FILE_EXTENSION = ".cache";
-    // Folder for a files that represents a 2nd level cache (HDD cache)
-    public static final String FILES_FOLDER = "Cache Data\\";
-
     // Number of hits to a RAM cache done during one caching process.
     private int mHitsRAMCache = 0;
     // Number of misses to a RAM cache done during one caching process.

@@ -6,6 +6,7 @@
 package ru.cache.vlad.yanchenko.caches;
 
 import android.support.annotation.NonNull;
+import ru.cache.vlad.yanchenko.CacheConstants;
 import ru.cache.vlad.yanchenko.Repository;
 import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
 import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
@@ -36,20 +37,18 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     /**
      * Create an instance of this class
      *
-     * @param logger to log the events
+     * @param logger     to log the events
      * @param repository that holds a settings for program.
      */
     public HDDCache(@NonNull Logger logger, @NonNull Repository repository) {
         mLogger = logger;
         mRepository = repository;
         switch (repository.getCacheKind()) {
-            case LFU, MRU ->
-                mMapEntries = new HashMap<>();
-            case LRU ->
-                mMapEntries = new LinkedHashMap<>();
+            case LFU, MRU -> mMapEntries = new HashMap<>();
+            case LRU -> mMapEntries = new LinkedHashMap<>();
         }
         try {
-            createFilesFolder(Repository.FILES_FOLDER);    // Makes a folder, when there is no such
+            createFilesFolder(CacheConstants.FILES_FOLDER);    // Makes a folder, when there is no such
         } catch (DirectoryException e) {
             e.printStackTrace();
         }
@@ -57,7 +56,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     }
 
     // Checking if a directory path has no special characters, such as :"\/|?<>
-    private boolean isPath (@NonNull String path) {
+    private boolean isPath(@NonNull String path) {
         Pattern p = Pattern.compile("[:<>|*/?]");
         Matcher m = p.matcher(path);
         if (path.lastIndexOf('\\') != path.length() - 1) {
@@ -85,7 +84,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     @Override
     public void clearCache() {
-        File dir = new File(Repository.FILES_FOLDER);
+        File dir = new File(CacheConstants.FILES_FOLDER);
         for (File file : dir.listFiles()) {
             if (!file.isDirectory()) {
                 file.delete();
@@ -111,7 +110,8 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 //            mapFrequency.put(key, mapFrequency.get(key) + 1);
             mLastAccessedEntryKey = key;
             switch (mRepository.getCacheKind()) {
-                case LFU -> { }
+                case LFU -> {
+                }
                 case LRU -> {
                     obj = mMapEntries.get(key);
                     mMapEntries.remove(key);
@@ -124,8 +124,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
             }
         } catch (ClassNotFoundException ex) {
             mLogger.info("Class not found !");
-        }
-        finally {
+        } finally {
             if (ous != null) {
                 try {
                     ous.close();
@@ -147,7 +146,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     // Saving file to disk.
     @Override
     public void addCacheEntry(@NonNull Object key, @NonNull Object obj) throws IOException {
-        String fullFileName = Repository.FILES_FOLDER + Repository.FILE_PREFIX + key + Repository.FILE_EXTENSION;
+        String fullFileName = CacheConstants.FILES_FOLDER + CacheConstants.FILE_PREFIX + key + CacheConstants.FILE_EXTENSION;
         FileOutputStream fos;
         ObjectOutputStream ous;
         // Deserializing object
@@ -157,8 +156,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
             ous.writeObject(obj);
         } catch (IOException ex) {
             mLogger.info("HDD cache entry addition is failed. Some disk trouble. Cache integrity is broken.");
-        }
-        finally {
+        } finally {
             if (ous != null) {
                 try {
                     ous.close();
@@ -184,7 +182,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     @Override
     public void removeCacheEntry(@NonNull Object key) throws NotPresentException {
-        File file = new File(Repository.FILES_FOLDER + Repository.FILE_PREFIX + key + Repository.FILE_EXTENSION);
+        File file = new File(CacheConstants.FILES_FOLDER + CacheConstants.FILE_PREFIX + key + CacheConstants.FILE_EXTENSION);
         if (file.exists()) {
             file.delete();
 //            mapFrequency.remove(key);
@@ -196,14 +194,19 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     @Override
     public boolean hasCacheEntry(@NonNull Object key) {
-        File file = new File(Repository.FILES_FOLDER + Repository.FILE_PREFIX + key + Repository.FILE_EXTENSION);
+        File file = new File(
+                CacheConstants.FILES_FOLDER
+                + CacheConstants.FILE_PREFIX
+                + key
+                + CacheConstants.FILE_EXTENSION);
         return file.exists();
     }
 
     @Override
     public Object getLeastUsed(@NonNull Repository.cacheKindEnum cacheKind) {
         switch (cacheKind) {
-            case LFU -> { }
+            case LFU -> {
+            }
             case LRU -> {
                 // Getting the first key from a map of objects, since first is the one that was used least recently.
                 return mMapEntries.entrySet().iterator().next().getKey();

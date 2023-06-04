@@ -6,6 +6,7 @@
 package ru.cache.vlad.yanchenko.arguments;
 
 import android.support.annotation.NonNull;
+import ru.cache.vlad.yanchenko.CacheConstants;
 import ru.cache.vlad.yanchenko.Repository;
 import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
 import ru.cache.vlad.yanchenko.exceptions.FileExtensionException;
@@ -59,21 +60,21 @@ public class ArgumentsProcessor {
     public void validateArguments() {
         FileUtils fileUtils = new FileUtils(mLogger);
         try {
-            fileUtils.validateFilePath(Repository.FILES_FOLDER);
+            fileUtils.validateFilePath(CacheConstants.FILES_FOLDER);
         } catch (DirectoryException e) {
-            mLogger.info(Repository.FILES_FOLDER + " is not a valid folder. Program exits.");
+            mLogger.info(CacheConstants.FILES_FOLDER + " is not a valid folder. Program exits.");
             System.exit(1);
         }
         try {
-            fileUtils.validateFilePrefix(Repository.FILE_PREFIX);
+            fileUtils.validateFilePrefix(CacheConstants.FILE_PREFIX);
         } catch (FilePrefixException e) {
-            mLogger.info(Repository.FILE_PREFIX + " is not a valid file prefix. Program exits.");
+            mLogger.info(CacheConstants.FILE_PREFIX + " is not a valid file prefix. Program exits.");
             System.exit(1);
         }
         try {
-            fileUtils.validateFileExtension(Repository.FILE_EXTENSION);
+            fileUtils.validateFileExtension(CacheConstants.FILE_EXTENSION);
         } catch (FileExtensionException e) {
-            mLogger.info(Repository.FILE_EXTENSION + " is not a valid file extension. Program exits.");
+            mLogger.info(CacheConstants.FILE_EXTENSION + " is not a valid file extension. Program exits.");
             System.exit(1);
         }
     }
@@ -116,13 +117,13 @@ public class ArgumentsProcessor {
         }
         try {
             mRepository.setRAMCacheEntriesNumber(Integer.parseInt(number));
-            if (mRepository.getRAMCacheEntriesNumber() < Repository.RAM_CACHE_ENTRIES_MINIMUM) {
+            if (mRepository.getRAMCacheEntriesNumber() < CacheConstants.RAM_CACHE_ENTRIES_MINIMUM) {
                 throw new NumberFormatException();
             }
             mLogger.info("Level 1 cache size is set to " + mRepository.getRAMCacheEntriesNumber());
         } catch (NumberFormatException nfe) {
-            mLogger.info("Level 1 cache size is not set, using default - " + Repository.RAM_CACHE_ENTRIES_DEFAULT);
-            mRepository.setRAMCacheEntriesNumber(Repository.RAM_CACHE_ENTRIES_DEFAULT);
+            mLogger.info("Level 1 cache size is not set, using default - " + CacheConstants.RAM_CACHE_ENTRIES_DEFAULT);
+            mRepository.setRAMCacheEntriesNumber(CacheConstants.RAM_CACHE_ENTRIES_DEFAULT);
         }
 
         // Processing arguments for level2 cache.
@@ -132,13 +133,13 @@ public class ArgumentsProcessor {
         }
         try {
             mRepository.setHDDCacheEntriesNumber(Integer.parseInt(number));
-            if (mRepository.getHDDCacheEntriesNumber() < Repository.HDD_CACHE_ENTRIES_MINIMUM) {
+            if (mRepository.getHDDCacheEntriesNumber() < CacheConstants.HDD_CACHE_ENTRIES_MINIMUM) {
                 throw new NumberFormatException();
             }
             mLogger.info("Level 2 cache size is set to " + mRepository.getHDDCacheEntriesNumber());
         } catch (NumberFormatException nfe) {
-            mLogger.info("Level 2 cache size is not set, using default - " + Repository.HDD_CACHE_ENTRIES_DEFAULT);
-            mRepository.setHDDCacheEntriesNumber(Repository.HDD_CACHE_ENTRIES_DEFAULT);
+            mLogger.info("Level 2 cache size is not set, using default - " + CacheConstants.HDD_CACHE_ENTRIES_DEFAULT);
+            mRepository.setHDDCacheEntriesNumber(CacheConstants.HDD_CACHE_ENTRIES_DEFAULT);
         }
     }
 
@@ -147,7 +148,6 @@ public class ArgumentsProcessor {
                 && arguments.get("ck") == null) {
             mLogger.info("Cache kind is not set, used default - Most Recently Used.");
             mRepository.setCacheKind(Repository.cacheKindEnum.MRU);
-//            repository.getLogger().info("");
         } else {
             String ck = arguments.get("cachekind");
             if (ck == null) {
@@ -183,9 +183,8 @@ public class ArgumentsProcessor {
             mRepository.setEntriesNumber(Integer.parseInt(arguments.get("m")));
             mLogger.info("Entries number is set to " + mRepository.getEntriesNumber());
         } catch (Exception nfe) {
-            mLogger.info("Entries number is not set, using default - "
-                    + Repository.ENTRIES_NUMBER_DEFAULT);
-            mRepository.setEntriesNumber(Repository.ENTRIES_NUMBER_DEFAULT);
+            mLogger.info("Entries number is not set, using default - " + CacheConstants.ENTRIES_NUMBER_DEFAULT);
+            mRepository.setEntriesNumber(CacheConstants.ENTRIES_NUMBER_DEFAULT);
         }
 
         if (mRepository.isDetailedReport()) {
