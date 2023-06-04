@@ -8,6 +8,7 @@ package ru.cache.vlad.yanchenko.caches;
 import android.support.annotation.NonNull;
 import ru.cache.vlad.yanchenko.CacheConstants;
 import ru.cache.vlad.yanchenko.Repository;
+import ru.cache.vlad.yanchenko.arguments.FileUtils;
 import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
 import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 
@@ -20,7 +21,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,7 +49,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
             case LRU -> mMapEntries = new LinkedHashMap<>();
         }
         try {
-            createFilesFolder(CacheConstants.FILES_FOLDER);    // Makes a folder, when there is no such
+            FileUtils.createFilesFolder(CacheConstants.FILES_FOLDER);    // Makes a folder, when there is no such
         } catch (DirectoryException e) {
             e.printStackTrace();
         }
@@ -61,25 +62,11 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         Matcher m = p.matcher(path);
         if (path.lastIndexOf('\\') != path.length() - 1) {
             path += "\\";
-            System.out.println(path);
+            if (mRepository.isDetailedReport()) {
+                mLogger.info(path);
+            }
         }
         return !m.find();
-    }
-
-    // Create a folder (in case its absent) for a files that constitute an HDD cache.
-    private void createFilesFolder(@NonNull String path) throws DirectoryException {
-        File directory = new File(path);
-        // Checking if a directory keep the real path on a disk.
-        if (!isPath(path)) {
-            throw new DirectoryException("\"" + path + "\"" +
-                    " is not a valid pathname. Change and rerun an app. Program exits.",
-                    mLogger);
-        }
-        // Checking if directory exists.
-        if (!directory.exists()) {
-            // And if not, make it.
-            new File(path).mkdir();
-        }
     }
 
     @Override

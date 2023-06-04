@@ -5,7 +5,9 @@ import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
 import ru.cache.vlad.yanchenko.exceptions.FileExtensionException;
 import ru.cache.vlad.yanchenko.exceptions.FilePrefixException;
 
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,7 +19,7 @@ import java.util.regex.Pattern;
 public class FileUtils {
 
     // Logging the operations.
-    private final Logger mLogger;
+    private static Logger sLogger;
     // To perform a check if a filename, extension or have any of these letters.
     private final String mFileSpecialCharacters = "[\\\\:<>|*/?]";
 
@@ -27,7 +29,7 @@ public class FileUtils {
      * @param logger to log cache operations
      */
     public FileUtils(@NonNull Logger logger) {
-        mLogger = logger;
+        sLogger = logger;
     }
 
     /**
@@ -41,19 +43,21 @@ public class FileUtils {
         String pathSpecialCharacters = "[:<>|*/?]";
         Pattern p = Pattern.compile(pathSpecialCharacters);
         Matcher m = p.matcher(path);
-        if (m.find()) { // Some special characters are present, thus ...
-            // Throwing an exception.
-            throw new DirectoryException("Folder path \"" + path + "\" has some special letters.", mLogger);
-//            // Make a files path to be of some valid value, say a current time.
-//            path = new GregorianCalendar().getTime().toString() + "\\";
-//            repository.getLogger().info("it is set to default " + path);
+        if (m.find()) {
+            // Some special characters are present, thus throw an exception.
+            throw new DirectoryException("Folder path \"" + path + "\" has some special letters.", sLogger);
         } else {
             // If filepath has no backslash at the end, add it.
             if (path.lastIndexOf('\\') != path.length() - 1) {
                 path += "\\";
-                System.out.println(path);
+                sLogger.info("Log file path is = " + path);
             }
         }
+    }
+
+    public static boolean isValidFilePath(@NonNull String path) {
+        File file = new File(path);
+        return (file.isFile());
     }
 
     /**
@@ -65,14 +69,11 @@ public class FileUtils {
     public void validateFilePrefix(@NonNull String filePrefix) throws FilePrefixException {
         Pattern p = Pattern.compile(mFileSpecialCharacters);
         Matcher m = p.matcher(filePrefix);
-        if (m.find()) { // Some special characters are present, thus ...
-            // Throwing an exception.
-            throw new FilePrefixException("File prefix \"" + filePrefix + "\" has some special letters.", mLogger);
-            // Make a folder named, some valid path, say a current time.
-//            filePrefix = "cache_file";
-//            repository.getLogger().info("It is set to default " + filePrefix);
+        if (m.find()) {
+            // Some special characters are present, thus throw an exception
+            throw new FilePrefixException("File prefix \"" + filePrefix + "\" has some special letters.", sLogger);
         } else {
-            mLogger.info("File prefix is set to: " + filePrefix);
+            sLogger.info("File prefix is set to: " + filePrefix);
         }
     }
 
@@ -87,28 +88,31 @@ public class FileUtils {
         Matcher m = p.matcher(fileExtension);
         if (m.find()) { // Some special characters are present, thus ...
             // Throwing an exception.
-            throw new FileExtensionException("File prefix \"" + fileExtension + "\" has some special letters.", mLogger);
+            throw new FileExtensionException("File prefix \"" + fileExtension + "\" has some special letters.", sLogger);
             // Make a folder named, some valid path, say a current time.
 //            filePrefix = "cache_file";
 //            repository.getLogger().info("It is set to default " + filePrefix);
         } else {
-            mLogger.info("File prefix is set to: " + fileExtension);
+            sLogger.info("File prefix is set to: " + fileExtension);
         }
     }
 
-//    private void createFilesFolder(String path) throws DirectoryException {
-//        File directory = new File(path);
-//        // Checking if a directory keep the real path on a disk.
-//        if (!isPath(path)) {
-//            throw new DirectoryException("\"" + path + "\"" +
-//                    " is not a valid pathname. Change and rerun an app. Program exits.",
-//                    repository.getLogger());
-//        }
-//        // Checking if directory exists.
-//        if (!directory.exists()) {
-//            // And if not, make it.
-//            new File(path).mkdir();
-//        }
-//    }
-
+    // Create a folder (in case its absent) for a files that constitute an HDD cache.
+    public static boolean createFilesFolder(@NonNull String path) throws DirectoryException {
+        File directory = new File(path);
+        // Checking if a directory keeps the real path on a disk.
+        if (!directory.isDirectory()) {
+            throw new DirectoryException(
+                    path + " is not a valid pathname. Change and rerun an app. Program exits.",
+                    sLogger);
+        }
+        // Checking if directory exists.
+        if (!directory.exists()) {
+            // And if not, make it.
+            return directory.mkdir();
+        } else {
+            sLogger.info("Directory already exists");
+        }
+        return false;
+    }
 }

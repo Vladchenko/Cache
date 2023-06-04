@@ -12,7 +12,7 @@ import ru.cache.vlad.yanchenko.operating.CacheProcessor;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Class runs a test on all the present cache algorithms.

@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  * In charge of an operations made with a RAM cache.

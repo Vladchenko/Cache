@@ -15,7 +15,7 @@ import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Class is in charge of an operations done while a caching process is running.
@@ -227,24 +227,24 @@ public class CacheProcessor {
                  */
             }
             case LRU ->
-                /*
-                 * If there was an HDD cache hit, then move this entry to a RAM
-                 * cache, and before that, define the least used one in a RAM
-                 * cache and move it back to HDD cache.
-                 *
-                 * RAM cache - first key in a map; HDD cache - requested key;
-                 */
-                replaceEntries(mRamCache.getMapEntries().entrySet().iterator().
-                        next().getKey(), key);
+                    /*
+                     * If there was an HDD cache hit, then move this entry to a RAM
+                     * cache, and before that, define the least used one in a RAM
+                     * cache and move it back to HDD cache.
+                     *
+                     * RAM cache - first key in a map; HDD cache - requested key;
+                     */
+                    replaceEntries(mRamCache.getMapEntries().entrySet().iterator().
+                            next().getKey(), key);
             case MRU ->
-                /*
-                 * If there was an HDD cache hit, then move this entry to a RAM
-                 * cache, and before that, define the least used one in a RAM
-                 * cache and move it back to HDD cache.
-                 *
-                 * RAM cache - keyLastAccessed; HDD cache - requested key;
-                 */
-                replaceEntries(mRamCache.getKeyLastAccessed(), key);
+                    /*
+                     * If there was an HDD cache hit, then move this entry to a RAM
+                     * cache, and before that, define the least used one in a RAM
+                     * cache and move it back to HDD cache.
+                     *
+                     * RAM cache - keyLastAccessed; HDD cache - requested key;
+                     */
+                    replaceEntries(mRamCache.getKeyLastAccessed(), key);
         }
     }
 

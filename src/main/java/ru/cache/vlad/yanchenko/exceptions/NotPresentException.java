@@ -7,7 +7,7 @@ package ru.cache.vlad.yanchenko.exceptions;
 
 import android.support.annotation.NonNull;
 
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Exception for cache entry not present in cache.

@@ -24,6 +24,7 @@ RAM cache - кэш первого уровня, HDD cache - он же кэш в�
 	m 	- Количество записей в выборке, из которых случайным образом запрашивается запись из кэша.
 
 TODO:
+        - Put all hardcodes to consts
         - Split methods into smaller ones
         - Several classes should be split, since S in SOLID breaks
         - Repository should be removed at all

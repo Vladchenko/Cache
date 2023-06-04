@@ -1,40 +1,35 @@
 package ru.cache.vlad.yanchenko.logging;
 
 import android.support.annotation.NonNull;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.builder.api.*;
+import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import ru.cache.vlad.yanchenko.Repository;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.Map;
-import java.util.logging.*;
+import java.util.logging.FileHandler;
+import java.util.logging.LogRecord;
+import java.util.logging.SimpleFormatter;;
 
 /** Utils to log the caching events. */
 public class CacheLoggingUtils {
 
     private static Logger sLogger;
-    private static final String LOGGER_NAME = "myLog";
 
     /** Get logger to log the events */
     public static Logger getLogger() {
         if  (sLogger == null) {
-            sLogger = Logger.getLogger(LOGGER_NAME);
-            sLogger.setUseParentHandlers(false);
-            setupLogging(sLogger);
-            Logger LOGGER = Logger.getLogger(CacheLoggingUtils.class.getName());
+            sLogger = LogManager.getLogger(CacheLoggingUtils.class);
         }
         return sLogger;
-    }
-
-    private static void setupLogging(@NonNull Logger logger) {
-        try {
-            FileHandler fileHandler = new FileHandler("Cache.log", 1000000, 1);
-//            ConsoleHandler fileHandler = new ConsoleHandler();
-            MyFormatter formatter = new MyFormatter();
-            fileHandler.setFormatter(formatter);
-            logger.addHandler(fileHandler);
-        } catch (IOException ex) {
-            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
     
     /** Writing a summary about a current caching process to a log file. */

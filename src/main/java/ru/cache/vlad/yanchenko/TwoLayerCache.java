@@ -1,12 +1,12 @@
 package ru.cache.vlad.yanchenko;
 
-import ru.cache.vlad.yanchenko.arguments.ArgumentsProcessor;
+import org.apache.logging.log4j.Logger;
+import ru.cache.vlad.yanchenko.arguments.CacheArgumentsProcessor;
+import ru.cache.vlad.yanchenko.arguments.CacheArgumentsReader;
 import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 import ru.cache.vlad.yanchenko.operating.CacheFeeder;
 import ru.cache.vlad.yanchenko.operating.CacheProcessor;
 import ru.cache.vlad.yanchenko.test.Testing;
-
-import java.util.logging.Logger;
 
 /**
  * Entry point class.
@@ -24,7 +24,8 @@ public class TwoLayerCache {
         mLogger = CacheLoggingUtils.getLogger();
         mRepository = Repository.getInstance();
         // Processing command line arguments.
-        ArgumentsProcessor argumentsProcessor = new ArgumentsProcessor(mLogger, mRepository);
+        CacheArgumentsProcessor argumentsProcessor =
+                new CacheArgumentsProcessor(mLogger, mRepository, new CacheArgumentsReader(mLogger, mRepository));
         argumentsProcessor.processArguments(args);
         argumentsProcessor.validateArguments();
         mCacheProcessor = CacheProcessor.getInstance(mLogger, mRepository, new CacheFeeder(mRepository.getEntriesNumber()));

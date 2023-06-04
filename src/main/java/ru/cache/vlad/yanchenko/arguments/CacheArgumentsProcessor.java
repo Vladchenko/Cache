@@ -13,29 +13,36 @@ import ru.cache.vlad.yanchenko.exceptions.FileExtensionException;
 import ru.cache.vlad.yanchenko.exceptions.FilePrefixException;
 import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 
-import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Logger;
+
+import static ru.cache.vlad.yanchenko.Repository.cacheKindEnum.*;
 
 /**
  * Command line arguments processor.
  *
  * @author v.yanchenko
  */
-public class ArgumentsProcessor {
+public class CacheArgumentsProcessor {
 
     private final Logger mLogger;
     private final Repository mRepository;
+    private final CacheArgumentsReader mArgumentsReader;
 
     /**
      * Public constructor - creates an instance of class
      *
      * @param logger     logger to log the events
      * @param repository that holds a settings for program.
+     * @param argumentsReader   reads command line argument
      */
-    public ArgumentsProcessor(@NonNull Logger logger, @NonNull Repository repository) {
+    public CacheArgumentsProcessor(@NonNull Logger logger,
+                                   @NonNull Repository repository,
+                                   @NonNull CacheArgumentsReader argumentsReader) {
         mLogger = logger;
         mRepository = repository;
+        mArgumentsReader = argumentsReader;
     }
 
     /**
@@ -44,11 +51,12 @@ public class ArgumentsProcessor {
      * @param args command line arguments
      */
     public void processArguments(@NonNull String[] args) {
-        Map<String, String> arguments = readArguments(args);
+        Map<String, String> arguments = mArgumentsReader.readArguments(args);
         if (mRepository.isDetailedReport()) {
             CacheLoggingUtils.printArgs(arguments);
         }
-        processCachesSizes(arguments);
+        processRamCacheSizeArgument(arguments);
+        processHddCacheSize(arguments);
         processCacheKind(arguments);
         processAccompanyingArguments(arguments);
     }
@@ -79,44 +87,17 @@ public class ArgumentsProcessor {
         }
     }
 
-    // Reading arguments entered from command line.
-    private Map<String, String> readArguments(@NonNull String[] args) {
-        // Delimiter that separates key from value in an entry.
-        String delimiters = "[=]+";    // Use = as a delimiter
-        // Map that represents "key=argument" entries, like (n=50).
-        Map<String, String> arguments = new HashMap<>();
-        for (String arg : args) {
-            // Checking if a detailed report is enabled.
-            if (arg.equals("dr")) {
-                mRepository.setDetailedReport(true);
-            }
-            // Checking if a testing is enabled.
-            if (arg.equals("test")) {
-                mRepository.setTesting(true);
-            }
-            String[] map = arg.split(delimiters);
-            try {
-                if (!map[0].isEmpty()) {
-                    arguments.put(map[0].toLowerCase(), map[1].toLowerCase());
-                }
-            } catch (Exception ex) {
-                mLogger.info("Some wrong argument present, check it.");
-            }
-        }
-        return arguments;
-    }
-
-    private void processCachesSizes(@NonNull Map<String, String> arguments) {
-
-        String number = "";
-
-        // Processing arguments for level1 cache.
+    private void processRamCacheSizeArgument(Map<String, String> arguments) {
+        String cacheSize;
         if (arguments.containsKey("level1size")
                 || arguments.containsKey("l1s")) {
-            number = arguments.get("level1size");
+            cacheSize = arguments.get("level1size");
+        } else {
+            mRepository.setRAMCacheEntriesNumber(CacheConstants.RAM_CACHE_ENTRIES_DEFAULT);
+            return;
         }
         try {
-            mRepository.setRAMCacheEntriesNumber(Integer.parseInt(number));
+            mRepository.setRAMCacheEntriesNumber(Integer.parseInt(cacheSize));
             if (mRepository.getRAMCacheEntriesNumber() < CacheConstants.RAM_CACHE_ENTRIES_MINIMUM) {
                 throw new NumberFormatException();
             }
@@ -125,14 +106,19 @@ public class ArgumentsProcessor {
             mLogger.info("Level 1 cache size is not set, using default - " + CacheConstants.RAM_CACHE_ENTRIES_DEFAULT);
             mRepository.setRAMCacheEntriesNumber(CacheConstants.RAM_CACHE_ENTRIES_DEFAULT);
         }
+    }
 
-        // Processing arguments for level2 cache.
+    private void processHddCacheSize(Map<String, String> arguments) {
+        String cacheSize;
         if (arguments.containsKey("level2size")
                 || arguments.containsKey("l2s")) {
-            number = arguments.get("level2size");
+            cacheSize = arguments.get("level2size");
+        } else {
+            mRepository.setHDDCacheEntriesNumber(CacheConstants.HDD_CACHE_ENTRIES_DEFAULT);
+            return;
         }
         try {
-            mRepository.setHDDCacheEntriesNumber(Integer.parseInt(number));
+            mRepository.setHDDCacheEntriesNumber(Integer.parseInt(cacheSize));
             if (mRepository.getHDDCacheEntriesNumber() < CacheConstants.HDD_CACHE_ENTRIES_MINIMUM) {
                 throw new NumberFormatException();
             }
@@ -147,28 +133,16 @@ public class ArgumentsProcessor {
         if (arguments.get("cachekind") == null
                 && arguments.get("ck") == null) {
             mLogger.info("Cache kind is not set, used default - Most Recently Used.");
-            mRepository.setCacheKind(Repository.cacheKindEnum.MRU);
+            mRepository.setCacheKind(MRU);
         } else {
             String ck = arguments.get("cachekind");
             if (ck == null) {
                 ck = arguments.get("ck");
             }
-            switch (ck) {
-                case "lfu": { }
-                case "LFU": {
-                    mRepository.setCacheKind(Repository.cacheKindEnum.LFU);
-                    break;
-                }
-                case "lru": { }
-                case "LRU": {
-                    mRepository.setCacheKind(Repository.cacheKindEnum.LRU);
-                    break;
-                }
-                case "mru": { }
-                case "MRU": {
-                    mRepository.setCacheKind(Repository.cacheKindEnum.MRU);
-                    break;
-                }
+            switch (valueOf(ck.toUpperCase(Locale.ROOT))) {
+                case LFU -> mRepository.setCacheKind(LFU);
+                case LRU -> mRepository.setCacheKind(LRU);
+                case MRU -> mRepository.setCacheKind(MRU);
             }
             mLogger.info("cacheKind is set to - " + mRepository.getCacheKind());
         }
@@ -201,7 +175,7 @@ public class ArgumentsProcessor {
         } catch (Exception ex) {
             mLogger.info("Cache process run times is not set, " + "using default - "
                     + mRepository.getPipelineRunTimes());
-            mRepository.setCacheKind(Repository.cacheKindEnum.MRU);
+            mRepository.setCacheKind(MRU);
         }
 
         mLogger.info("");
