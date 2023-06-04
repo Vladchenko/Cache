@@ -5,11 +5,13 @@
  */
 package ru.cache.vlad.yanchenko.caches;
 
+import android.support.annotation.NonNull;
 import ru.cache.vlad.yanchenko.Repository;
+import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
+import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -17,35 +19,35 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
  * In charge of an operations made with a RAM cache.
  *
  * @author v.yanchenko
  */
 public class HDDCache extends AbstractCache implements Serializable, ICache {
 
-    public static Repository repository = Repository.getInstance();
+    private final Logger mLogger;
+    private final Repository mRepository;
 
-    public HDDCache() {
+    /**
+     * Create an instance of this class
+     *
+     * @param logger to log the events
+     * @param repository that holds a settings for program.
+     */
+    public HDDCache(@NonNull Logger logger, @NonNull Repository repository) {
+        mLogger = logger;
+        mRepository = repository;
         switch (repository.getCacheKind()) {
-            case LFU: {
-                mapEntries = new HashMap();
-                break;
-            }
-            case LRU: {
-                mapEntries = new LinkedHashMap();
-                break;
-            }
-            case MRU: {
-                mapEntries = new HashMap();
-                break;
-            }
+            case LFU, MRU ->
+                mMapEntries = new HashMap<>();
+            case LRU ->
+                mMapEntries = new LinkedHashMap<>();
         }
-//        mapFrequency = new LinkedHashMap();
         try {
             createFilesFolder(Repository.FILES_FOLDER);    // Makes a folder, when there is no such
         } catch (DirectoryException e) {
@@ -54,11 +56,10 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         clearCache();           // Clear a cache before run a caching loop
     }
 
-    // Cheking if a directory path have no special characters, such as :"\/|?<>
-    private boolean isPath (String path) throws DirectoryException {
+    // Checking if a directory path has no special characters, such as :"\/|?<>
+    private boolean isPath (@NonNull String path) {
         Pattern p = Pattern.compile("[:<>|*/?]");
         Matcher m = p.matcher(path);
-//        System.out.println(path);
         if (path.lastIndexOf('\\') != path.length() - 1) {
             path += "\\";
             System.out.println(path);
@@ -66,17 +67,14 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         return !m.find();
     }
 
-    /**
-     * Creating a folder (in case its absent) for a files that constitute an HDD
-     * cache.
-     */
-    private void createFilesFolder(String path) throws DirectoryException {
+    // Create a folder (in case its absent) for a files that constitute an HDD cache.
+    private void createFilesFolder(@NonNull String path) throws DirectoryException {
         File directory = new File(path);
         // Checking if a directory keep the real path on a disk.
         if (!isPath(path)) {
             throw new DirectoryException("\"" + path + "\"" +
                     " is not a valid pathname. Change and rerun an app. Program exits.",
-                    repository.getLogger());
+                    mLogger);
         }
         // Checking if directory exists.
         if (!directory.exists()) {
@@ -93,57 +91,53 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
                 file.delete();
             }
         }
-        mapEntries.clear();
+        mMapEntries.clear();
 //        mapFrequency.clear();
-        size = 0;
+        mSize = 0;
     }
 
     // Uploading file to RAM.
     @Override
-    public Object getObject(Object key) throws IOException,
-            FileNotFoundException, ClassNotFoundException {
+    public Object getCacheEntry(@NonNull Object key) throws IOException, ClassNotFoundException {
         Object obj = null;
-        FileInputStream fos = null;
-        ObjectInputStream ous = null;
+        FileInputStream fos;
+        ObjectInputStream ous;
         // Serializing object
-        fos = new FileInputStream((String) mapEntries.get(key));
+        fos = new FileInputStream((String) mMapEntries.get(key));
         ous = new ObjectInputStream(fos);
         try {
             obj = ous.readObject();
             // Increasing a call count for this entry.
 //            mapFrequency.put(key, mapFrequency.get(key) + 1);
-            keyLastAccessed = key;
-            switch (repository.getCacheKind()) {
-                case LFU: {
-                    break;
+            mLastAccessedEntryKey = key;
+            switch (mRepository.getCacheKind()) {
+                case LFU -> { }
+                case LRU -> {
+                    obj = mMapEntries.get(key);
+                    mMapEntries.remove(key);
+                    mMapEntries.put(key, obj);
                 }
-                case LRU: {
-                    obj = mapEntries.get(key);
-                    mapEntries.remove(key);
-                    mapEntries.put(key, obj);
-                    break;
-                }
-                case MRU: {
-                    keyLastAccessed = key;
-                    return keyLastAccessed;
+                case MRU -> {
+                    mLastAccessedEntryKey = key;
+                    return mLastAccessedEntryKey;
                 }
             }
         } catch (ClassNotFoundException ex) {
-            repository.getLogger().info("Class not found !");
+            mLogger.info("Class not found !");
         }
         finally {
             if (ous != null) {
                 try {
                     ous.close();
                 } catch (Exception ex) {
-                    repository.getLogger().info("HDDCache object read stream failed to close !");
+                    mLogger.info("HDDCache object read stream failed to close !");
                 }
             }
             if (fos != null) {
                 try {
                     fos.close();
                 } catch (Exception ex) {
-                    repository.getLogger().info("HDDCache file read stream failed to close !");
+                    mLogger.info("HDDCache file read stream failed to close !");
                 }
             }
         }
@@ -152,81 +146,70 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     // Saving file to disk.
     @Override
-    public void addObject(Object key, Object obj) throws IOException,
-            FileNotFoundException {
-        String fullFileName = Repository.FILES_FOLDER
-                + Repository.FILE_PREFIX + key + Repository.FILE_EXTENTION;
-        FileOutputStream fos = null;
-        ObjectOutputStream ous = null;
+    public void addCacheEntry(@NonNull Object key, @NonNull Object obj) throws IOException {
+        String fullFileName = Repository.FILES_FOLDER + Repository.FILE_PREFIX + key + Repository.FILE_EXTENSION;
+        FileOutputStream fos;
+        ObjectOutputStream ous;
         // Deserializing object
         fos = new FileOutputStream(fullFileName);
         ous = new ObjectOutputStream(fos);
         try {
             ous.writeObject(obj);
         } catch (IOException ex) {
-            repository.getLogger().info("HDD cache entry addition is failed. " +
-                    "Some disk trouble. Cache integrity is broken.");
+            mLogger.info("HDD cache entry addition is failed. Some disk trouble. Cache integrity is broken.");
         }
         finally {
             if (ous != null) {
                 try {
                     ous.close();
                 } catch (Exception ex) {
-                    repository.getLogger().info("HDDCache object write stream failed to close !");
+                    mLogger.info("HDDCache object write stream failed to close !");
                 }
             }
             if (fos != null) {
                 try {
                     fos.close();
                 } catch (Exception ex) {
-                    repository.getLogger().info("HDDCache file write stream failed to close !");
+                    mLogger.info("HDDCache file write stream failed to close !");
                 }
             }
         }
 //        File file = new File(fullFileName);
 //        cacheSize += file.length();
-        size++;
+        mSize++;
 //        mapFrequency.put(key, 1);
-        mapEntries.put(key, fullFileName);
-        keyLastAccessed = key;
+        mMapEntries.put(key, fullFileName);
+        mLastAccessedEntryKey = key;
     }
 
     @Override
-    public void removeObject(Object key) throws NotPresentException {
-        File file = new File(Repository.FILES_FOLDER
-                + Repository.FILE_PREFIX + key + Repository.FILE_EXTENTION);
+    public void removeCacheEntry(@NonNull Object key) throws NotPresentException {
+        File file = new File(Repository.FILES_FOLDER + Repository.FILE_PREFIX + key + Repository.FILE_EXTENSION);
         if (file.exists()) {
             file.delete();
 //            mapFrequency.remove(key);
-            mapEntries.remove(key);
+            mMapEntries.remove(key);
         } else {
-            throw new NotPresentException();
+            throw new NotPresentException(file.getName(), mLogger);
         }
     }
 
     @Override
-    public boolean hasObject(Object key) {
-        File file = new File(Repository.FILES_FOLDER
-                + Repository.FILE_PREFIX + key + Repository.FILE_EXTENTION);
+    public boolean hasCacheEntry(@NonNull Object key) {
+        File file = new File(Repository.FILES_FOLDER + Repository.FILE_PREFIX + key + Repository.FILE_EXTENSION);
         return file.exists();
     }
 
     @Override
-    public Object getLeastUsed(Repository.cacheKindEnum cacheKind) {
-//        return mapFrequency.lastKey();
+    public Object getLeastUsed(@NonNull Repository.cacheKindEnum cacheKind) {
         switch (cacheKind) {
-            case LFU: {
-                break;
+            case LFU -> { }
+            case LRU -> {
+                // Getting the first key from a map of objects, since first is the one that was used least recently.
+                return mMapEntries.entrySet().iterator().next().getKey();
             }
-            case LRU: {
-                /**
-                 * Getting the first key from a map of objects, since first is
-                 * the one that was used least recently.
-                 */
-                return mapEntries.entrySet().iterator().next().getKey();
-            }
-            case MRU: {
-                return keyLastAccessed;
+            case MRU -> {
+                return mLastAccessedEntryKey;
             }
         }
         return null;

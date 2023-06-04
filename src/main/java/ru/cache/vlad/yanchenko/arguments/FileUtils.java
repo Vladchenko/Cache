@@ -1,39 +1,49 @@
 package ru.cache.vlad.yanchenko.arguments;
 
-import ru.cache.vlad.yanchenko.caches.DirectoryException;
-import ru.cache.vlad.yanchenko.caches.FileExtensionException;
-import ru.cache.vlad.yanchenko.caches.FilePrefixException;
+import android.support.annotation.NonNull;
+import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
+import ru.cache.vlad.yanchenko.exceptions.FileExtensionException;
+import ru.cache.vlad.yanchenko.exceptions.FilePrefixException;
 
-import java.io.File;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Checking validity of all the fields in the application.
- *
+ * <p>
  * Created by v.yanchenko on 02.09.2016.
  */
-public class ValidateLayout {
+public class FileUtils {
 
-    // To perform a check if a path is to have any of these letters.
-    private String pathSpecialCharacters = "[:<>|*/?]";
-    // To perform a check if a filename, extension or have any of these letters.
-    private String fileSpecialCharacters = "[\\\\:<>|*/?]";
     // Logging the operations.
-    private Logger logger;
+    private final Logger mLogger;
+    // To perform a check if a filename, extension or have any of these letters.
+    private final String mFileSpecialCharacters = "[\\\\:<>|*/?]";
 
-    public ValidateLayout(Logger logger) {
-        this.logger = logger;
+    /**
+     * Creates an instance of class
+     *
+     * @param logger to log cache operations
+     */
+    public FileUtils(@NonNull Logger logger) {
+        mLogger = logger;
     }
 
-    public String validatePath(String path) throws DirectoryException {
+    /**
+     * Validate file path.
+     *
+     * @param path to be validated
+     * @throws DirectoryException, when a file path is not valid
+     */
+    public void validateFilePath(@NonNull String path) throws DirectoryException {
+        // To perform a check if a path is to have any of these letters.
+        String pathSpecialCharacters = "[:<>|*/?]";
         Pattern p = Pattern.compile(pathSpecialCharacters);
         Matcher m = p.matcher(path);
         if (m.find()) { // Some special characters are present, thus ...
             // Throwing an exception.
-            throw new DirectoryException("Folder path \"" + path
-                    + "\" has some special letters.",logger);
+            throw new DirectoryException("Folder path \"" + path + "\" has some special letters.", mLogger);
 //            // Make a files path to be of some valid value, say a current time.
 //            path = new GregorianCalendar().getTime().toString() + "\\";
 //            repository.getLogger().info("it is set to default " + path);
@@ -44,39 +54,46 @@ public class ValidateLayout {
                 System.out.println(path);
             }
         }
-        return path;
     }
 
-    public String validateFilePrefix(String filePrefix) throws FilePrefixException {
-        Pattern p = Pattern.compile(fileSpecialCharacters);
+    /**
+     * Validate file prefix.
+     *
+     * @param filePrefix to be validated
+     * @throws FilePrefixException, when a file prefix is not valid
+     */
+    public void validateFilePrefix(@NonNull String filePrefix) throws FilePrefixException {
+        Pattern p = Pattern.compile(mFileSpecialCharacters);
         Matcher m = p.matcher(filePrefix);
         if (m.find()) { // Some special characters are present, thus ...
             // Throwing an exception.
-            throw new FilePrefixException("File prefix \"" + filePrefix
-                    + "\" has some special letters.", logger);
+            throw new FilePrefixException("File prefix \"" + filePrefix + "\" has some special letters.", mLogger);
             // Make a folder named, some valid path, say a current time.
 //            filePrefix = "cache_file";
 //            repository.getLogger().info("It is set to default " + filePrefix);
         } else {
-            logger.info("File prefix is set to: " + filePrefix);
+            mLogger.info("File prefix is set to: " + filePrefix);
         }
-        return filePrefix;
     }
 
-    public String validateFileExtension(String fileExtension) throws FileExtensionException {
-        Pattern p = Pattern.compile(fileSpecialCharacters);
+    /**
+     * Validate file extension.
+     *
+     * @param fileExtension to be validated
+     * @throws FileExtensionException, when a file extension is not valid
+     */
+    public void validateFileExtension(@NonNull String fileExtension) throws FileExtensionException {
+        Pattern p = Pattern.compile(mFileSpecialCharacters);
         Matcher m = p.matcher(fileExtension);
         if (m.find()) { // Some special characters are present, thus ...
             // Throwing an exception.
-            throw new FileExtensionException("File prefix \"" + fileExtension
-                    + "\" has some special letters.", logger);
+            throw new FileExtensionException("File prefix \"" + fileExtension + "\" has some special letters.", mLogger);
             // Make a folder named, some valid path, say a current time.
 //            filePrefix = "cache_file";
 //            repository.getLogger().info("It is set to default " + filePrefix);
         } else {
-            logger.info("File prefix is set to: " + fileExtension);
+            mLogger.info("File prefix is set to: " + fileExtension);
         }
-        return fileExtension;
     }
 
 //    private void createFilesFolder(String path) throws DirectoryException {
