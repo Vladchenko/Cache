@@ -19,12 +19,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.nio.file.Files;
+import java.util.*;
+
 import org.apache.logging.log4j.Logger;
 
-import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,8 +45,8 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     /**
      * Create an instance of this class
      *
-     * @param logger     to log the events
-     * @param arguments  for define settings of a cache process
+     * @param logger    to log the events
+     * @param arguments for define settings of a cache process
      */
     public HDDCache(@NonNull Logger logger, @NonNull Map<String, String> arguments) {
         mLogger = logger;
@@ -57,26 +56,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
             case LFU, MRU -> mCacheEntries = new HashMap<>();
             case LRU -> mCacheEntries = new LinkedHashMap<>();
         }
-        try {
-            // TODO Move this file creation out
-            FileUtils.createFilesFolder(CacheConstants.FILES_FOLDER);    // Makes a folder, when there is no such
-        } catch (DirectoryException e) {
-            e.printStackTrace();
-        }
         clearCache();           // Clear a cache before run a caching loop
-    }
-
-    // Checking if a directory path has no special characters, such as :"\/|?<>
-    private boolean isPath(@NonNull String path) {
-        Pattern p = Pattern.compile("[:<>|*/?]");
-        Matcher m = p.matcher(path);
-        if (path.lastIndexOf('\\') != path.length() - 1) {
-            path += "\\";
-            if (Boolean.parseBoolean(mArguments.get("dr"))) {
-                mLogger.info(path);
-            }
-        }
-        return !m.find();
     }
 
     @Override
@@ -86,10 +66,17 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     @Override
     public void clearCache() {
-        File dir = new File(CacheConstants.FILES_FOLDER);
-        for (File file : dir.listFiles()) {
+        File dir = new File(FileUtils.FILES_FOLDER);
+        for (File file : Objects.requireNonNull(dir.listFiles())) {
             if (!file.isDirectory()) {
-                file.delete();
+                try {
+                    Files.delete(file.toPath());
+                    if (mArguments.get("dr") != null) {
+                        mLogger.info(file.getName() + " was deleted");
+                    }
+                } catch (IOException ioex) {
+                    mLogger.error(ioex.getMessage());
+                }
             }
         }
         mCacheEntries.clear();
@@ -148,7 +135,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     // Saving file to disk.
     @Override
     public void addCacheEntry(@NonNull Object key, @NonNull Object obj) throws IOException {
-        String fullFileName = CacheConstants.FILES_FOLDER + CacheConstants.FILE_PREFIX + key + CacheConstants.FILE_EXTENSION;
+        String fullFileName = FileUtils.FILES_FOLDER + FileUtils.FILE_PREFIX + key + FileUtils.FILE_EXTENSION;
         FileOutputStream fos;
         ObjectOutputStream ous;
         // Deserializing object
@@ -184,7 +171,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     @Override
     public void removeCacheEntry(@NonNull Object key) throws NotPresentException {
-        File file = new File(CacheConstants.FILES_FOLDER + CacheConstants.FILE_PREFIX + key + CacheConstants.FILE_EXTENSION);
+        File file = new File(FileUtils.FILES_FOLDER + FileUtils.FILE_PREFIX + key + FileUtils.FILE_EXTENSION);
         if (file.exists()) {
             file.delete();
 //            mapFrequency.remove(key);
@@ -197,10 +184,10 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     @Override
     public boolean hasCacheEntry(@NonNull Object key) {
         File file = new File(
-                CacheConstants.FILES_FOLDER
-                + CacheConstants.FILE_PREFIX
-                + key
-                + CacheConstants.FILE_EXTENSION);
+                FileUtils.FILES_FOLDER
+                        + FileUtils.FILE_PREFIX
+                        + key
+                        + FileUtils.FILE_EXTENSION);
         return file.exists();
     }
 
@@ -215,6 +202,8 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
             }
             case MRU -> {
                 return mLastAccessedEntryKey;
+            }
+            default -> {
             }
         }
         return null;
@@ -254,6 +243,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     /**
      * TODO
+     *
      * @return
      */
     @Override
@@ -274,6 +264,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     /**
      * TODO
+     *
      * @param hddCacheEntriesNumber
      */
     public void setHDDCacheEntriesNumber(int hddCacheEntriesNumber) {

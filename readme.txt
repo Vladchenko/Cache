@@ -25,6 +25,7 @@ RAM cache - кэш первого уровня, HDD cache - он же кэш в�
 
 TODO:
         - ? Make caches not to be fully filled in th beginning
+        - ? Maybe validate some more arguments
         - Put all hardcodes to consts
         - Split methods into smaller ones
         - Several classes should be split, since S in SOLID breaks

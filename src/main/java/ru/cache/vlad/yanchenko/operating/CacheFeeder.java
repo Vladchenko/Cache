@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.cache.vlad.yanchenko.operating;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Class simulates a source where the objects, that are not present in cache,
@@ -20,6 +16,7 @@ public class CacheFeeder {
     private final int mEntryNumber;
     // Data that is going to be fed to a cacheProcessor.
     private Map<Object, Object> mMapObjectsFed;
+    private final Random mRandom = new Random();
     // Array of objects for one could refer to objects by index, to get a fast retrieval.
     private final Object[] mArrValues;
 
@@ -45,9 +42,9 @@ public class CacheFeeder {
     public Map<Object, Object> populateData() {
         Map<Object, Object> map = new HashMap<>();
         for (int i = 0; i < mEntryNumber; i++) {
-            mArrValues[i] = Integer.toString((int) (Math.random() * 1000000000));
+            mArrValues[i] = Integer.toString(mRandom.nextInt(1000000000));
             String key = mArrValues[i].toString();
-            map.put(key, Integer.toString((int) (Math.random() * 1000000000)));
+            map.put(key, Integer.toString(mRandom.nextInt(1000000000)));
         }
         return map;
     }
@@ -84,7 +81,7 @@ public class CacheFeeder {
      * finally, retrieve to alleged CPU.
      */
     public String requestObject() {
-        int i = (int) (Math.random() * mEntryNumber);
+        int i = (int) (mRandom.nextDouble() * mEntryNumber);
         return (String) mArrValues[i];
     }
 

@@ -8,11 +8,22 @@ import ru.cache.vlad.yanchenko.operating.CacheFeeder;
 import java.io.IOException;
 
 /**
- *
+ * Cache population utility.
  */
-public class CachePopulationUtils {
+public final class CachePopulationUtils {
 
-    // Populating caches before running a caching-retrieval process.
+    private CachePopulationUtils() {
+    }
+
+    /**
+     * Populating caches before running a caching-retrieval process.
+     *
+     * @param logger to log cache operating events
+     * @param ramCache memory cache
+     * @param hddCache disk cache
+     * @param cacheFeeder cache data feeder
+     * @throws IOException when a disk operating problem occurs
+     */
     public static void populateCaches(
             @NonNull Logger logger,
             @NonNull ICache ramCache,

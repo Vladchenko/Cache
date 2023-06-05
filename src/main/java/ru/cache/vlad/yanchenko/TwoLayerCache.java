@@ -6,11 +6,13 @@ import ru.cache.vlad.yanchenko.arguments.CacheArgumentsReader;
 import ru.cache.vlad.yanchenko.caches.HDDCache;
 import ru.cache.vlad.yanchenko.caches.ICache;
 import ru.cache.vlad.yanchenko.caches.RAMCache;
+import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
 import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 import ru.cache.vlad.yanchenko.operating.CacheFeeder;
 import ru.cache.vlad.yanchenko.operating.CacheProcessor;
 import ru.cache.vlad.yanchenko.test.Testing;
+import ru.cache.vlad.yanchenko.utils.FileUtils;
 import ru.cache.vlad.yanchenko.utils.ValidatingUtils;
 
 import java.io.IOException;
@@ -38,6 +40,11 @@ public class TwoLayerCache {
         CacheArgumentsProcessor argumentsProcessor = new CacheArgumentsProcessor(mLogger);
         mArguments = argumentsProcessor.processArguments(new CacheArgumentsReader(mLogger).readArguments(args));
         ICache ramCache = new RAMCache(mLogger, mArguments);
+        try {
+            FileUtils.createFilesFolder(mLogger);
+        } catch (DirectoryException e) {
+            e.printStackTrace();
+        }
         ICache hddCache = new HDDCache(mLogger, mArguments);
         CacheFeeder cacheFeeder = new CacheFeeder(Integer.parseInt(mArguments.get("n")));
         populateCaches(mLogger, ramCache, hddCache, cacheFeeder);

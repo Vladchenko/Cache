@@ -20,10 +20,6 @@ public abstract class AbstractCache implements ICache {
     // Map that holds the keys to an entries that constitute a cache.
     protected Map<Object, Object> mCacheEntries;
 
-//    protected void setMapEntries(Map<Object, Object> mapEntries) {
-//        this.mapEntries = mapEntries;
-//    }
-
     public Object getTempObject() {
         return mTempObject;
     }
@@ -37,7 +33,7 @@ public abstract class AbstractCache implements ICache {
     }
 
     public void setKeyLastAccessed(@NonNull Object keyLastAccessed) {
-        this.mLastAccessedEntryKey = keyLastAccessed;
+        mLastAccessedEntryKey = keyLastAccessed;
     }
 
     public int getSize() {
@@ -47,5 +43,4 @@ public abstract class AbstractCache implements ICache {
     public void setSize(int size) {
         this.mSize = size;
     }
-
 }

@@ -10,9 +10,11 @@ import java.util.Map;
 /**
  * Utils to log the caching events.
  */
-public class CacheLoggingUtils {
+public final class CacheLoggingUtils {
 
     private static Logger sLogger;
+
+    private CacheLoggingUtils() { }
 
     /**
      * Get logger to log the events

@@ -16,41 +16,44 @@ import java.util.regex.Pattern;
  * <p>
  * Created by v.yanchenko on 02.09.2016.
  */
-public class FileUtils {
+public final class FileUtils {
 
-    // Logging the operations.
-    private static Logger sLogger;
     // To perform a check if a filename, extension or have any of these letters.
-    private final String mFileSpecialCharacters = "[\\\\:<>|*/?]";
-
+    private static final String FILE_SPECIAL_CHARACTERS = "[\\\\:<>|*/?]";
     /**
-     * Creates an instance of class
-     *
-     * @param logger to log cache operations
+     * Folder for a files that represents a 2nd level cache (HDD cache)
      */
-    public FileUtils(@NonNull Logger logger) {
-        sLogger = logger;
+    public static final String FILES_FOLDER = "Cache Data\\";
+    /**
+     * File prefix for files to be cached
+     */
+    public static final String FILE_PREFIX = "cache_file_";
+    /**
+     * File extension for files to be cached
+     */
+    public static final String FILE_EXTENSION = ".cache";
+
+    private FileUtils() {
     }
 
     /**
      * Validate file path.
      *
-     * @param path to be validated
+     * @param logger to log events
      * @throws DirectoryException, when a file path is not valid
      */
-    public void validateFilePath(@NonNull String path) throws DirectoryException {
+    public static void validateFilePath(@NonNull Logger logger) throws DirectoryException {
         // To perform a check if a path is to have any of these letters.
         String pathSpecialCharacters = "[:<>|*/?]";
         Pattern p = Pattern.compile(pathSpecialCharacters);
-        Matcher m = p.matcher(path);
+        Matcher m = p.matcher(FILES_FOLDER);
         if (m.find()) {
             // Some special characters are present, thus throw an exception.
-            throw new DirectoryException("Folder path \"" + path + "\" has some special letters.", sLogger);
+            throw new DirectoryException("Folder path \"" + FILES_FOLDER + "\" has some special letters.", logger);
         } else {
             // If filepath has no backslash at the end, add it.
-            if (path.lastIndexOf('\\') != path.length() - 1) {
-                path += "\\";
-                sLogger.info("Log file path is = " + path);
+            if (FILES_FOLDER.lastIndexOf('\\') != FILES_FOLDER.length() - 1) {
+                logger.error("Add slash at the end of path " + FILES_FOLDER);
             }
         }
     }
@@ -58,59 +61,59 @@ public class FileUtils {
     /**
      * Validate file prefix.
      *
-     * @param filePrefix to be validated
+     * @param logger to log events
      * @throws FilePrefixException, when a file prefix is not valid
      */
-    public void validateFilePrefix(@NonNull String filePrefix) throws FilePrefixException {
-        Pattern p = Pattern.compile(mFileSpecialCharacters);
-        Matcher m = p.matcher(filePrefix);
+    public static void validateFilePrefix(@NonNull Logger logger) throws FilePrefixException {
+        Pattern p = Pattern.compile(FILE_SPECIAL_CHARACTERS);
+        Matcher m = p.matcher(FILE_PREFIX);
         if (m.find()) {
             // Some special characters are present, thus throw an exception
-            throw new FilePrefixException("File prefix \"" + filePrefix + "\" has some special letters.", sLogger);
+            throw new FilePrefixException("File prefix \"" + FILE_PREFIX + "\" has some special letters.", logger);
         } else {
-            sLogger.info("File prefix is set to: " + filePrefix);
+            logger.info("File prefix is set to: " + FILE_PREFIX);
         }
     }
 
     /**
      * Validate file extension.
      *
-     * @param fileExtension to be validated
+     * @param logger to log events
      * @throws FileExtensionException, when a file extension is not valid
      */
-    public void validateFileExtension(@NonNull String fileExtension) throws FileExtensionException {
-        Pattern p = Pattern.compile(mFileSpecialCharacters);
-        Matcher m = p.matcher(fileExtension);
+    public static void validateFileExtension(@NonNull Logger logger) throws FileExtensionException {
+        Pattern p = Pattern.compile(FILE_SPECIAL_CHARACTERS);
+        Matcher m = p.matcher(FILE_EXTENSION);
         if (m.find()) { // Some special characters are present, thus ...
             // Throwing an exception.
-            throw new FileExtensionException("File prefix \"" + fileExtension + "\" has some special letters.", sLogger);
+            throw new FileExtensionException("File prefix \"" + FILE_EXTENSION + "\" has some special letters.", logger);
             // Make a folder named, some valid path, say a current time.
 //            filePrefix = "cache_file";
 //            repository.getLogger().info("It is set to default " + filePrefix);
         } else {
-            sLogger.info("File prefix is set to: " + fileExtension);
+            logger.info("File prefix is set to: " + FILE_EXTENSION);
         }
     }
 
     /**
      * Create a folder (in case its absent) for a files that constitute an HDD cache.
      *
-     * @param path for a cache files folder
+     * @param logger to log events
      */
-    public static boolean createFilesFolder(@NonNull String path) throws DirectoryException {
-        File directory = new File(path);
+    public static boolean createFilesFolder(@NonNull Logger logger) throws DirectoryException {
+        File directory = new File(FILES_FOLDER);
         // Checking if a directory keeps the real path on a disk.
         if (!directory.isDirectory()) {
             throw new DirectoryException(
-                    path + " is not a valid pathname. Change and rerun an app. Program exits.",
-                    sLogger);
+                    FILES_FOLDER + " is not a valid pathname. Change and rerun an app. Program exits.",
+                    logger);
         }
         // Checking if directory exists.
         if (!directory.exists()) {
             // And if not, create it.
             return directory.mkdir();
         } else {
-            sLogger.info("HDD cache files folder already exists");
+            logger.info("HDD cache files folder already exists");
         }
         return false;
     }
