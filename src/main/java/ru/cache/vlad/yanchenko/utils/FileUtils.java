@@ -55,11 +55,6 @@ public class FileUtils {
         }
     }
 
-    public static boolean isValidFilePath(@NonNull String path) {
-        File file = new File(path);
-        return (file.isFile());
-    }
-
     /**
      * Validate file prefix.
      *

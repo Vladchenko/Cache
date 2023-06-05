@@ -36,14 +36,12 @@ public class CacheProcessor {
                            @NonNull ICache ramCache,
                            @NonNull ICache hddCache,
                            @NonNull CacheFeeder cacheFeeder,
-                           @NonNull Map<String, String> arguments) throws IOException {
+                           @NonNull Map<String, String> arguments) {
         mLogger = logger;
         mRamCache = ramCache;
         mHddCache = hddCache;
         mArguments = arguments;
-        // Setting how many entries will a cacheFeeder have to request from a cacheProcessor.
         mCacheFeeder = cacheFeeder;
-        populateCaches();
     }
 
     // Public method that always returns the same instance of repository.
@@ -52,7 +50,7 @@ public class CacheProcessor {
             @NonNull ICache ramCache,
             @NonNull ICache hddCache,
             @NonNull CacheFeeder cacheFeeder,
-            @NonNull Map<String, String> arguments) throws IOException {
+            @NonNull Map<String, String> arguments) {
         if (sCacheProcessor == null) {
             sCacheProcessor = new CacheProcessor(logger, ramCache, hddCache, cacheFeeder, arguments);
         }
@@ -229,8 +227,7 @@ public class CacheProcessor {
                      *
                      * RAM cache - first key in a map; HDD cache - requested key;
                      */
-                    replaceEntries(mRamCache.getCacheEntries().entrySet().iterator().
-                            next().getKey(), key);
+                    replaceEntries(mRamCache.getCacheEntries().entrySet().iterator().next().getKey(), key);
             case MRU ->
                     /*
                      * If there was an HDD cache hit, then move this entry to a RAM
@@ -266,14 +263,11 @@ public class CacheProcessor {
             mRamCache.addCacheEntry(keyHDDCache, mHddCache.getCacheEntry(keyHDDCache));
             mHddCache.removeCacheEntry(keyHDDCache);
         } catch (NotPresentException ex) {
-            mLogger.info("Cannot recache, such entry is absent. "
-                    + "Cache integrity is broken.");
+            mLogger.info("Cannot recache, such entry is absent. Cache integrity is broken.");
         } catch (FileNotFoundException | ClassNotFoundException ex) {
-            mLogger.info("Cannot recache, file or class not found. "
-                    + "Cache integrity is broken.");
+            mLogger.info("Cannot recache, file or class not found. Cache integrity is broken.");
         } catch (IOException ex) {
-            mLogger.info("Cannot recache, some IO problem. Cache "
-                    + "integrity is broken.");
+            mLogger.info("Cannot recache, some IO problem. Cache integrity is broken.");
         }
 
         if (Boolean.parseBoolean(mArguments.get("dr"))) {
@@ -330,23 +324,6 @@ public class CacheProcessor {
             obj = processRequest(mCacheFeeder.requestObject());
         }
         CacheLoggingUtils.printSummary(mRamCache, mHddCache, mArguments);
-    }
-
-    // Populating caches before running a caching-retrieval process.
-    private void populateCaches() throws IOException {
-        while (mRamCache.getSize() < mRamCache.getEntriesNumber()) {
-            mRamCache.addCacheEntry(mCacheFeeder.requestObject(),
-                    mCacheFeeder.deliverObject(mCacheFeeder.requestObject()));
-        }
-        while (mHddCache.getSize() < mHddCache.getEntriesNumber()) {
-            try {
-                mHddCache.addCacheEntry(mCacheFeeder.requestObject(),
-                        mCacheFeeder.deliverObject(mCacheFeeder.requestObject()));
-            } catch (IOException ex) {
-                mLogger.info("Cannot populate HDD cache, some IO problem.");
-            }
-        }
-        mLogger.info("Caches have been populated.");
     }
 
     //<editor-fold defaultstate="collapsed" desc="getters">

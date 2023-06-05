@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Logger;
 import ru.cache.vlad.yanchenko.arguments.CacheArgumentsProcessor;
 import ru.cache.vlad.yanchenko.arguments.CacheArgumentsReader;
 import ru.cache.vlad.yanchenko.caches.HDDCache;
+import ru.cache.vlad.yanchenko.caches.ICache;
 import ru.cache.vlad.yanchenko.caches.RAMCache;
 import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
@@ -14,6 +15,8 @@ import ru.cache.vlad.yanchenko.utils.ValidatingUtils;
 
 import java.io.IOException;
 import java.util.Map;
+
+import static ru.cache.vlad.yanchenko.utils.CachePopulationUtils.populateCaches;
 
 /**
  * Entry point class.
@@ -32,18 +35,13 @@ public class TwoLayerCache {
         // Validating program constants
         ValidatingUtils.validateArguments(mLogger);
         // Processing command line arguments.
-        CacheArgumentsProcessor argumentsProcessor =
-                new CacheArgumentsProcessor(mLogger);
-        mArguments = argumentsProcessor.processArguments(
-                new CacheArgumentsReader(mLogger).readArguments(args)
-        );
-        mCacheProcessor = CacheProcessor.getInstance(
-                mLogger,
-                new RAMCache(mLogger, mArguments),
-                new HDDCache(mLogger, mArguments),
-                new CacheFeeder(Integer.parseInt(mArguments.get("n"))),
-                mArguments
-        );
+        CacheArgumentsProcessor argumentsProcessor = new CacheArgumentsProcessor(mLogger);
+        mArguments = argumentsProcessor.processArguments(new CacheArgumentsReader(mLogger).readArguments(args));
+        ICache ramCache = new RAMCache(mLogger, mArguments);
+        ICache hddCache = new HDDCache(mLogger, mArguments);
+        CacheFeeder cacheFeeder = new CacheFeeder(Integer.parseInt(mArguments.get("n")));
+        populateCaches(mLogger, ramCache, hddCache, cacheFeeder);
+        mCacheProcessor = CacheProcessor.getInstance(mLogger, ramCache, hddCache, cacheFeeder, mArguments);
     }
 
     /**

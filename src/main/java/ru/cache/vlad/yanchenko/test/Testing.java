@@ -56,16 +56,17 @@ public class Testing {
                 mCacheProcessor.getCacheFeeder().copyData(
                         mTestingObjects));
 
-        // Putting all the entries from a testing msp to a map that's going to be fed to a caching algorithm.
+        // Putting all the entries from a testing map to a map that's going to be fed to a caching algorithm.
         mCacheProcessor.getCacheFeeder().setMapObjectsFed(
-                mCacheProcessor.getCacheFeeder().copyData(
-                        mTestingObjects));
+                mCacheProcessor.getCacheFeeder().copyData(mTestingObjects)
+        );
 
         // Setting a cache kind.
         mArguments.put("cachekind", Repository.cacheKindEnum.LRU.toString());
         for (int i = 0; i < Integer.parseInt(mArguments.get("n")); i++) {
             mCacheProcessor.processRequest(
-                    mCacheProcessor.getCacheFeeder().requestObject());
+                    mCacheProcessor.getCacheFeeder().requestObject()
+            );
         }
         // Printing a summary for a current caching process.
         CacheLoggingUtils.printSummary(mCacheProcessor.getRamCache(), mCacheProcessor.getHddCache(), mArguments);
@@ -84,14 +85,10 @@ public class Testing {
         // Setting a cache kind.
         mArguments.put("cachekind", Repository.cacheKindEnum.MRU.toString());
         for (int i = 0; i < Integer.parseInt(mArguments.get("n")); i++) {
-            mCacheProcessor.processRequest(
-                    mCacheProcessor.getCacheFeeder().requestObject());
+            mCacheProcessor.processRequest(mCacheProcessor.getCacheFeeder().requestObject());
         }
 
         // Printing a summary for a current caching process.
-        CacheLoggingUtils.printSummary(
-                mCacheProcessor.getRamCache(),
-                mCacheProcessor.getHddCache(),
-                mArguments);
+        CacheLoggingUtils.printSummary(mCacheProcessor.getRamCache(), mCacheProcessor.getHddCache(), mArguments);
     }
 }
