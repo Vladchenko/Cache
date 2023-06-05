@@ -1,31 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.cache.vlad.yanchenko.caches;
 
 import android.support.annotation.NonNull;
-import ru.cache.vlad.yanchenko.CacheConstants;
-import ru.cache.vlad.yanchenko.Repository;
-import ru.cache.vlad.yanchenko.utils.FileUtils;
-import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
+import org.apache.logging.log4j.Logger;
 import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
+import ru.cache.vlad.yanchenko.utils.FileUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
-
-import org.apache.logging.log4j.Logger;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * In charge of an operations made with a RAM cache.
@@ -52,7 +34,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         mLogger = logger;
         mArguments = arguments;
         mCacheEntriesNumber = Integer.parseInt(mArguments.get("l2s"));
-        switch (Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
+        switch (CacheKind.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
             case LFU, MRU -> mCacheEntries = new HashMap<>();
             case LRU -> mCacheEntries = new LinkedHashMap<>();
         }
@@ -98,7 +80,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
             // Increasing a call count for this entry.
 //            mapFrequency.put(key, mapFrequency.get(key) + 1);
             mLastAccessedEntryKey = key;
-            switch (Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
+            switch (CacheKind.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
                 case LFU -> {
                 }
                 case LRU -> {
@@ -192,7 +174,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public Object getLeastUsed(@NonNull Repository.cacheKindEnum cacheKind) {
+    public Object getLeastUsed(@NonNull CacheKind cacheKind) {
         switch (cacheKind) {
             case LFU -> {
             }

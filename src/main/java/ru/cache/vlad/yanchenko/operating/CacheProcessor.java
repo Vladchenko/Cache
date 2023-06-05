@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.cache.vlad.yanchenko.operating;
 
 import android.support.annotation.NonNull;
 import org.apache.logging.log4j.Logger;
-import ru.cache.vlad.yanchenko.Repository;
+import ru.cache.vlad.yanchenko.caches.CacheKind;
 import ru.cache.vlad.yanchenko.caches.ICache;
 import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
@@ -118,7 +113,7 @@ public class CacheProcessor {
                     if (mHddCache.getSize() < mHddCache.getEntriesNumber()) {
                         // Getting the least used entry in a RAM cache.
                         Object key_ = mRamCache.getLeastUsed(
-                                Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT)));
+                                CacheKind.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT)));
                         // Moving least used RAM entry to an HDD cache.
                         try {
                             mHddCache.addCacheEntry(key_, mRamCache.getCacheEntry(key_));
@@ -149,7 +144,7 @@ public class CacheProcessor {
                             mLogger.info("HDD cache is full, removing a least used entry.");
                         }
                         // Getting the least used entry in an HDD cache 
-                        Object key_ = mHddCache.getLeastUsed(Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT)));
+                        Object key_ = mHddCache.getLeastUsed(CacheKind.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT)));
                         try {
                             // and removing this entry.
                             mHddCache.removeCacheEntry(key_);
@@ -161,7 +156,7 @@ public class CacheProcessor {
                         }
                         // Getting the least used entry in a RAM cache.
                         key_ = mRamCache.getLeastUsed(
-                                Repository.cacheKindEnum.valueOf(
+                                CacheKind.valueOf(
                                         mArguments.get("cachekind").toUpperCase(Locale.ROOT)
                                 )
                         );
@@ -204,7 +199,7 @@ public class CacheProcessor {
      * Recaching the data in a caches. When data should be moved from an HDD cache, to a RAM cache.
      */
     private void reCache(@NonNull Object key) {
-        switch (Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
+        switch (CacheKind.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
             case LFU -> {
                 /*
                  * If there was an HDD cache hit, then check if there is any
@@ -266,10 +261,9 @@ public class CacheProcessor {
         }
 
         if (Boolean.parseBoolean(mArguments.get("dr"))) {
-            mLogger.info("Recaching has been done. Object in RAM "
-                    + "cache key=" + keyRAMCache + " have been moved to an HDD "
-                    + "cache. Object in HDD cache key=" + keyHDDCache + " has "
-                    + "been moved to a RAM cache.");
+            mLogger.info("Recaching has been done.");
+            mLogger.info("Object in RAM cache key=" + keyRAMCache + " has been moved to an HDD cache.");
+            mLogger.info("Object in HDD cache key=" + keyHDDCache + " has been moved to a RAM cache.");
             mLogger.info("");
         }
     }
@@ -287,13 +281,8 @@ public class CacheProcessor {
             }
             for (Map.Entry<Object, Object> entrySet : mRamCache.getCacheEntries().entrySet()) {
                 Object key = entrySet.getKey();
-                Object value = entrySet.getValue();
-                mLogger.info("\tkey=" + key + ", value=" + "Object@"
-                                + Integer.toHexString(
-                                System.identityHashCode(
-                                        mRamCache.getCacheEntries().get(key))
-                        )
-                );
+                Object value = entrySet.getValue().toString();
+                mLogger.info("\tkey=" + key + ", value=" + value);
             }
             mLogger.info("********    HDD cache contents    ********");
             if (mHddCache.getCacheEntries().size() == 0) {
@@ -340,7 +329,7 @@ public class CacheProcessor {
     /**
      * @return the cacheFeeder
      */
-    public ru.cache.vlad.yanchenko.operating.CacheFeeder getCacheFeeder() {
+    public CacheFeeder getCacheFeeder() {
         return mCacheFeeder;
     }
     //</editor-fold>

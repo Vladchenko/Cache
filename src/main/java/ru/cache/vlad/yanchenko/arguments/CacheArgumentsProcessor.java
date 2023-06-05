@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.cache.vlad.yanchenko.arguments;
 
 import android.support.annotation.NonNull;
@@ -14,7 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import static ru.cache.vlad.yanchenko.CacheConstants.PIPELINE_RUNS_NUMBER_DEFAULT;
-import static ru.cache.vlad.yanchenko.Repository.cacheKindEnum.*;
+import static ru.cache.vlad.yanchenko.caches.CacheKind.*;
 
 /**
  * Command line arguments processor.

@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.cache.vlad.yanchenko.test;
 
 import android.support.annotation.NonNull;
-import ru.cache.vlad.yanchenko.Repository;
+import org.apache.logging.log4j.Logger;
+import ru.cache.vlad.yanchenko.caches.CacheKind;
 import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 import ru.cache.vlad.yanchenko.operating.CacheProcessor;
@@ -14,8 +10,6 @@ import ru.cache.vlad.yanchenko.operating.CacheProcessor;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.logging.log4j.Logger;
 
 /**
  * Class runs a test on all the present cache algorithms.
@@ -62,7 +56,7 @@ public class Testing {
         );
 
         // Setting a cache kind.
-        mArguments.put("cachekind", Repository.cacheKindEnum.LRU.toString());
+        mArguments.put("cachekind", CacheKind.LRU.toString());
         for (int i = 0; i < Integer.parseInt(mArguments.get("n")); i++) {
             mCacheProcessor.processRequest(
                     mCacheProcessor.getCacheFeeder().requestObject()
@@ -83,7 +77,7 @@ public class Testing {
                         mTestingObjects));
 
         // Setting a cache kind.
-        mArguments.put("cachekind", Repository.cacheKindEnum.MRU.toString());
+        mArguments.put("cachekind", CacheKind.MRU.toString());
         for (int i = 0; i < Integer.parseInt(mArguments.get("n")); i++) {
             mCacheProcessor.processRequest(mCacheProcessor.getCacheFeeder().requestObject());
         }

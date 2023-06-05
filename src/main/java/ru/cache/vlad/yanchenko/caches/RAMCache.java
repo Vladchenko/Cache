@@ -1,12 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package ru.cache.vlad.yanchenko.caches;
 
 import android.support.annotation.NonNull;
-import ru.cache.vlad.yanchenko.Repository;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -48,7 +43,7 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
         mArguments = arguments;
         mCacheEntriesNumber = Integer.parseInt(mArguments.get("l1s"));
         // Defining which kind of map to be used, depending on a cache kind.
-        switch (Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
+        switch (CacheKind.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
             case LFU -> {
                 mMapObjectsLFU = new LinkedHashMap<>();
                 mMapFrequency = new HashMap<>();
@@ -74,7 +69,7 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     public Object getCacheEntry(@NonNull Object key) {
         mMapFrequency.put(key, mMapFrequency.get(key) + 1);
         mLastAccessedEntryKey = key;
-        switch (Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
+        switch (CacheKind.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
             case LFU -> {
             }
             case LRU -> {
@@ -127,7 +122,7 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public Object getLeastUsed(@NonNull Repository.cacheKindEnum cacheKind) {
+    public Object getLeastUsed(@NonNull CacheKind cacheKind) {
 //        return mapFrequency.lastKey();
         switch (cacheKind) {
             case LFU -> {

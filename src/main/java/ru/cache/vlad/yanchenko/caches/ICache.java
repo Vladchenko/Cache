@@ -1,12 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package ru.cache.vlad.yanchenko.caches;
 
 import android.support.annotation.NonNull;
-import ru.cache.vlad.yanchenko.Repository;
 import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 
 import java.io.IOException;
@@ -29,7 +24,7 @@ public interface ICache {
     void addCacheEntry(@NonNull Object key, @NonNull Object obj) throws IOException;
     
     /** Getting the least used entry to make an eviction. */
-    Object getLeastUsed(@NonNull Repository.cacheKindEnum cacheKind);
+    Object getLeastUsed(@NonNull CacheKind cacheKind);
     
     /** Getting requested object by key. */
     Object getCacheEntry(@NonNull Object key) throws IOException, ClassNotFoundException;
