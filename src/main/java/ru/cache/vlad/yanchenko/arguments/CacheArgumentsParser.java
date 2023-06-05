@@ -8,9 +8,9 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Cache arguments reader
+ * Cache arguments parser
  */
-public class CacheArgumentsReader {
+public class CacheArgumentsParser {
 
     private final Logger mLogger;
 
@@ -19,7 +19,7 @@ public class CacheArgumentsReader {
      *
      * @param logger logger to log the events
      */
-    public CacheArgumentsReader(@NonNull Logger logger) {
+    public CacheArgumentsParser(@NonNull Logger logger) {
         mLogger = logger;
     }
 

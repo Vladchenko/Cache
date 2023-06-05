@@ -2,7 +2,7 @@ package ru.cache.vlad.yanchenko;
 
 import org.apache.logging.log4j.Logger;
 import ru.cache.vlad.yanchenko.arguments.CacheArgumentsProcessor;
-import ru.cache.vlad.yanchenko.arguments.CacheArgumentsReader;
+import ru.cache.vlad.yanchenko.arguments.CacheArgumentsParser;
 import ru.cache.vlad.yanchenko.caches.HDDCache;
 import ru.cache.vlad.yanchenko.caches.ICache;
 import ru.cache.vlad.yanchenko.caches.RAMCache;
@@ -38,7 +38,7 @@ public class TwoLayerCache {
         ValidatingUtils.validateArguments(mLogger);
         // Processing command line arguments.
         CacheArgumentsProcessor argumentsProcessor = new CacheArgumentsProcessor(mLogger);
-        mArguments = argumentsProcessor.processArguments(new CacheArgumentsReader(mLogger).readArguments(args));
+        mArguments = argumentsProcessor.processArguments(new CacheArgumentsParser(mLogger).readArguments(args));
         ICache ramCache = new RAMCache(mLogger, mArguments);
         try {
             FileUtils.createFilesFolder(mLogger);
