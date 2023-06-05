@@ -5,25 +5,32 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.cache.vlad.yanchenko.caches.ICache;
 
-import java.util.Date;
 import java.util.Map;
-import java.util.logging.LogRecord;
-import java.util.logging.SimpleFormatter;
 
-/** Utils to log the caching events. */
+/**
+ * Utils to log the caching events.
+ */
 public class CacheLoggingUtils {
 
     private static Logger sLogger;
 
-    /** Get logger to log the events */
+    /**
+     * Get logger to log the events
+     */
     public static Logger getLogger() {
-        if  (sLogger == null) {
+        if (sLogger == null) {
             sLogger = LogManager.getLogger(CacheLoggingUtils.class);
         }
         return sLogger;
     }
-    
-    /** Writing a summary about a current caching process to a log file. */
+
+    /**
+     * Writing a summary about a current caching process to a log file.
+     *
+     * @param ramCache  memory cache
+     * @param hddCache  disk cache
+     * @param arguments from command line
+     */
     public static void printSummary(@NonNull ICache ramCache,
                                     @NonNull ICache hddCache,
                                     @NonNull Map<String, String> arguments) {
@@ -44,30 +51,15 @@ public class CacheLoggingUtils {
      * @param map of command line parameters
      */
     public static void printArgs(@NonNull Map<String, String> map) {
+        sLogger.info("Command line arguments are:");
         if (map.isEmpty()) {
             sLogger.info("No command line arguments present");
         } else {
             for (Map.Entry<String, String> entrySet : map.entrySet()) {
                 String key = entrySet.getKey();
                 String value = entrySet.getValue();
-                sLogger.info(key + "=" + value);
+                sLogger.info("\t\t" + key + "=" + value);
             }
-        }
-    }
-
-    /** Overriding an implementation of a standard formatter. It's done to remove excessive information that is put to log. */
-    static class MyFormatter extends SimpleFormatter {
-
-        private static final String format = "[%1$tF %1$tT] [%2$-7s] %3$s %n";
-
-        // Changing a string that is going to be put to a log file.
-        @Override
-        public synchronized String format(@NonNull LogRecord record) {
-            return String.format(format,
-                    new Date(record.getMillis()),
-                    record.getLevel().getLocalizedName(),
-                    record.getMessage()
-            );
         }
     }
 }

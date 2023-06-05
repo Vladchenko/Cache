@@ -92,7 +92,11 @@ public class FileUtils {
         }
     }
 
-    // Create a folder (in case its absent) for a files that constitute an HDD cache.
+    /**
+     * Create a folder (in case its absent) for a files that constitute an HDD cache.
+     *
+     * @param path for a cache files folder
+     */
     public static boolean createFilesFolder(@NonNull String path) throws DirectoryException {
         File directory = new File(path);
         // Checking if a directory keeps the real path on a disk.
@@ -103,10 +107,10 @@ public class FileUtils {
         }
         // Checking if directory exists.
         if (!directory.exists()) {
-            // And if not, make it.
+            // And if not, create it.
             return directory.mkdir();
         } else {
-            sLogger.info("Directory already exists");
+            sLogger.info("HDD cache files folder already exists");
         }
         return false;
     }

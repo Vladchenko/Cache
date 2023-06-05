@@ -2,7 +2,6 @@ package ru.cache.vlad.yanchenko.arguments;
 
 import android.support.annotation.NonNull;
 import org.apache.logging.log4j.Logger;
-import ru.cache.vlad.yanchenko.Repository;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -18,7 +17,7 @@ public class CacheArgumentsReader {
     /**
      * Public constructor - creates an instance of class
      *
-     * @param logger     logger to log the events
+     * @param logger logger to log the events
      */
     public CacheArgumentsReader(@NonNull Logger logger) {
         mLogger = logger;
@@ -27,7 +26,7 @@ public class CacheArgumentsReader {
     /**
      * Reading arguments entered from command line.
      *
-     * @param args  command line arguments
+     * @param args command line arguments
      */
     public Map<String, String> readArguments(@NonNull String[] args) {
         // Delimiter that separates key from value in an entry.
@@ -40,16 +39,12 @@ public class CacheArgumentsReader {
             currentArg = arg.toLowerCase(Locale.ROOT);
             // Checking if a detailed report is enabled.
             if (currentArg.equals("dr")) {
-//                mRepository.setDetailedReport(true);
                 arguments.put("dr", "true");
-                mLogger.info("'detailed report' argument recognised");
                 continue;
             }
             // Checking if a testing is enabled.
             if (currentArg.equals("test")) {
-//                mRepository.setTesting(true);
                 arguments.put("test", "true");
-                mLogger.info("'test' argument recognized");
                 continue;
             }
             keyValueArg = currentArg.split(delimiters);

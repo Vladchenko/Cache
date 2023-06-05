@@ -6,17 +6,12 @@
 package ru.cache.vlad.yanchenko.arguments;
 
 import android.support.annotation.NonNull;
+import org.apache.logging.log4j.Logger;
 import ru.cache.vlad.yanchenko.CacheConstants;
-import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
-import ru.cache.vlad.yanchenko.exceptions.FileExtensionException;
-import ru.cache.vlad.yanchenko.exceptions.FilePrefixException;
 import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 
 import java.util.Locale;
 import java.util.Map;
-
-import org.apache.logging.log4j.Logger;
-import ru.cache.vlad.yanchenko.utils.FileUtils;
 
 import static ru.cache.vlad.yanchenko.CacheConstants.PIPELINE_RUNS_NUMBER_DEFAULT;
 import static ru.cache.vlad.yanchenko.Repository.cacheKindEnum.*;
@@ -33,7 +28,7 @@ public class CacheArgumentsProcessor {
     /**
      * Public constructor - creates an instance of class
      *
-     * @param logger     logger to log the events
+     * @param logger to log the events
      */
     public CacheArgumentsProcessor(@NonNull Logger logger) {
         mLogger = logger;
@@ -42,17 +37,24 @@ public class CacheArgumentsProcessor {
     /**
      * Putting an args and couples of "key=value" to a map
      *
-     * @param args command line arguments
+     * @param arguments from command line
      */
-    public Map<String, String> processArguments(@NonNull Map<String, String> args) {
-        if (args.containsKey("dr")) {
-            CacheLoggingUtils.printArgs(args);
+    public Map<String, String> processArguments(@NonNull Map<String, String> arguments) {
+        processDetailedReportArgument(arguments);
+        processRamCacheSizeArgument(arguments);
+        processHddCacheSize(arguments);
+        processCacheKind(arguments);
+        processAccompanyingArguments(arguments);
+        return arguments;
+    }
+
+    private void processDetailedReportArgument(Map<String, String> arguments) {
+        if (arguments.containsKey("dr")) {
+            mLogger.info(">>> Caching process report is set to be detailed.");
+            CacheLoggingUtils.printArgs(arguments);
+        } else {
+            mLogger.info(">>> Caching process report is set to be not detailed.");
         }
-        processRamCacheSizeArgument(args);
-        processHddCacheSize(args);
-        processCacheKind(args);
-        processAccompanyingArguments(args);
-        return args;
     }
 
     private void processRamCacheSizeArgument(Map<String, String> arguments) {
@@ -104,10 +106,10 @@ public class CacheArgumentsProcessor {
                 ck = arguments.get("ck");
             }
             switch (valueOf(ck.toUpperCase(Locale.ROOT))) {
-                case LFU -> mLogger.info("cacheKind is set to - " + LFU);
-                case LRU -> mLogger.info("cacheKind is set to - " + LRU);
-                case MRU -> mLogger.info("cacheKind is set to - " + MRU);
-                default -> mLogger.info("cacheKind is set to - " + MRU);
+                case LFU -> mLogger.info("cachekind is set to - " + LFU);
+                case LRU -> mLogger.info("cachekind is set to - " + LRU);
+                case MRU -> mLogger.info("cachekind is set to - " + MRU);
+                default -> mLogger.info("cachekind is set to - " + MRU);
             }
         }
     }
@@ -121,12 +123,6 @@ public class CacheArgumentsProcessor {
             arguments.put("m", Integer.toString(CacheConstants.ENTRIES_NUMBER_DEFAULT));
         }
 
-//        if (mRepository.isDetailedReport()) {
-//            mLogger.info("Caching process report is set to be detailed.");
-//        } else {
-//            mLogger.info("Caching process report is set to be not detailed.");
-//        }
-
         // Defining a cache process running times, i.e. how many times a caching process is to run.
         try {
             String number = arguments.get("n");
@@ -134,7 +130,7 @@ public class CacheArgumentsProcessor {
             arguments.put("n", number);
             mLogger.info("Cache process will run for " + number + " times");
         } catch (NumberFormatException nfex) {
-            mLogger.info("Cache process run times is not set, " + "using default - " + PIPELINE_RUNS_NUMBER_DEFAULT);
+            mLogger.info("Cache process run times is not set, using default - " + PIPELINE_RUNS_NUMBER_DEFAULT);
             arguments.put("n", Integer.toString(PIPELINE_RUNS_NUMBER_DEFAULT));
         }
         mLogger.info("");

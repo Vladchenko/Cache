@@ -75,27 +75,23 @@ public class CacheProcessor {
 
         // If RAM cache has a requested entry,
         if (mRamCache.hasCacheEntry(key)) {
-            if (Boolean.parseBoolean(mArguments.get("dr"))) {
-                mLogger.info("RAM cache hit, key=" + key);
-            }
+            mLogger.info("RAM cache hit, key=" + key);
             // return it to CPU.
             mRamCache.setCacheHits(mRamCache.getCacheHits() + 1);
             return mRamCache.getCacheEntry(key);
         } else {
             // RAM cache miss, 
             mRamCache.setCacheMisses(mRamCache.getCacheMisses() + 1);
-            mLogger.info("! No entry with key=" + key + " in RAM cache");
+            mLogger.info("! RAM cache miss, key=" + key);
             try {
                 // trying to retrieve an entry from an HDD cache.
                 obj = mHddCache.getCacheEntry(key);
                 mHddCache.setCacheHits(mHddCache.getCacheHits() + 1);
-                if (Boolean.parseBoolean(mArguments.get("dr"))) {
-                    mLogger.info("HDD cache hit, key=" + key);
-                }
+                mLogger.info("HDD cache hit, key=" + key);
                 reCache(key);
                 return obj;
             } catch (NullPointerException | IOException | ClassNotFoundException ignored) {
-                mLogger.info("! No entry with key=" + key + " in HDD cache");
+                mLogger.info("! HDD cache miss, key=" + key);
             }
             // When both caches miss,
             if (obj == null) {
@@ -164,21 +160,21 @@ public class CacheProcessor {
                             mLogger.info("!!! HDD cache entry failed to be removed, it is absent.");
                         }
                         // Getting the least used entry in a RAM cache.
-                        key_ = mRamCache.getLeastUsed(Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT)));
+                        key_ = mRamCache.getLeastUsed(
+                                Repository.cacheKindEnum.valueOf(
+                                        mArguments.get("cachekind").toUpperCase(Locale.ROOT)
+                                )
+                        );
                         try {
                             // Moving least used RAM entry to HDD cache.
                             mHddCache.addCacheEntry(key_, mRamCache.getCacheEntry(key_));
 //                            hddCache.getMapFrequency().put(key_, 0);
                             if (Boolean.parseBoolean(mArguments.get("dr"))) {
-                                mLogger.info("Least used entry in RAM"
-                                        + " cache with key=" + key_
-                                        + " is moved to an HDD cache. ");
+                                mLogger.info("Least used RAM cache entry with key="
+                                        + key_ + " is moved to an HDD cache. ");
                             }
                         } catch (IOException ex) {
-                            if (Boolean.parseBoolean(mArguments.get("dr"))) {
-                                mLogger.info("!!! Cannot move to HDD cache"
-                                        + " ! Disk drive might be corrupt.");
-                            }
+                            mLogger.info("!!! Cannot move to HDD cache ! Disk drive might be corrupt.");
                         }
                         // Removing least used entry from a RAM cache.
                         mRamCache.removeCacheEntry(key_);
@@ -205,8 +201,7 @@ public class CacheProcessor {
     }
 
     /**
-     * Recaching the data in a caches. When data should be moved from an HDD
-     * cache, to a RAM cache.
+     * Recaching the data in a caches. When data should be moved from an HDD cache, to a RAM cache.
      */
     private void reCache(@NonNull Object key) {
         switch (Repository.cacheKindEnum.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
