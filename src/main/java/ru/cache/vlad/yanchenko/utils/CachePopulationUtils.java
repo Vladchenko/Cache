@@ -41,6 +41,6 @@ public final class CachePopulationUtils {
                 logger.info("Cannot populate HDD cache, some IO problem.");
             }
         }
-        logger.info("Caches have been populated.");
+        logger.info("Caches have been populated");
     }
 }

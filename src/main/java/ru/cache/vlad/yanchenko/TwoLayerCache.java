@@ -1,8 +1,8 @@
 package ru.cache.vlad.yanchenko;
 
 import org.apache.logging.log4j.Logger;
-import ru.cache.vlad.yanchenko.arguments.CacheArgumentsProcessor;
-import ru.cache.vlad.yanchenko.arguments.CacheArgumentsParser;
+import ru.cache.vlad.yanchenko.arguments.CacheArgumentsParserImpl;
+import ru.cache.vlad.yanchenko.arguments.CacheArgumentsValidatorImpl;
 import ru.cache.vlad.yanchenko.caches.HDDCache;
 import ru.cache.vlad.yanchenko.caches.ICache;
 import ru.cache.vlad.yanchenko.caches.RAMCache;
@@ -18,8 +18,7 @@ import ru.cache.vlad.yanchenko.utils.ValidatingUtils;
 import java.io.IOException;
 import java.util.Map;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_ENTRIES_FED_ARGUMENT_KEY;
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.*;
 import static ru.cache.vlad.yanchenko.utils.CachePopulationUtils.populateCaches;
 
 /**
@@ -36,20 +35,47 @@ public class TwoLayerCache {
 
     private TwoLayerCache(String[] args) throws IOException {
         mLogger = CacheLoggingUtils.getLogger();
-        // Validating program constants
-        ValidatingUtils.validateArguments(mLogger);
-        // Processing command line arguments.
-        CacheArgumentsProcessor argumentsProcessor = new CacheArgumentsProcessor(mLogger);
-        mArguments = argumentsProcessor.processArguments(new CacheArgumentsParser(mLogger).parseCommandLineArguments(args));
+
+        // Validating file constants
+        ValidatingUtils.validateFileConstants(mLogger);
+
+        // Processing command line arguments
+        CacheArgumentsValidatorImpl argumentsValidator = new CacheArgumentsValidatorImpl(mLogger);
+
+        // Validating command line arguments
+        mArguments = argumentsValidator.validateCommandLineArguments(
+                new CacheArgumentsParserImpl(mLogger).parseCommandLineArguments(args)
+        );
+
+        // Printing command line arguments if detailed report argument is on
+        if (mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY).equals("true")) {
+            CacheLoggingUtils.printArgs(mArguments);
+        }
+
+        // Creating RAM cache
         ICache ramCache = new RAMCache(mLogger, mArguments);
+
+        // Creating HDD cache folder^ if needed
         try {
             FileUtils.createFilesFolder(mLogger);
         } catch (DirectoryException e) {
             e.printStackTrace();
         }
+
+        // Creating HDD cache
         ICache hddCache = new HDDCache(mLogger, mArguments);
-        CacheFeeder cacheFeeder = new CacheFeeder(Integer.parseInt(mArguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)));
+
+        // Creating cache feeder to fetch cache data to caches
+        CacheFeeder cacheFeeder = new CacheFeeder(
+                Integer.parseInt(
+                        mArguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)
+                )
+        );
+
+        // Populating caches with data from cacheFeeder
         populateCaches(mLogger, ramCache, hddCache, cacheFeeder);
+
+        // Run caching process
         mCacheProcessor = CacheProcessor.getInstance(mLogger, ramCache, hddCache, cacheFeeder, mArguments);
     }
 

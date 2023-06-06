@@ -19,7 +19,7 @@ public final class ValidatingUtils {
      *
      * @param logger to log the validation events
      */
-    public static void validateArguments(@NonNull Logger logger) {
+    public static void validateFileConstants(@NonNull Logger logger) {
         try {
             FileUtils.validateFilePath(logger);
         } catch (DirectoryException e) {

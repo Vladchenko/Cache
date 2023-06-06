@@ -9,7 +9,6 @@ import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Locale;
 import java.util.Map;
 
 import static ru.cache.vlad.yanchenko.ArgumentsConstants.*;
