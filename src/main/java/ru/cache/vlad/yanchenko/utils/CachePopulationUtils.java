@@ -18,14 +18,12 @@ public final class CachePopulationUtils {
     /**
      * Populating caches before running a caching-retrieval process.
      *
-     * @param logger to log cache operating events
-     * @param ramCache memory cache
-     * @param hddCache disk cache
+     * @param ramCache    memory cache
+     * @param hddCache    disk cache
      * @param cacheFeeder cache data feeder
      * @throws IOException when a disk operating problem occurs
      */
     public static void populateCaches(
-            @NonNull Logger logger,
             @NonNull ICache ramCache,
             @NonNull ICache hddCache,
             @NonNull CacheFeeder cacheFeeder) throws IOException {
@@ -34,13 +32,8 @@ public final class CachePopulationUtils {
                     cacheFeeder.deliverObject(cacheFeeder.requestObject()));
         }
         while (hddCache.getSize() < hddCache.getEntriesNumber()) {
-            try {
-                hddCache.addCacheEntry(cacheFeeder.requestObject(),
-                        cacheFeeder.deliverObject(cacheFeeder.requestObject()));
-            } catch (IOException ex) {
-                logger.info("Cannot populate HDD cache, some IO problem.");
-            }
+            hddCache.addCacheEntry(cacheFeeder.requestObject(),
+                    cacheFeeder.deliverObject(cacheFeeder.requestObject()));
         }
-        logger.info("Caches have been populated");
     }
 }

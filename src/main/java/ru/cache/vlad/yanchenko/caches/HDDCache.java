@@ -126,24 +126,19 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         // Deserializing object
         fos = new FileOutputStream(fullFileName);
         ous = new ObjectOutputStream(fos);
-        try {
-            ous.writeObject(obj);
-        } catch (IOException ex) {
-            mLogger.info("HDD cache entry addition is failed. Some disk trouble. Cache integrity is broken.");
-        } finally {
-            if (ous != null) {
-                try {
-                    ous.close();
-                } catch (Exception ex) {
-                    mLogger.info("HDDCache object write stream failed to close !");
-                }
+        ous.writeObject(obj);
+        if (ous != null) {
+            try {
+                ous.close();
+            } catch (Exception ex) {
+                mLogger.info("HDDCache object write stream failed to close !");
             }
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (Exception ex) {
-                    mLogger.info("HDDCache file write stream failed to close !");
-                }
+        }
+        if (fos != null) {
+            try {
+                fos.close();
+            } catch (Exception ex) {
+                mLogger.info("HDDCache file write stream failed to close !");
             }
         }
 //        File file = new File(fullFileName);

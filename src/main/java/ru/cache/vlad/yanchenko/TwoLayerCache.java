@@ -72,8 +72,14 @@ public class TwoLayerCache {
                 )
         );
 
-        // Populating caches with data from cacheFeeder
-        populateCaches(mLogger, ramCache, hddCache, cacheFeeder);
+        try {
+            // Populating caches with data from cacheFeeder
+            populateCaches(ramCache, hddCache, cacheFeeder);
+            mLogger.info("Caches have been populated");
+        } catch (IOException exception) {
+            mLogger.error("Cannot populate HDD cache, some IO problem.");
+            mLogger.error(exception);
+        }
 
         // Run caching process
         mCacheProcessor = CacheProcessor.getInstance(mLogger, ramCache, hddCache, cacheFeeder, mArguments);
