@@ -8,10 +8,15 @@ version '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
     google()
+    maven {
+        url "https://dlcdn.apache.org/"
+    }
 }
 
 dependencies {
+    implementation 'commons-cli:commons-cli:1.5.0'
     implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.logging.log4j:log4j:2.20.0'
     implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'

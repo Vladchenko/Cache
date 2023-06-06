@@ -8,7 +8,9 @@ import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 import java.util.Locale;
 import java.util.Map;
 
-import static ru.cache.vlad.yanchenko.CacheConstants.PIPELINE_RUNS_NUMBER_DEFAULT;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_ENTRIES_FED_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.CacheConstants.DEFAULT_PIPELINE_RUNS_NUMBER;
 import static ru.cache.vlad.yanchenko.caches.CacheKind.*;
 
 /**
@@ -61,13 +63,13 @@ public class CacheArgumentsProcessor {
                 }
             } catch (NumberFormatException nfex) {
                 mLogger.info("Level 1 cache size is wrong, using default - "
-                        + CacheConstants.RAM_CACHE_ENTRIES_DEFAULT);
-                arguments.put("l1s", Integer.toString(CacheConstants.RAM_CACHE_ENTRIES_DEFAULT));
+                        + CacheConstants.DEFAULT_RAM_CACHE_ENTRIES);
+                arguments.put("l1s", Integer.toString(CacheConstants.DEFAULT_RAM_CACHE_ENTRIES));
             }
         } else {
             mLogger.info("Level 1 cache size is not set, using default - "
-                    + CacheConstants.RAM_CACHE_ENTRIES_DEFAULT);
-            arguments.put("l1s", Integer.toString(CacheConstants.RAM_CACHE_ENTRIES_DEFAULT));
+                    + CacheConstants.DEFAULT_RAM_CACHE_ENTRIES);
+            arguments.put("l1s", Integer.toString(CacheConstants.DEFAULT_RAM_CACHE_ENTRIES));
         }
     }
 
@@ -80,13 +82,13 @@ public class CacheArgumentsProcessor {
                 }
             } catch (NumberFormatException nfex) {
                 mLogger.info("Level 2 cache size is wrong, using default - "
-                        + CacheConstants.HDD_CACHE_ENTRIES_DEFAULT);
-                arguments.put("l2s", Integer.toString(CacheConstants.HDD_CACHE_ENTRIES_DEFAULT));
+                        + CacheConstants.DEFAULT_HDD_CACHE_ENTRIES);
+                arguments.put("l2s", Integer.toString(CacheConstants.DEFAULT_HDD_CACHE_ENTRIES));
             }
         } else {
             mLogger.info("Level 2 cache size is not set, using default - "
-                    + CacheConstants.HDD_CACHE_ENTRIES_DEFAULT);
-            arguments.put("l2s", Integer.toString(CacheConstants.HDD_CACHE_ENTRIES_DEFAULT));
+                    + CacheConstants.DEFAULT_HDD_CACHE_ENTRIES);
+            arguments.put("l2s", Integer.toString(CacheConstants.DEFAULT_HDD_CACHE_ENTRIES));
         }
     }
 
@@ -112,21 +114,21 @@ public class CacheArgumentsProcessor {
     private void processAccompanyingArguments(@NonNull Map<String, String> arguments) {
         // Defining how many entries will be fed to a caching process.
         try {
-            mLogger.info("Entries number is set to " + Integer.parseInt(arguments.get("m")));
+            mLogger.info("Entries number is set to " + Integer.parseInt(arguments.get(CACHE_ENTRIES_FED_ARGUMENT_KEY)));
         } catch (Exception nfe) {
-            mLogger.info("Entries number is not set, using default - " + CacheConstants.ENTRIES_NUMBER_DEFAULT);
-            arguments.put("m", Integer.toString(CacheConstants.ENTRIES_NUMBER_DEFAULT));
+            mLogger.info("Entries number is not set, using default - " + CacheConstants.DEFAULT_CACHE_ENTRIES_NUMBER);
+            arguments.put(CACHE_ENTRIES_FED_ARGUMENT_KEY, Integer.toString(CacheConstants.DEFAULT_CACHE_ENTRIES_NUMBER));
         }
 
         // Defining a cache process running times, i.e. how many times a caching process is to run.
         try {
-            String number = arguments.get("n");
+            String number = arguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY);
             Integer.parseInt(number);
-            arguments.put("n", number);
+            arguments.put(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY, number);
             mLogger.info("Cache process will run for " + number + " times");
         } catch (NumberFormatException nfex) {
-            mLogger.info("Cache process run times is not set, using default - " + PIPELINE_RUNS_NUMBER_DEFAULT);
-            arguments.put("n", Integer.toString(PIPELINE_RUNS_NUMBER_DEFAULT));
+            mLogger.info("Cache process run times is not set, using default - " + DEFAULT_PIPELINE_RUNS_NUMBER);
+            arguments.put(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY, Integer.toString(DEFAULT_PIPELINE_RUNS_NUMBER));
         }
         mLogger.info("");
     }

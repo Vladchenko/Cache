@@ -18,6 +18,8 @@ import ru.cache.vlad.yanchenko.utils.ValidatingUtils;
 import java.io.IOException;
 import java.util.Map;
 
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_ENTRIES_FED_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY;
 import static ru.cache.vlad.yanchenko.utils.CachePopulationUtils.populateCaches;
 
 /**
@@ -38,7 +40,7 @@ public class TwoLayerCache {
         ValidatingUtils.validateArguments(mLogger);
         // Processing command line arguments.
         CacheArgumentsProcessor argumentsProcessor = new CacheArgumentsProcessor(mLogger);
-        mArguments = argumentsProcessor.processArguments(new CacheArgumentsParser(mLogger).readArguments(args));
+        mArguments = argumentsProcessor.processArguments(new CacheArgumentsParser(mLogger).parseCommandLineArguments(args));
         ICache ramCache = new RAMCache(mLogger, mArguments);
         try {
             FileUtils.createFilesFolder(mLogger);
@@ -46,7 +48,7 @@ public class TwoLayerCache {
             e.printStackTrace();
         }
         ICache hddCache = new HDDCache(mLogger, mArguments);
-        CacheFeeder cacheFeeder = new CacheFeeder(Integer.parseInt(mArguments.get("n")));
+        CacheFeeder cacheFeeder = new CacheFeeder(Integer.parseInt(mArguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)));
         populateCaches(mLogger, ramCache, hddCache, cacheFeeder);
         mCacheProcessor = CacheProcessor.getInstance(mLogger, ramCache, hddCache, cacheFeeder, mArguments);
     }

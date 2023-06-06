@@ -1,16 +1,23 @@
 package ru.cache.vlad.yanchenko.arguments;
 
 import android.support.annotation.NonNull;
+import org.apache.commons.cli.*;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.Logger;
+import ru.cache.vlad.yanchenko.caches.CacheKind;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_ENTRIES_FED_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.CacheConstants.*;
+
 /**
  * Cache arguments parser
  */
-public class CacheArgumentsParser {
+public class CacheArgumentsParser implements ICacheArgumentsParser {
 
     private final Logger mLogger;
 
@@ -23,39 +30,119 @@ public class CacheArgumentsParser {
         mLogger = logger;
     }
 
-    /**
-     * Reading arguments entered from command line.
-     *
-     * @param args command line arguments
-     */
-    public Map<String, String> readArguments(@NonNull String[] args) {
-        // Delimiter that separates key from value in an entry.
-        String delimiters = "[=]+";    // Use = as a delimiter
-        // Map that represents "key=argument" entries, like (n=50).
+    @Override
+    public Map<String, String> parseCommandLineArguments(String[] args) {
+        Options options = new Options();
+        defineCommandLineOptions(options);
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = null;
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            mLogger.error(e.getMessage());
+            System.exit(1);
+        }
         Map<String, String> arguments = new HashMap<>();
-        String[] keyValueArg;
-        String currentArg;
-        for (String arg : args) {
-            currentArg = arg.toLowerCase(Locale.ROOT);
-            // Checking if a detailed report is enabled.
-            if (currentArg.equals("dr")) {
-                arguments.put("dr", "true");
-                continue;
-            }
-            // Checking if a testing is enabled.
-            if (currentArg.equals("test")) {
-                arguments.put("test", "true");
-                continue;
-            }
-            keyValueArg = currentArg.split(delimiters);
-            try {
-                if (!keyValueArg[0].isEmpty()) {
-                    arguments.put(keyValueArg[0].toLowerCase(), keyValueArg[1].toLowerCase());
-                }
-            } catch (Exception ex) {
-                mLogger.info("Some wrong argument present, check it.");
-            }
+
+        parseTestArgument(cmd, arguments);
+        parseDetailedReportArgument(cmd, arguments);
+        parseMaximumCacheEntriesArgument(cmd, arguments);
+        parseCachingProcessRunTimesArgument(cmd, arguments);
+        parseCacheKindArgument(cmd, arguments);
+        if (arguments.get("dr").equals("true")) {
+            printArguments(arguments);
         }
         return arguments;
+    }
+
+    private void printArguments(Map<String, String> arguments) {
+        mLogger.info("Command line arguments are: ");
+        mLogger.info(arguments);
+    }
+
+    private void defineCommandLineOptions(Options options) {
+        options.addOption(CACHE_ENTRIES_FED_ARGUMENT_KEY, true, "Number of entries to be fed to a cache processor");
+        options.addOption(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY, true, "Number of times cache pipeline is to run");
+        options.addOption("ck", true, "Cache kind - LRU/MRU");
+        options.addOption("dr", false, "If detailed report on cache operating should be provided");
+        options.addOption("l1s", true, "RAM cache maximum size");
+        options.addOption("l2s", true, "HDD cache maximum size");
+        options.addOption("test", false, "If cache test run to be performed");
+    }
+
+    private void parseCacheKindArgument(CommandLine cmd, Map<String, String> arguments) {
+        if (cmd.hasOption("ck")) {
+            if (EnumUtils.isValidEnum(CacheKind.class, cmd.getOptionValue("ck").toUpperCase(Locale.ROOT))) {
+                arguments.put("cachekind", cmd.getOptionValue("ck").toUpperCase(Locale.ROOT));
+            } else {
+                mLogger.info("Command line argument for cache kind is wrong, using default = " + DEFAULT_CACHE_KIND);
+                arguments.put("cachekind", DEFAULT_CACHE_KIND.toString());
+            }
+        } else {
+            mLogger.info("Command line argument for cache kind is not set, using default = " + DEFAULT_CACHE_KIND);
+            arguments.put("cachekind", DEFAULT_CACHE_KIND.toString());
+        }
+    }
+
+    private void parseCachingProcessRunTimesArgument(CommandLine cmd, Map<String, String> arguments) {
+        if (cmd.hasOption(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)) {
+            try {
+                if (Integer.parseInt(cmd.getOptionValue(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)) < DEFAULT_PIPELINE_RUNS_NUMBER) {
+                    mLogger.error("Cache process run times command line argument is small, using default = "
+                            + DEFAULT_PIPELINE_RUNS_NUMBER);
+                    arguments.put(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY, String.valueOf(DEFAULT_PIPELINE_RUNS_NUMBER));
+                } else {
+                    arguments.put(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY, cmd.getOptionValue(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY));
+                }
+            } catch (NumberFormatException mfex) {
+                mLogger.error("Command line argument for cache process run times is wrong, using default = "
+                        + DEFAULT_PIPELINE_RUNS_NUMBER);
+                arguments.put(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY, String.valueOf(DEFAULT_PIPELINE_RUNS_NUMBER));
+            }
+        } else {
+            mLogger.info("Command line argument for cache process run times is not stated, using default = "
+                    + DEFAULT_PIPELINE_RUNS_NUMBER);
+            arguments.put(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY, String.valueOf(DEFAULT_PIPELINE_RUNS_NUMBER));
+        }
+    }
+
+    private void parseMaximumCacheEntriesArgument(CommandLine cmd, Map<String, String> arguments) {
+        if (cmd.hasOption(CACHE_ENTRIES_FED_ARGUMENT_KEY)) {
+            try {
+                if (Integer.parseInt(cmd.getOptionValue(CACHE_ENTRIES_FED_ARGUMENT_KEY)) < DEFAULT_CACHE_ENTRIES_NUMBER) {
+                    mLogger.error("Command line argument for entries number for cache to get data from is small, " +
+                            "using default = " + DEFAULT_PIPELINE_RUNS_NUMBER);
+                    arguments.put(CACHE_ENTRIES_FED_ARGUMENT_KEY, String.valueOf(DEFAULT_CACHE_ENTRIES_NUMBER));
+                } else {
+                    arguments.put(CACHE_ENTRIES_FED_ARGUMENT_KEY, cmd.getOptionValue(CACHE_ENTRIES_FED_ARGUMENT_KEY));
+                }
+            } catch (NumberFormatException mfex) {
+                mLogger.error("Command line argument for entries number for cache to get data from is wrong, " +
+                        "using default = " + DEFAULT_CACHE_ENTRIES_NUMBER);
+                arguments.put(CACHE_ENTRIES_FED_ARGUMENT_KEY, String.valueOf(DEFAULT_CACHE_ENTRIES_NUMBER));
+            }
+        } else {
+            mLogger.info("Command line argument for entries number for cache to get data from is not stated, " +
+                    "using default = " + DEFAULT_CACHE_ENTRIES_NUMBER);
+            arguments.put(CACHE_ENTRIES_FED_ARGUMENT_KEY, String.valueOf(DEFAULT_CACHE_ENTRIES_NUMBER));
+        }
+    }
+
+    private void parseDetailedReportArgument(CommandLine cmd, Map<String, String> arguments) {
+        if (cmd.hasOption("dr")) {
+            arguments.put("dr", "true");
+            mLogger.info("Command line argument for detailed report is stated");
+        } else {
+            arguments.put("dr", "false");
+        }
+    }
+
+    private void parseTestArgument(CommandLine cmd, Map<String, String> arguments) {
+        if (cmd.hasOption("test")) {
+            mLogger.info("Command line argument for test is stated");
+            arguments.put("test", "true");
+        } else {
+            arguments.put("test", "false");
+        }
     }
 }

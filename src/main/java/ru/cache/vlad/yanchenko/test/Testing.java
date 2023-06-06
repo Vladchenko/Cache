@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_ENTRIES_FED_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY;
+
 /**
  * Class runs a test on all the present cache algorithms.
  *
@@ -57,7 +60,7 @@ public class Testing {
 
         // Setting a cache kind.
         mArguments.put("cachekind", CacheKind.LRU.toString());
-        for (int i = 0; i < Integer.parseInt(mArguments.get("n")); i++) {
+        for (int i = 0; i < Integer.parseInt(mArguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)); i++) {
             mCacheProcessor.processRequest(
                     mCacheProcessor.getCacheFeeder().requestObject()
             );
@@ -78,7 +81,7 @@ public class Testing {
 
         // Setting a cache kind.
         mArguments.put("cachekind", CacheKind.MRU.toString());
-        for (int i = 0; i < Integer.parseInt(mArguments.get("n")); i++) {
+        for (int i = 0; i < Integer.parseInt(mArguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)); i++) {
             mCacheProcessor.processRequest(mCacheProcessor.getCacheFeeder().requestObject());
         }
 

@@ -91,7 +91,7 @@ public final class FileUtils {
 //            filePrefix = "cache_file";
 //            repository.getLogger().info("It is set to default " + filePrefix);
         } else {
-            logger.info("File prefix is set to: " + FILE_EXTENSION);
+            logger.info("File extension is set to: " + FILE_EXTENSION);
         }
     }
 

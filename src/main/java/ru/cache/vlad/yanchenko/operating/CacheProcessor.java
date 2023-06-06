@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_ENTRIES_FED_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY;
+
 /**
  * Class is in charge of an operations done while a caching process is running.
  *
@@ -304,7 +307,7 @@ public class CacheProcessor {
         if (Boolean.parseBoolean(mArguments.get("dr"))) {
             mLogger.info("\n\n<<<--- Data retrieval/caching loop begun --->>>\n");
         }
-        for (int i = 0; i < Integer.parseInt(mArguments.get("n")); i++) {
+        for (int i = 0; i < Integer.parseInt(mArguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)); i++) {
             obj = processRequest(mCacheFeeder.requestObject());
         }
         CacheLoggingUtils.printSummary(mRamCache, mHddCache, mArguments);
