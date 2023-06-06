@@ -9,6 +9,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
 
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_DETAILED_REPORT_ARGUMENT_KEY;
 import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY;
 
 /**
@@ -55,7 +56,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
             if (!file.isDirectory()) {
                 try {
                     Files.delete(file.toPath());
-                    if (mArguments.get("dr") != null) {
+                    if (mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY) != null) {
                         mLogger.info(file.getName() + " was deleted");
                     }
                 } catch (IOException ioex) {

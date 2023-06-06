@@ -65,7 +65,7 @@ public class CacheProcessor {
         // Data that is going to be retrieved on an alleged request.
         Object obj = null;
 
-        if (Boolean.parseBoolean(mArguments.get("dr"))) {
+        if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
             printCaches();
             mLogger.info(">>> Requested key=" + key);
         }
@@ -99,7 +99,7 @@ public class CacheProcessor {
                     obj = mCacheFeeder.deliverObject(key);
                     // try adding a newly downloaded entry to a RAM cache.
                     mRamCache.addCacheEntry(key, obj);
-                    if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                    if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                         mLogger.info("Entry with key=" + key + " is added to a RAM cache.");
                     }
                     return obj;
@@ -109,7 +109,7 @@ public class CacheProcessor {
                      * an HDD cache and if HDD cache is full, remove the least
                      * used one. Then write to a RAM cache a new entry.
                      */
-                    if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                    if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                         mLogger.info("Both caches miss. RAM cache is full, performing an eviction.");
                     }
                     if (mHddCache.getSize() < mHddCache.getEntriesNumber()) {
@@ -120,7 +120,7 @@ public class CacheProcessor {
                         try {
                             mHddCache.addCacheEntry(key_, mRamCache.getCacheEntry(key_));
 //                            hddCache.getMapFrequency().put(key_, 0);
-                            if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                            if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                                 mLogger.info("An entry with key=" + key_ + " is moved to an HDD cache.");
                                 mLogger.info("Entry with key=" + key + " is moved to a RAM cache.");
                                 mLogger.info("");
@@ -142,7 +142,7 @@ public class CacheProcessor {
                          * cache, then move the least used RAM cache entry to an HDD
                          * cache and write a new entry to RAM cache.
                          */
-                        if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                        if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                             mLogger.info("HDD cache is full, removing a least used entry.");
                         }
                         // Getting the least used entry in an HDD cache 
@@ -150,7 +150,7 @@ public class CacheProcessor {
                         try {
                             // and removing this entry.
                             mHddCache.removeCacheEntry(key_);
-                            if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                            if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                                 mLogger.info("Entry with key=" + key_ + " is removed from an HDD cache. ");
                             }
                         } catch (NotPresentException ex) {
@@ -162,7 +162,7 @@ public class CacheProcessor {
                             // Moving least used RAM entry to HDD cache.
                             mHddCache.addCacheEntry(key_, mRamCache.getCacheEntry(key_));
 //                            hddCache.getMapFrequency().put(key_, 0);
-                            if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                            if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                                 mLogger.info("Least used RAM cache entry with key="
                                         + key_ + " is moved to an HDD cache. ");
                             }
@@ -171,12 +171,12 @@ public class CacheProcessor {
                         }
                         // Removing least used entry from a RAM cache.
                         mRamCache.removeCacheEntry(key_);
-                        if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                        if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                             mLogger.info("Least used RAM cache entry with key=" + key_ + " is removed.");
                         }
                         // Adding a newly downloaded entry to a RAM cache.
                         mRamCache.addCacheEntry(key, mCacheFeeder.deliverObject(key));
-                        if (Boolean.parseBoolean(mArguments.get("dr"))) {
+                        if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                             mLogger.info("New entry with key=" + key + " is added to a RAM cache.");
                             mLogger.info("");
                         }
@@ -258,7 +258,7 @@ public class CacheProcessor {
             mLogger.info("Cannot recache, some IO problem. Cache integrity is broken.");
         }
 
-        if (Boolean.parseBoolean(mArguments.get("dr"))) {
+        if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
             mLogger.info("Recaching has been done.");
             mLogger.info("Object in RAM cache key=" + keyRAMCache + " has been moved to an HDD cache.");
             mLogger.info("Object in HDD cache key=" + keyHDDCache + " has been moved to a RAM cache.");
@@ -299,7 +299,7 @@ public class CacheProcessor {
      */
     public void performCachingProcess() throws NotPresentException, IOException, ClassNotFoundException {
         Object obj;
-        if (Boolean.parseBoolean(mArguments.get("dr"))) {
+        if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
             mLogger.info("\n\n<<<--- Data retrieval/caching loop begun --->>>\n");
         }
         for (int i = 0; i < Integer.parseInt(mArguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)); i++) {

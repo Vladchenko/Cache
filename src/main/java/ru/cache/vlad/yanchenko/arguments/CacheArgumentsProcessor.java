@@ -45,11 +45,11 @@ public class CacheArgumentsProcessor {
     }
 
     private void processDetailedReportArgument(Map<String, String> arguments) {
-        if (arguments.containsKey("dr")) {
-            mLogger.info(">>> Caching process report is set to be detailed.");
+        if (arguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY).equals("true")) {
+            mLogger.info("Caching process report is set to be detailed.");
             CacheLoggingUtils.printArgs(arguments);
         } else {
-            mLogger.info(">>> Caching process report is set to be not detailed.");
+            mLogger.info("Caching process report is set to be not detailed.");
         }
     }
 
@@ -108,7 +108,8 @@ public class CacheArgumentsProcessor {
     private void processAccompanyingArguments(@NonNull Map<String, String> arguments) {
         // Defining how many entries will be fed to a caching process.
         try {
-            mLogger.info("Entries number is set to " + Integer.parseInt(arguments.get(CACHE_ENTRIES_FED_ARGUMENT_KEY)));
+            mLogger.info("Number of entries caches to run on set to "
+                    + Integer.parseInt(arguments.get(CACHE_ENTRIES_FED_ARGUMENT_KEY)));
         } catch (Exception nfe) {
             mLogger.info("Entries number is not set, using default - " + CacheConstants.DEFAULT_CACHE_ENTRIES_NUMBER);
             arguments.put(CACHE_ENTRIES_FED_ARGUMENT_KEY, Integer.toString(CacheConstants.DEFAULT_CACHE_ENTRIES_NUMBER));

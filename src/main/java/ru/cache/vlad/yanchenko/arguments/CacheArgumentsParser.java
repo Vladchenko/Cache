@@ -45,25 +45,17 @@ public class CacheArgumentsParser implements ICacheArgumentsParser {
 
         parseTestArgument(cmd, arguments);
         parseDetailedReportArgument(cmd, arguments);
-        parseMaximumCacheEntriesArgument(cmd, arguments);
+        parseMaximumEntriesToBeFedToCacheArgument(cmd, arguments);
         parseCachingProcessRunTimesArgument(cmd, arguments);
         parseCacheKindArgument(cmd, arguments);
-        if (arguments.get("dr").equals("true")) {
-            printArguments(arguments);
-        }
         return arguments;
-    }
-
-    private void printArguments(Map<String, String> arguments) {
-        mLogger.info("Command line arguments are: ");
-        mLogger.info(arguments);
     }
 
     private void defineCommandLineOptions(Options options) {
         options.addOption(CACHE_ENTRIES_FED_ARGUMENT_KEY, true, "Number of entries to be fed to a cache processor");
         options.addOption(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY, true, "Number of times cache pipeline is to run");
-        options.addOption(CACHE_KIND_ARGUMENT_KEY, true, "Cache kind - LRU/MRU");
-        options.addOption("dr", false, "If detailed report on cache operating should be provided");
+        options.addOption(CACHE_KIND_ARGUMENT_KEY, true, "Cache kind - LRU/MRU/LFU");
+        options.addOption(CACHE_DETAILED_REPORT_ARGUMENT_KEY, false, "If detailed report on cache operating should be provided");
         options.addOption("l1s", true, "RAM cache maximum size");
         options.addOption("l2s", true, "HDD cache maximum size");
         options.addOption("test", false, "If cache test run to be performed");
@@ -107,12 +99,12 @@ public class CacheArgumentsParser implements ICacheArgumentsParser {
         }
     }
 
-    private void parseMaximumCacheEntriesArgument(CommandLine cmd, Map<String, String> arguments) {
+    private void parseMaximumEntriesToBeFedToCacheArgument(CommandLine cmd, Map<String, String> arguments) {
         if (cmd.hasOption(CACHE_ENTRIES_FED_ARGUMENT_KEY)) {
             try {
                 if (Integer.parseInt(cmd.getOptionValue(CACHE_ENTRIES_FED_ARGUMENT_KEY)) < DEFAULT_CACHE_ENTRIES_NUMBER) {
                     mLogger.error("Command line argument for entries number for cache to get data from is small, " +
-                            "using default = " + DEFAULT_PIPELINE_RUNS_NUMBER);
+                            "using default = " + DEFAULT_CACHE_ENTRIES_NUMBER);
                     arguments.put(CACHE_ENTRIES_FED_ARGUMENT_KEY, String.valueOf(DEFAULT_CACHE_ENTRIES_NUMBER));
                 } else {
                     arguments.put(CACHE_ENTRIES_FED_ARGUMENT_KEY, cmd.getOptionValue(CACHE_ENTRIES_FED_ARGUMENT_KEY));
@@ -130,11 +122,11 @@ public class CacheArgumentsParser implements ICacheArgumentsParser {
     }
 
     private void parseDetailedReportArgument(CommandLine cmd, Map<String, String> arguments) {
-        if (cmd.hasOption("dr")) {
-            arguments.put("dr", "true");
+        if (cmd.hasOption(CACHE_DETAILED_REPORT_ARGUMENT_KEY)) {
+            arguments.put(CACHE_DETAILED_REPORT_ARGUMENT_KEY, "true");
             mLogger.info("Command line argument for detailed report is stated");
         } else {
-            arguments.put("dr", "false");
+            arguments.put(CACHE_DETAILED_REPORT_ARGUMENT_KEY, "false");
         }
     }
 
