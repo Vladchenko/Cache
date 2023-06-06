@@ -10,8 +10,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_ENTRIES_FED_ARGUMENT_KEY;
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.*;
 import static ru.cache.vlad.yanchenko.CacheConstants.*;
 
 /**
@@ -63,7 +62,7 @@ public class CacheArgumentsParser implements ICacheArgumentsParser {
     private void defineCommandLineOptions(Options options) {
         options.addOption(CACHE_ENTRIES_FED_ARGUMENT_KEY, true, "Number of entries to be fed to a cache processor");
         options.addOption(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY, true, "Number of times cache pipeline is to run");
-        options.addOption("ck", true, "Cache kind - LRU/MRU");
+        options.addOption(CACHE_KIND_ARGUMENT_KEY, true, "Cache kind - LRU/MRU");
         options.addOption("dr", false, "If detailed report on cache operating should be provided");
         options.addOption("l1s", true, "RAM cache maximum size");
         options.addOption("l2s", true, "HDD cache maximum size");
@@ -71,17 +70,19 @@ public class CacheArgumentsParser implements ICacheArgumentsParser {
     }
 
     private void parseCacheKindArgument(CommandLine cmd, Map<String, String> arguments) {
-        if (cmd.hasOption("ck")) {
-            if (EnumUtils.isValidEnum(CacheKind.class, cmd.getOptionValue("ck").toUpperCase(Locale.ROOT))) {
-                arguments.put("cachekind", cmd.getOptionValue("ck").toUpperCase(Locale.ROOT));
+        String cacheKind = "";
+        if (cmd.hasOption(CACHE_KIND_ARGUMENT_KEY)) {
+            if (EnumUtils.isValidEnum(CacheKind.class, cmd.getOptionValue(CACHE_KIND_ARGUMENT_KEY).toUpperCase(Locale.ROOT))) {
+                cacheKind = cmd.getOptionValue(CACHE_KIND_ARGUMENT_KEY);
             } else {
                 mLogger.info("Command line argument for cache kind is wrong, using default = " + DEFAULT_CACHE_KIND);
-                arguments.put("cachekind", DEFAULT_CACHE_KIND.toString());
+                cacheKind = DEFAULT_CACHE_KIND.toString();
             }
         } else {
             mLogger.info("Command line argument for cache kind is not set, using default = " + DEFAULT_CACHE_KIND);
-            arguments.put("cachekind", DEFAULT_CACHE_KIND.toString());
+            cacheKind = DEFAULT_CACHE_KIND.toString();
         }
+        arguments.put(CACHE_KIND_ARGUMENT_KEY, cacheKind.toUpperCase(Locale.ROOT));
     }
 
     private void parseCachingProcessRunTimesArgument(CommandLine cmd, Map<String, String> arguments) {

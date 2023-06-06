@@ -12,8 +12,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_ENTRIES_FED_ARGUMENT_KEY;
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.*;
 
 /**
  * Class is in charge of an operations done while a caching process is running.
@@ -116,7 +115,7 @@ public class CacheProcessor {
                     if (mHddCache.getSize() < mHddCache.getEntriesNumber()) {
                         // Getting the least used entry in a RAM cache.
                         Object key_ = mRamCache.getLeastUsed(
-                                CacheKind.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT)));
+                                CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY)));
                         // Moving least used RAM entry to an HDD cache.
                         try {
                             mHddCache.addCacheEntry(key_, mRamCache.getCacheEntry(key_));
@@ -147,7 +146,7 @@ public class CacheProcessor {
                             mLogger.info("HDD cache is full, removing a least used entry.");
                         }
                         // Getting the least used entry in an HDD cache 
-                        Object key_ = mHddCache.getLeastUsed(CacheKind.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT)));
+                        Object key_ = mHddCache.getLeastUsed(CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY)));
                         try {
                             // and removing this entry.
                             mHddCache.removeCacheEntry(key_);
@@ -155,14 +154,10 @@ public class CacheProcessor {
                                 mLogger.info("Entry with key=" + key_ + " is removed from an HDD cache. ");
                             }
                         } catch (NotPresentException ex) {
-                            mLogger.info("!!! HDD cache entry failed to be removed, it is absent.");
+                            mLogger.error("!!! HDD cache entry failed to be removed, it is absent.");
                         }
                         // Getting the least used entry in a RAM cache.
-                        key_ = mRamCache.getLeastUsed(
-                                CacheKind.valueOf(
-                                        mArguments.get("cachekind").toUpperCase(Locale.ROOT)
-                                )
-                        );
+                        key_ = mRamCache.getLeastUsed(CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY)));
                         try {
                             // Moving least used RAM entry to HDD cache.
                             mHddCache.addCacheEntry(key_, mRamCache.getCacheEntry(key_));
@@ -202,7 +197,7 @@ public class CacheProcessor {
      * Recaching the data in a caches. When data should be moved from an HDD cache, to a RAM cache.
      */
     private void reCache(@NonNull Object key) {
-        switch (CacheKind.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
+        switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
             case LFU -> {
                 /*
                  * If there was an HDD cache hit, then check if there is any

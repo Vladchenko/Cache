@@ -7,8 +7,7 @@ import ru.cache.vlad.yanchenko.caches.ICache;
 
 import java.util.Map;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_ENTRIES_FED_ARGUMENT_KEY;
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.*;
 
 /**
  * Utils to log the caching events.
@@ -41,7 +40,7 @@ public final class CacheLoggingUtils {
                                     @NonNull Map<String, String> arguments) {
         sLogger.info("");
         sLogger.info("--- Summary ---------------------------------------");
-        sLogger.info("| Cache algorithm : " + arguments.get("cachekind"));
+        sLogger.info("| Cache algorithm : " + arguments.get(CACHE_KIND_ARGUMENT_KEY));
         sLogger.info("| Pipeline ran for: " + arguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY) + " times");
         sLogger.info("| RAM cache hits  : " + ramCache.getCacheHits() + " times");
         sLogger.info("| HDD cache hits  : " + hddCache.getCacheHits() + " times");

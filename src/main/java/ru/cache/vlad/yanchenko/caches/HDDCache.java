@@ -9,6 +9,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
 
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY;
+
 /**
  * In charge of an operations made with a RAM cache.
  *
@@ -34,7 +36,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         mLogger = logger;
         mArguments = arguments;
         mCacheEntriesNumber = Integer.parseInt(mArguments.get("l2s"));
-        switch (CacheKind.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
+        switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
             case LFU, MRU -> mCacheEntries = new HashMap<>();
             case LRU -> mCacheEntries = new LinkedHashMap<>();
         }
@@ -80,7 +82,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
             // Increasing a call count for this entry.
 //            mapFrequency.put(key, mapFrequency.get(key) + 1);
             mLastAccessedEntryKey = key;
-            switch (CacheKind.valueOf(mArguments.get("cachekind").toUpperCase(Locale.ROOT))) {
+            switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
                 case LFU -> {
                 }
                 case LRU -> {

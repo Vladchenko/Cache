@@ -8,8 +8,7 @@ import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 import java.util.Locale;
 import java.util.Map;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_ENTRIES_FED_ARGUMENT_KEY;
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.*;
 import static ru.cache.vlad.yanchenko.CacheConstants.DEFAULT_PIPELINE_RUNS_NUMBER;
 import static ru.cache.vlad.yanchenko.caches.CacheKind.*;
 
@@ -93,20 +92,15 @@ public class CacheArgumentsProcessor {
     }
 
     private void processCacheKind(@NonNull Map<String, String> arguments) {
-        if (arguments.get("cachekind") == null
-                && arguments.get("ck") == null) {
+        if (arguments.get(CACHE_KIND_ARGUMENT_KEY) == null) {
             mLogger.info("Cache kind is not set, used default - Most Recently Used.");
-            arguments.put("cachekind", String.valueOf(MRU));
+            arguments.put(CACHE_KIND_ARGUMENT_KEY, String.valueOf(MRU));
         } else {
-            String ck = arguments.get("cachekind");
-            if (ck == null) {
-                ck = arguments.get("ck");
-            }
-            switch (valueOf(ck.toUpperCase(Locale.ROOT))) {
-                case LFU -> mLogger.info("cachekind is set to - " + LFU);
-                case LRU -> mLogger.info("cachekind is set to - " + LRU);
-                case MRU -> mLogger.info("cachekind is set to - " + MRU);
-                default -> mLogger.info("cachekind is set to - " + MRU);
+            switch (valueOf(arguments.get(CACHE_KIND_ARGUMENT_KEY))) {
+                case LFU -> mLogger.info("Cache kind is set to - " + LFU);
+                case LRU -> mLogger.info("Cache kind is set to - " + LRU);
+                case MRU -> mLogger.info("Cache kind is set to - " + MRU);
+                default -> mLogger.info("Cache kind is set to - " + MRU);
             }
         }
     }
