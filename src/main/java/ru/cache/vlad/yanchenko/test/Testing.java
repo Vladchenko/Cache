@@ -52,7 +52,7 @@ public class Testing {
                 mCacheProcessor.getCacheFeeder().copyData(
                         mTestingObjects));
 
-        // Putting all the entries from a testing map to a map that's going to be fed to a caching algorithm.
+        // Putting all the entries from a testing map to a map that's going to be fed to a caching pipeline.
         mCacheProcessor.getCacheFeeder().setMapObjectsFed(
                 mCacheProcessor.getCacheFeeder().copyData(mTestingObjects)
         );
@@ -66,8 +66,17 @@ public class Testing {
         }
         // Printing a summary for a current caching process.
         CacheLoggingUtils.printSummary(mCacheProcessor.getRamCache(), mCacheProcessor.getHddCache(), mArguments);
-        mCacheProcessor.getRamCache().clearCache();
-        mCacheProcessor.getHddCache().clearCache();
+        try {
+            mCacheProcessor.getRamCache().clearCache();
+        } catch (IOException ioex) {
+            mLogger.error(ioex.getMessage());
+        }
+        try {
+            mCacheProcessor.getHddCache().clearCache();
+        } catch (IOException ioex) {
+            mLogger.error(ioex.getMessage());
+        }
+
         mCacheProcessor.getRamCache().resetCacheStatistics();
         mCacheProcessor.getHddCache().resetCacheStatistics();
         mLogger.info("");

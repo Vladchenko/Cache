@@ -1,7 +1,6 @@
 package ru.cache.vlad.yanchenko.utils;
 
 import android.support.annotation.NonNull;
-import org.apache.logging.log4j.Logger;
 import ru.cache.vlad.yanchenko.caches.ICache;
 import ru.cache.vlad.yanchenko.operating.CacheFeeder;
 
@@ -28,11 +27,11 @@ public final class CachePopulationUtils {
             @NonNull ICache hddCache,
             @NonNull CacheFeeder cacheFeeder) throws IOException {
         while (ramCache.getSize() < ramCache.getEntriesNumber()) {
-            ramCache.addCacheEntry(cacheFeeder.requestObject(),
+            ramCache.putEntry(cacheFeeder.requestObject(),
                     cacheFeeder.deliverObject(cacheFeeder.requestObject()));
         }
         while (hddCache.getSize() < hddCache.getEntriesNumber()) {
-            hddCache.addCacheEntry(cacheFeeder.requestObject(),
+            hddCache.putEntry(cacheFeeder.requestObject(),
                     cacheFeeder.deliverObject(cacheFeeder.requestObject()));
         }
     }

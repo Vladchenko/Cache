@@ -18,16 +18,16 @@ public interface ICache {
     Map<Object, Object> getCacheEntries();
 
     /** Clearing a cache of all the entries. */
-    void clearCache();
+    void clearCache() throws IOException;
 
     /** Adding an entry to a cache. */
-    void addCacheEntry(@NonNull Object key, @NonNull Object obj) throws IOException;
+    void putEntry(@NonNull Object key, @NonNull Object obj) throws IOException;
     
     /** Getting the least used entry to make an eviction. */
     Object getLeastUsed(@NonNull CacheKind cacheKind);
     
     /** Getting requested object by key. */
-    Object getCacheEntry(@NonNull Object key) throws IOException, ClassNotFoundException;
+    Object getEntry(@NonNull Object key) throws IOException, ClassNotFoundException;
 
     /** Checking if a specific object exists. */
     boolean hasCacheEntry(@NonNull Object key);

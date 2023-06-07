@@ -19,7 +19,6 @@ import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY
  */
 public class HDDCache extends AbstractCache implements Serializable, ICache {
 
-    private final Logger mLogger;
     private final Map<String, String> mArguments;
 
     private int mCacheHits = 0;
@@ -30,18 +29,15 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     /**
      * Create an instance of this class
      *
-     * @param logger    to log the events
-     * @param arguments for define settings of a cache process
+     * @param arguments from command line
      */
-    public HDDCache(@NonNull Logger logger, @NonNull Map<String, String> arguments) {
-        mLogger = logger;
+    public HDDCache(@NonNull Map<String, String> arguments) {
         mArguments = arguments;
         mCacheEntriesNumber = Integer.parseInt(mArguments.get("l2s"));
         switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
             case LFU, MRU -> mCacheEntries = new HashMap<>();
             case LRU -> mCacheEntries = new LinkedHashMap<>();
         }
-        clearCache();           // Clear a cache before run a caching loop
     }
 
     @Override
@@ -50,18 +46,11 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public void clearCache() {
+    public void clearCache() throws IOException {
         File dir = new File(FileUtils.FILES_FOLDER);
         for (File file : Objects.requireNonNull(dir.listFiles())) {
             if (!file.isDirectory()) {
-                try {
-                    Files.delete(file.toPath());
-                    if (mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY) != null) {
-                        mLogger.info(file.getName() + " was deleted");
-                    }
-                } catch (IOException ioex) {
-                    mLogger.error(ioex.getMessage());
-                }
+                Files.delete(file.toPath());
             }
         }
         mCacheEntries.clear();
@@ -71,20 +60,21 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     // Uploading file to RAM.
     @Override
-    public Object getCacheEntry(@NonNull Object key) throws IOException, ClassNotFoundException {
-        Object obj = null;
-        FileInputStream fos;
-        ObjectInputStream ous;
+    public Object getEntry(@NonNull Object key) throws IOException, ClassNotFoundException {
+        Object obj;
+        FileInputStream fos = null;
+        ObjectInputStream ous = null;
         // Serializing object
-        fos = new FileInputStream((String) mCacheEntries.get(key));
-        ous = new ObjectInputStream(fos);
         try {
+            fos = new FileInputStream((String) mCacheEntries.get(key));
+            ous = new ObjectInputStream(fos);
             obj = ous.readObject();
             // Increasing a call count for this entry.
 //            mapFrequency.put(key, mapFrequency.get(key) + 1);
             mLastAccessedEntryKey = key;
             switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
                 case LFU -> {
+                    // TODO
                 }
                 case LRU -> {
                     obj = mCacheEntries.get(key);
@@ -95,23 +85,16 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
                     mLastAccessedEntryKey = key;
                     return mLastAccessedEntryKey;
                 }
+                default -> {
+                    // TODO
+                }
             }
-        } catch (ClassNotFoundException ex) {
-            mLogger.info("Class not found !");
         } finally {
             if (ous != null) {
-                try {
-                    ous.close();
-                } catch (Exception ex) {
-                    mLogger.info("HDDCache object read stream failed to close !");
-                }
+                ous.close();
             }
             if (fos != null) {
-                try {
-                    fos.close();
-                } catch (Exception ex) {
-                    mLogger.info("HDDCache file read stream failed to close !");
-                }
+                fos.close();
             }
         }
         return obj;
@@ -119,7 +102,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     // Saving file to disk.
     @Override
-    public void addCacheEntry(@NonNull Object key, @NonNull Object obj) throws IOException {
+    public void putEntry(@NonNull Object key, @NonNull Object obj) throws IOException {
         String fullFileName = FileUtils.FILES_FOLDER + FileUtils.FILE_PREFIX + key + FileUtils.FILE_EXTENSION;
         FileOutputStream fos;
         ObjectOutputStream ous;
@@ -128,18 +111,10 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         ous = new ObjectOutputStream(fos);
         ous.writeObject(obj);
         if (ous != null) {
-            try {
-                ous.close();
-            } catch (Exception ex) {
-                mLogger.info("HDDCache object write stream failed to close !");
-            }
+            ous.close();
         }
         if (fos != null) {
-            try {
-                fos.close();
-            } catch (Exception ex) {
-                mLogger.info("HDDCache file write stream failed to close !");
-            }
+            fos.close();
         }
 //        File file = new File(fullFileName);
 //        cacheSize += file.length();
@@ -157,7 +132,8 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 //            mapFrequency.remove(key);
             mCacheEntries.remove(key);
         } else {
-            throw new NotPresentException(file.getName(), mLogger);
+            throw new NotPresentException("\tEntry with key=" + key + ", value=" + file.getName()
+                    + " is absent in cache");
         }
     }
 

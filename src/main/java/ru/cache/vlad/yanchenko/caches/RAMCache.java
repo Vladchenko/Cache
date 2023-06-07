@@ -20,7 +20,6 @@ import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY
  */
 public class RAMCache extends AbstractCache implements Serializable, ICache {
 
-    private final Logger mLogger;   //TODO Log the cache events
     private final Map<String, String> mArguments;
 
     // Number of hits to a RAM cache done during one caching process.
@@ -37,11 +36,9 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     /**
      * Public constructor. Provides dependencies and creates instance of class
      *
-     * @param logger    to log the cache events
-     * @param arguments for define settings of a cache process
+     * @param arguments from command line
      */
-    public RAMCache(@NonNull Logger logger, @NonNull Map<String, String> arguments) {
-        mLogger = logger;
+    public RAMCache(@NonNull Map<String, String> arguments) {
         mArguments = arguments;
         mCacheEntriesNumber = Integer.parseInt(mArguments.get("l1s"));
         // Defining which kind of map to be used, depending on a cache kind.
@@ -68,7 +65,7 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public Object getCacheEntry(@NonNull Object key) {
+    public Object getEntry(@NonNull Object key) {
         mMapFrequency.put(key, mMapFrequency.get(key) + 1);
         mLastAccessedEntryKey = key;
         switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY).toUpperCase(Locale.ROOT))) {
@@ -95,7 +92,7 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public void addCacheEntry(@NonNull Object key, @NonNull Object obj) {
+    public void putEntry(@NonNull Object key, @NonNull Object obj) {
         mLastAccessedEntryKey = key;
         mCacheEntries.put(key, obj);
         mMapFrequency.put(key, 1);

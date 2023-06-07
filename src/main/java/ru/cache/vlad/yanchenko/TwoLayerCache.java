@@ -53,7 +53,7 @@ public class TwoLayerCache {
         }
 
         // Creating RAM cache
-        ICache ramCache = new RAMCache(mLogger, mArguments);
+        ICache ramCache = new RAMCache(mArguments);
 
         // Creating HDD cache folder^ if needed
         try {
@@ -63,7 +63,7 @@ public class TwoLayerCache {
         }
 
         // Creating HDD cache
-        ICache hddCache = new HDDCache(mLogger, mArguments);
+        ICache hddCache = new HDDCache(mArguments);
 
         // Creating cache feeder to fetch cache data to caches
         CacheFeeder cacheFeeder = new CacheFeeder(
