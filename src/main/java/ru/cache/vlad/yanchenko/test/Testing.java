@@ -5,13 +5,15 @@ import org.apache.logging.log4j.Logger;
 import ru.cache.vlad.yanchenko.caches.CacheKind;
 import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
+import ru.cache.vlad.yanchenko.operating.CacheFeeder;
 import ru.cache.vlad.yanchenko.operating.CacheProcessor;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.*;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY;
 
 /**
  * Class runs a test on all the present cache algorithms.
@@ -30,16 +32,20 @@ public class Testing {
      * Public constructor. Provides dependencies and creates an instance of a class.
      *
      * @param logger         to log a testing events
+     * @param cacheFeeder    cache data feeder
      * @param arguments      from command line
      * @param cacheProcessor operates the caches
      */
-    public Testing(@NonNull Logger logger, @NonNull Map<String, String> arguments, @NonNull CacheProcessor cacheProcessor) {
+    public Testing(@NonNull Logger logger,
+                   @NonNull CacheFeeder cacheFeeder,
+                   @NonNull Map<String, String> arguments,
+                   @NonNull CacheProcessor cacheProcessor) {
         mLogger = logger;
         mArguments = arguments;
         mTestingObjects = new HashMap<>();
         mCacheProcessor = cacheProcessor;
         // Populating a map for further using it as a template entry set for all the caching algorithms.
-        mTestingObjects = cacheProcessor.getCacheFeeder().populateData();
+        mTestingObjects = cacheFeeder.populateData();
     }
 
     /**

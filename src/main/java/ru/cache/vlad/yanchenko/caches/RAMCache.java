@@ -66,7 +66,6 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     @Override
     public Object getEntry(@NonNull Object key) {
         mMapFrequency.put(key, mMapFrequency.get(key) + 1);
-        mLastAccessedEntryKey = key;
         switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY).toUpperCase(Locale.ROOT))) {
             case LFU -> {
             }
@@ -82,7 +81,7 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
             }
             case MRU -> {
                 mLastAccessedEntryKey = key;
-                return mLastAccessedEntryKey;
+                return mCacheEntries.get(mLastAccessedEntryKey);
             }
         }
         return mCacheEntries.get(key);
@@ -97,7 +96,7 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public void removeCacheEntry(@NonNull Object key) {
+    public void removeEntry(@NonNull Object key) {
         mCacheEntries.remove(key);
         mMapFrequency.remove(key);
         mSize--;
@@ -118,16 +117,13 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public Object getLeastUsed(@NonNull CacheKind cacheKind) {
+    public Object getLeastUsedEntry(@NonNull CacheKind cacheKind) {
 //        return mapFrequency.lastKey();
         switch (cacheKind) {
             case LFU -> {
             }
             case LRU -> {
-                /*
-                 * Getting the first key from a map of objects, since first is
-                 * the one that was used least recently.
-                 */
+                // Getting the first key from a map of objects, since first is the one that was used least recently.
                 return mCacheEntries.entrySet().iterator().next().getKey();
             }
             case MRU -> {
@@ -137,42 +133,26 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
         return null;
     }
 
-    /**
-     * @return the hitsRAMCache
-     */
     @Override
     public int getCacheHits() {
         return mCacheHits;
     }
 
-    /**
-     * @param hitsRAMCache the hitsRAMCache to set
-     */
     @Override
     public void setCacheHits(int hitsRAMCache) {
         mCacheHits = hitsRAMCache;
     }
 
-    /**
-     * @return the missesRAMCache
-     */
     @Override
     public int getCacheMisses() {
         return mCacheMisses;
     }
 
-    /**
-     * @param missesRAMCache the missesRAMCache to set
-     */
     @Override
     public void setCacheMisses(int missesRAMCache) {
         mCacheMisses = missesRAMCache;
     }
 
-    /**
-     * TODO
-     * @return
-     */
     @Override
     public int getEntriesNumber() {
         return mCacheEntriesNumber;

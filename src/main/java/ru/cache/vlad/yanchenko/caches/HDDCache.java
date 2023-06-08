@@ -1,15 +1,18 @@
 package ru.cache.vlad.yanchenko.caches;
 
 import android.support.annotation.NonNull;
-import org.apache.logging.log4j.Logger;
 import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 import ru.cache.vlad.yanchenko.utils.FileUtils;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.*;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.LEVEL_2_CACHE_SIZE_ARGUMENT_KEY;
 
 /**
  * In charge of an operations made with a RAM cache.
@@ -124,7 +127,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public void removeCacheEntry(@NonNull Object key) throws NotPresentException {
+    public void removeEntry(@NonNull Object key) throws NotPresentException {
         File file = new File(FileUtils.FILES_FOLDER + FileUtils.FILE_PREFIX + key + FileUtils.FILE_EXTENSION);
         if (file.exists()) {
             file.delete();
@@ -147,7 +150,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public Object getLeastUsed(@NonNull CacheKind cacheKind) {
+    public Object getLeastUsedEntry(@NonNull CacheKind cacheKind) {
         switch (cacheKind) {
             case LFU -> {
             }
@@ -164,43 +167,26 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         return null;
     }
 
-    /**
-     * @return the hitsHDDCache
-     */
     @Override
     public int getCacheHits() {
         return mCacheHits;
     }
 
-    /**
-     * @param hitsHDDCache the hitsHDDCache to set
-     */
     @Override
     public void setCacheHits(int hitsHDDCache) {
         mCacheHits = hitsHDDCache;
     }
 
-    /**
-     * @return the missesHDDCache
-     */
     @Override
     public int getCacheMisses() {
         return mCacheMisses;
     }
 
-    /**
-     * @param missesHDDCache the missesHDDCache to set
-     */
     @Override
     public void setCacheMisses(int missesHDDCache) {
         mCacheMisses = missesHDDCache;
     }
 
-    /**
-     * TODO
-     *
-     * @return
-     */
     @Override
     public int getEntriesNumber() {
         return mCacheEntriesNumber;

@@ -112,7 +112,7 @@ public class CacheProcessor {
                      */
                     if (mHddCache.getSize() < mHddCache.getEntriesNumber()) {
                         // Getting the least used entry in a RAM cache.
-                        Object key_ = mRamCache.getLeastUsed(CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY)));
+                        Object key_ = mRamCache.getLeastUsedEntry(CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY)));
                         // Moving least used RAM entry to an HDD cache.
                         try {
                             mHddCache.putEntry(key_, mRamCache.getEntry(key_));
@@ -123,7 +123,7 @@ public class CacheProcessor {
                                 mLogger.info("");
                             }
                             // Removing such entry from a RAM cache.
-                            mRamCache.removeCacheEntry(key_);
+                            mRamCache.removeEntry(key_);
                             // Downloading a requested data from a mock source.
                             obj = mCacheFeeder.deliverObject(key);
                             // Adding a newly downloaded entry to a RAM cache.
@@ -143,10 +143,10 @@ public class CacheProcessor {
                             mLogger.info("HDD cache is full, removing a least used entry.");
                         }
                         // Getting the least used entry in an HDD cache 
-                        Object key_ = mHddCache.getLeastUsed(CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY)));
+                        Object key_ = mHddCache.getLeastUsedEntry(CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY)));
                         try {
                             // and removing this entry.
-                            mHddCache.removeCacheEntry(key_);
+                            mHddCache.removeEntry(key_);
                             if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                                 mLogger.info("Entry with key=" + key_ + " is removed from an HDD cache. ");
                             }
@@ -155,7 +155,7 @@ public class CacheProcessor {
                             mLogger.error(ex.getMessage());
                         }
                         // Getting the least used entry in a RAM cache.
-                        key_ = mRamCache.getLeastUsed(CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY)));
+                        key_ = mRamCache.getLeastUsedEntry(CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY)));
                         try {
                             // Moving least used RAM entry to HDD cache.
                             mHddCache.putEntry(key_, mRamCache.getEntry(key_));
@@ -168,7 +168,7 @@ public class CacheProcessor {
                             mLogger.info("!!! Cannot move to HDD cache ! Disk drive might be corrupt.");
                         }
                         // Removing least used entry from a RAM cache.
-                        mRamCache.removeCacheEntry(key_);
+                        mRamCache.removeEntry(key_);
                         if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                             mLogger.info("Least used RAM cache entry with key=" + key_ + " is removed.");
                         }
@@ -177,7 +177,6 @@ public class CacheProcessor {
                         mRamCache.putEntry(key, obj);
                         if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                             mLogger.info("New entry with key=" + key + " is added to a RAM cache.");
-                            mLogger.info("");
                         }
                     }
                 }
@@ -204,18 +203,16 @@ public class CacheProcessor {
             }
             case LRU ->
                     /*
-                     * If there was an HDD cache hit, then move this entry to a RAM
-                     * cache, and before that, define the least used one in a RAM
-                     * cache and move it back to HDD cache.
+                     * If there was an HDD cache hit, then move this entry to a RAM cache, and before that,
+                     * define the least used one in a RAM cache and move it back to HDD cache.
                      *
                      * RAM cache - first key in a map; HDD cache - requested key;
                      */
                     replaceEntries(mRamCache.getCacheEntries().entrySet().iterator().next().getKey(), key);
             case MRU ->
                     /*
-                     * If there was an HDD cache hit, then move this entry to a RAM
-                     * cache, and before that, define the least used one in a RAM
-                     * cache and move it back to HDD cache.
+                     * If there was an HDD cache hit, then move this entry to a RAM cache, and before that,
+                     * define the least used one in a RAM cache and move it back to HDD cache.
                      *
                      * RAM cache - keyLastAccessed; HDD cache - requested key;
                      */
@@ -225,6 +222,9 @@ public class CacheProcessor {
 
     /**
      * Swapping the least used object in a RAM cache with a most used object in an HDD cache.
+     *
+     * @param keyRAMCache memory cache
+     * @param keyHDDCache disk cache
      */
     private void replaceEntries(@NonNull Object keyRAMCache, @NonNull Object keyHDDCache) {
 
@@ -242,9 +242,9 @@ public class CacheProcessor {
 
         try {
             mHddCache.putEntry(keyRAMCache, mRamCache.getEntry(keyRAMCache));
-            mRamCache.removeCacheEntry(keyRAMCache);
+            mRamCache.removeEntry(keyRAMCache);
             mRamCache.putEntry(keyHDDCache, mHddCache.getEntry(keyHDDCache));
-            mHddCache.removeCacheEntry(keyHDDCache);
+            mHddCache.removeEntry(keyHDDCache);
         } catch (NotPresentException ex) {
             mLogger.info("Cannot recache, such entry is absent. Cache integrity is broken.");
         } catch (FileNotFoundException | ClassNotFoundException ex) {
@@ -261,9 +261,8 @@ public class CacheProcessor {
         }
     }
 
-    // Writing a contents of both the caches to the log file.
+    // Logging a contents of both the caches.
     private void printCaches() {
-
 //        if (ramCache.mapObjects instanceof LinkedHashMap) {
 //
 //        }
@@ -301,11 +300,12 @@ public class CacheProcessor {
             try {
                 obj = processRequest(mCacheFeeder.requestObject());
                 mLogger.info("Requested entry=" + obj + " delivered to a requester.");
-            } catch(NotPresentException npex) {
+                mLogger.info("");
+            } catch (NotPresentException npex) {
                 mLogger.error(npex);
-            } catch(ClassNotFoundException cnfex) {
+            } catch (ClassNotFoundException cnfex) {
                 mLogger.error(cnfex);
-            } catch(IOException ioex) {
+            } catch (IOException ioex) {
                 mLogger.error(ioex);
             }
         }

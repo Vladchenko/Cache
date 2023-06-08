@@ -30,10 +30,11 @@ public class TwoLayerCache {
 
     private Testing mTest;
     private final Logger mLogger;
+    private final CacheFeeder mCacheFeeder;
     private final CacheProcessor mCacheProcessor;
     private final Map<String, String> mArguments;
 
-    private TwoLayerCache(String[] args) throws IOException {
+    private TwoLayerCache(String[] args) {
         mLogger = CacheLoggingUtils.getLogger();
 
         // Validating file constants
@@ -66,7 +67,7 @@ public class TwoLayerCache {
         ICache hddCache = new HDDCache(mArguments);
 
         // Creating cache feeder to fetch cache data to caches
-        CacheFeeder cacheFeeder = new CacheFeeder(
+        mCacheFeeder = new CacheFeeder(
                 Integer.parseInt(
                         mArguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)
                 )
@@ -74,7 +75,7 @@ public class TwoLayerCache {
 
         try {
             // Populating caches with data from cacheFeeder
-            populateCaches(ramCache, hddCache, cacheFeeder);
+            populateCaches(ramCache, hddCache, mCacheFeeder);
             mLogger.info("Caches have been populated");
         } catch (IOException exception) {
             mLogger.error("Cannot populate HDD cache, some IO problem.");
@@ -82,7 +83,7 @@ public class TwoLayerCache {
         }
 
         // Run caching process
-        mCacheProcessor = CacheProcessor.getInstance(mLogger, ramCache, hddCache, cacheFeeder, mArguments);
+        mCacheProcessor = CacheProcessor.getInstance(mLogger, ramCache, hddCache, mCacheFeeder, mArguments);
     }
 
     /**
@@ -96,6 +97,7 @@ public class TwoLayerCache {
         if (Boolean.parseBoolean(twoLayerCache.mArguments.get(CACHE_TEST_ARGUMENT_KEY))) {
             twoLayerCache.mTest = new Testing(
                     twoLayerCache.mLogger,
+                    twoLayerCache.mCacheFeeder,
                     twoLayerCache.mArguments,
                     twoLayerCache.mCacheProcessor);
             twoLayerCache.mTest.runTesting();
