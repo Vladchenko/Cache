@@ -93,7 +93,7 @@ public class TwoLayerCache {
     public static void main(String[] args) throws NotPresentException, IOException, ClassNotFoundException {
         TwoLayerCache twoLayerCache = new TwoLayerCache(args);
         // Run a test, if a specific command line arguments says so.
-        if (Boolean.parseBoolean(twoLayerCache.mArguments.get("test"))) {
+        if (Boolean.parseBoolean(twoLayerCache.mArguments.get(CACHE_TEST_ARGUMENT_KEY))) {
             twoLayerCache.mTest = new Testing(
                     twoLayerCache.mLogger,
                     twoLayerCache.mArguments,

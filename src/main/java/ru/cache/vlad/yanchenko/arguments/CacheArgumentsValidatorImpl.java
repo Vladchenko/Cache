@@ -118,11 +118,11 @@ public class CacheArgumentsValidatorImpl implements CacheArgumentsValidator {
     }
 
     private void parseTestArgument(@NonNull CommandLine commandLine, @NonNull Map<String, String> arguments) {
-        if (commandLine.hasOption("test")) {
+        if (commandLine.hasOption(CACHE_TEST_ARGUMENT_KEY)) {
             mLogger.info("Command line argument for test is stated");
-            arguments.put("test", "true");
+            arguments.put(CACHE_TEST_ARGUMENT_KEY, "true");
         } else {
-            arguments.put("test", "false");
+            arguments.put(CACHE_TEST_ARGUMENT_KEY, "false");
         }
     }
 
