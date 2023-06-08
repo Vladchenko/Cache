@@ -103,18 +103,16 @@ public class CacheProcessor {
                     }
                     return obj;
                 } else {    // RAM cache is full, it needs an eviction.
-                    /*
-                     * Find the least used entry in a RAM cache and move it to
-                     * an HDD cache and if HDD cache is full, remove the least
-                     * used one. Then write to a RAM cache a new entry.
-                     */
                     if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                         mLogger.info("Both caches miss. RAM cache is full, performing an eviction.");
                     }
+                    /*
+                     * Find the least used entry in a RAM cache and move it to an HDD cache and if HDD cache is full,
+                     * remove the least used one. Then write to a RAM cache a new entry.
+                     */
                     if (mHddCache.getSize() < mHddCache.getEntriesNumber()) {
                         // Getting the least used entry in a RAM cache.
-                        Object key_ = mRamCache.getLeastUsed(
-                                CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY)));
+                        Object key_ = mRamCache.getLeastUsed(CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY)));
                         // Moving least used RAM entry to an HDD cache.
                         try {
                             mHddCache.putEntry(key_, mRamCache.getEntry(key_));
@@ -174,8 +172,9 @@ public class CacheProcessor {
                         if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                             mLogger.info("Least used RAM cache entry with key=" + key_ + " is removed.");
                         }
+                        obj = mCacheFeeder.deliverObject(key);
                         // Adding a newly downloaded entry to a RAM cache.
-                        mRamCache.putEntry(key, mCacheFeeder.deliverObject(key));
+                        mRamCache.putEntry(key, obj);
                         if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
                             mLogger.info("New entry with key=" + key + " is added to a RAM cache.");
                             mLogger.info("");
@@ -185,12 +184,8 @@ public class CacheProcessor {
             }
         }
 
-        // Fetching a requested entry to a CPU.
+        // Fetching a requested entry.
         return obj;
-    }
-
-    private void removeCacheEntry() {
-
     }
 
     /**
@@ -300,12 +295,12 @@ public class CacheProcessor {
     public void performCachingProcess() {
         Object obj;
         if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
-            mLogger.info("\n\n<<<--- Data retrieval/caching loop begun --->>>\n");
+            mLogger.info("\n\n<<<--- Data retrieval/caching loop has begun --->>>\n");
         }
         for (int i = 0; i < Integer.parseInt(mArguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)); i++) {
             try {
                 obj = processRequest(mCacheFeeder.requestObject());
-                mLogger.info("Cache entry=" + obj + " delivered to a requester.");
+                mLogger.info("Requested entry=" + obj + " delivered to a requester.");
             } catch(NotPresentException npex) {
                 mLogger.error(npex);
             } catch(ClassNotFoundException cnfex) {

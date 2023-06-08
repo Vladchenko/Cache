@@ -55,7 +55,7 @@ public class TwoLayerCache {
         // Creating RAM cache
         ICache ramCache = new RAMCache(mArguments);
 
-        // Creating HDD cache folder^ if needed
+        // Creating HDD cache folder, if needed
         try {
             FileUtils.createFilesFolder(mLogger);
         } catch (DirectoryException e) {
@@ -99,8 +99,7 @@ public class TwoLayerCache {
                     twoLayerCache.mArguments,
                     twoLayerCache.mCacheProcessor);
             twoLayerCache.mTest.runTesting();
-            // Else run a single cache algorithm.
-        } else {
+        } else { // Else run a single cache algorithm.
             twoLayerCache.mCacheProcessor.performCachingProcess();
         }
     }

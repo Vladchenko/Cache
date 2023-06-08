@@ -9,8 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.logging.log4j.Logger;
-
 import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY;
 import static ru.cache.vlad.yanchenko.ArgumentsConstants.LEVEL_1_CACHE_SIZE_ARGUMENT_KEY;
 
@@ -74,11 +72,9 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
             }
             case LRU -> {
                 /*
-                 * Since "lru" states that object to be moved is the one that
-                 * was least recently used, then we should put every requested
-                 * object to the end of the LinkedHashMap. Finally, we will have
-                 * a list of an objects beginning with least used, an ending
-                 * with most used.
+                 * Since "lru" states that object to be moved is the one that was least recently used, then one should
+                 * put every requested object to the end of the LinkedHashMap. Finally, one will have a list of
+                 * an objects beginning with least used, an ending with most used.
                  */
                 mTempObject = mCacheEntries.get(key);
                 mCacheEntries.remove(key);

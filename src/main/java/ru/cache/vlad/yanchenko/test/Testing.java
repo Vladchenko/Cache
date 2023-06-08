@@ -31,7 +31,7 @@ public class Testing {
      *
      * @param logger         to log a testing events
      * @param arguments      from command line
-     * @param cacheProcessor TODO
+     * @param cacheProcessor operates the caches
      */
     public Testing(@NonNull Logger logger, @NonNull Map<String, String> arguments, @NonNull CacheProcessor cacheProcessor) {
         mLogger = logger;
