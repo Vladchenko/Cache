@@ -43,7 +43,7 @@ public class CacheArgumentsParserImpl implements CacheArgumentsParser {
         options.addOption(CACHE_KIND_ARGUMENT_KEY, true, "Cache kind - LRU/MRU/LFU");
         options.addOption(CACHE_DETAILED_REPORT_ARGUMENT_KEY, false, "If detailed report on cache operating should be provided");
         options.addOption(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY, true, "RAM cache size");
-        options.addOption("l2s", true, "HDD cache size");
+        options.addOption(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY, true, "HDD cache size");
         options.addOption("test", false, "If cache test run to be performed");
     }
 }

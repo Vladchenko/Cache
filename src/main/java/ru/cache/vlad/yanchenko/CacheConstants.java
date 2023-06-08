@@ -21,11 +21,11 @@ public final class CacheConstants {
     /**
      * Minimum number of entries that RAM cache can hold.
      */
-    public static final int RAM_CACHE_ENTRIES_MINIMUM = 1;
+    public static final int MINIMUM_RAM_CACHE_ENTRIES = 1;
     /**
      * Minimum number of entries that HDD cache can hold.
      */
-    public static final int HDD_CACHE_ENTRIES_MINIMUM = 1;
+    public static final int MINIMUM_HDD_CACHE_ENTRIES = 1;
     /**
      * Number of entries to be fed to a cache processor.
      */

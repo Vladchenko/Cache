@@ -9,8 +9,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_DETAILED_REPORT_ARGUMENT_KEY;
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.*;
 
 /**
  * In charge of an operations made with a RAM cache.
@@ -33,7 +32,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
      */
     public HDDCache(@NonNull Map<String, String> arguments) {
         mArguments = arguments;
-        mCacheEntriesNumber = Integer.parseInt(mArguments.get("l2s"));
+        mCacheEntriesNumber = Integer.parseInt(mArguments.get(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY));
         switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
             case LFU, MRU -> mCacheEntries = new HashMap<>();
             case LRU -> mCacheEntries = new LinkedHashMap<>();

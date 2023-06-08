@@ -130,7 +130,7 @@ public class CacheArgumentsValidatorImpl implements CacheArgumentsValidator {
         if (commandLine.hasOption(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY)) {
             try {
                 int cacheSize = Integer.parseInt(commandLine.getOptionValue(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY));
-                if (cacheSize < CacheConstants.RAM_CACHE_ENTRIES_MINIMUM) {
+                if (cacheSize < CacheConstants.MINIMUM_RAM_CACHE_ENTRIES) {
                     mLogger.info("Level 1 cache size is small, using default - "
                             + CacheConstants.DEFAULT_RAM_CACHE_ENTRIES);
                 } else {
@@ -147,22 +147,22 @@ public class CacheArgumentsValidatorImpl implements CacheArgumentsValidator {
     }
 
     private void processHddCacheSizeArgument(@NonNull CommandLine commandLine, @NonNull Map<String, String> arguments) {
-        if (commandLine.hasOption("l2s")) {
+        if (commandLine.hasOption(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY)) {
             try {
-                int cacheSize = Integer.parseInt(commandLine.getOptionValue("l2s"));
-                if (cacheSize < CacheConstants.HDD_CACHE_ENTRIES_MINIMUM) {
+                int cacheSize = Integer.parseInt(commandLine.getOptionValue(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY));
+                if (cacheSize < CacheConstants.MINIMUM_HDD_CACHE_ENTRIES) {
                     mLogger.info("Level 2 cache size is small, using default - "
                             + CacheConstants.DEFAULT_HDD_CACHE_ENTRIES);
                 } else {
-                    arguments.put("l2s", String.valueOf(cacheSize));
+                    arguments.put(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY, String.valueOf(cacheSize));
                 }
             } catch (NumberFormatException nfex) {
                 mLogger.info("Level 2 cache size is wrong, using default - " + CacheConstants.DEFAULT_HDD_CACHE_ENTRIES);
-                arguments.put("l2s", Integer.toString(CacheConstants.DEFAULT_HDD_CACHE_ENTRIES));
+                arguments.put(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY, Integer.toString(CacheConstants.DEFAULT_HDD_CACHE_ENTRIES));
             }
         } else {
             mLogger.info("Level 2 cache size is not set, using default - " + CacheConstants.DEFAULT_HDD_CACHE_ENTRIES);
-            arguments.put("l2s", Integer.toString(CacheConstants.DEFAULT_HDD_CACHE_ENTRIES));
+            arguments.put(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY, Integer.toString(CacheConstants.DEFAULT_HDD_CACHE_ENTRIES));
         }
     }
 }
