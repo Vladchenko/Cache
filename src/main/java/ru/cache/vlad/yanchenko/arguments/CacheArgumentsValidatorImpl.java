@@ -127,22 +127,22 @@ public class CacheArgumentsValidatorImpl implements CacheArgumentsValidator {
     }
 
     private void processRamCacheSizeArgument(@NonNull CommandLine commandLine, @NonNull Map<String, String> arguments) {
-        if (commandLine.hasOption("l1s")) {
+        if (commandLine.hasOption(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY)) {
             try {
-                int cacheSize = Integer.parseInt(commandLine.getOptionValue("l1s"));
+                int cacheSize = Integer.parseInt(commandLine.getOptionValue(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY));
                 if (cacheSize < CacheConstants.RAM_CACHE_ENTRIES_MINIMUM) {
                     mLogger.info("Level 1 cache size is small, using default - "
                             + CacheConstants.DEFAULT_RAM_CACHE_ENTRIES);
                 } else {
-                    arguments.put("l1s", String.valueOf(cacheSize));
+                    arguments.put(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY, String.valueOf(cacheSize));
                 }
             } catch (NumberFormatException nfex) {
                 mLogger.info("Level 1 cache size is wrong, using default - " + CacheConstants.DEFAULT_RAM_CACHE_ENTRIES);
-                arguments.put("l1s", Integer.toString(CacheConstants.DEFAULT_RAM_CACHE_ENTRIES));
+                arguments.put(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY, Integer.toString(CacheConstants.DEFAULT_RAM_CACHE_ENTRIES));
             }
         } else {
             mLogger.info("Level 1 cache size is not set, using default - " + CacheConstants.DEFAULT_RAM_CACHE_ENTRIES);
-            arguments.put("l1s", Integer.toString(CacheConstants.DEFAULT_RAM_CACHE_ENTRIES));
+            arguments.put(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY, Integer.toString(CacheConstants.DEFAULT_RAM_CACHE_ENTRIES));
         }
     }
 

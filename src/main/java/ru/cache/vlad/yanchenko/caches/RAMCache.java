@@ -12,6 +12,7 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 
 import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.ArgumentsConstants.LEVEL_1_CACHE_SIZE_ARGUMENT_KEY;
 
 /**
  * In charge of an operations done with a RAM cache.
@@ -40,7 +41,7 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
      */
     public RAMCache(@NonNull Map<String, String> arguments) {
         mArguments = arguments;
-        mCacheEntriesNumber = Integer.parseInt(mArguments.get("l1s"));
+        mCacheEntriesNumber = Integer.parseInt(mArguments.get(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY));
         // Defining which kind of map to be used, depending on a cache kind.
         switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
             case LFU -> {
