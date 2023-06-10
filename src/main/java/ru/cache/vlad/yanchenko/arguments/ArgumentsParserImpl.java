@@ -4,12 +4,12 @@ import android.support.annotation.NonNull;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.Logger;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.*;
+import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.*;
 
 /**
  * Cache arguments parser
  */
-public class CacheArgumentsParserImpl implements CacheArgumentsParser {
+public class ArgumentsParserImpl implements ArgumentsParser {
 
     private final Logger mLogger;
 
@@ -18,7 +18,7 @@ public class CacheArgumentsParserImpl implements CacheArgumentsParser {
      *
      * @param logger logger to log the events
      */
-    public CacheArgumentsParserImpl(@NonNull Logger logger) {
+    public ArgumentsParserImpl(@NonNull Logger logger) {
         mLogger = logger;
     }
 

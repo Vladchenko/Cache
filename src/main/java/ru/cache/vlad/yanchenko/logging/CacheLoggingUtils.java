@@ -7,8 +7,8 @@ import ru.cache.vlad.yanchenko.caches.ICache;
 
 import java.util.Map;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY;
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY;
 
 /**
  * Utils to log the caching events.
@@ -47,23 +47,5 @@ public final class CacheLoggingUtils {
         sLogger.info("║ RAM cache misses: " + ramCache.getCacheMisses() + " times");
         sLogger.info("║ HDD cache misses: " + hddCache.getCacheMisses() + " times");
         sLogger.info("╚══════════════════════════════════╝");
-    }
-
-    /**
-     * Printing the command line arguments
-     *
-     * @param map of command line parameters
-     */
-    public static void printArgs(@NonNull Map<String, String> map) {
-        sLogger.info("Command line arguments are:");
-        if (map.isEmpty()) {
-            sLogger.info("No command line arguments present");
-        } else {
-            for (Map.Entry<String, String> entrySet : map.entrySet()) {
-                String key = entrySet.getKey();
-                String value = entrySet.getValue();
-                sLogger.info("\t\t" + key + "=" + value);
-            }
-        }
     }
 }

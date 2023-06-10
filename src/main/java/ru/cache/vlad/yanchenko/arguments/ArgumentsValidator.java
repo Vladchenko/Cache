@@ -4,6 +4,6 @@ import org.apache.commons.cli.CommandLine;
 
 import java.util.Map;
 
-public interface CacheArgumentsValidator {
+public interface ArgumentsValidator {
     Map<String, String> validateCommandLineArguments(CommandLine commandLine);
 }

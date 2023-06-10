@@ -1,4 +1,4 @@
-package ru.cache.vlad.yanchenko;
+package ru.cache.vlad.yanchenko.arguments;
 
 /**
  * Command line argument keys

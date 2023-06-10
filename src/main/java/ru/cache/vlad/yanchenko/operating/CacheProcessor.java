@@ -11,7 +11,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.*;
+import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.*;
+import static ru.cache.vlad.yanchenko.operating.CacheUtils.logCaches;
 
 /**
  * Class is in charge of an operations done while a caching process is running.
@@ -40,7 +41,16 @@ public class CacheProcessor {
         mCacheFeeder = cacheFeeder;
     }
 
-    // Public method that always returns the same instance of repository.
+    /**
+     * Provide singleton for this class.
+     *
+     * @param logger to log cache events
+     * @param ramCache memory cache
+     * @param hddCache disk cache
+     * @param cacheFeeder that feeds data to cache
+     * @param arguments that keep data to operate caches
+     * @return instance for this class
+     */
     public static CacheProcessor getInstance(
             @NonNull Logger logger,
             @NonNull ICache ramCache,
@@ -65,7 +75,8 @@ public class CacheProcessor {
         Object obj = null;
 
         if (Boolean.parseBoolean(mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
-            printCaches();
+            logCaches(mLogger, mRamCache, mHddCache);
+            mLogger.info("");
             mLogger.info(">>> Requested key=" + key);
         }
 
@@ -189,6 +200,8 @@ public class CacheProcessor {
 
     /**
      * Recaching the data in a caches. When data should be moved from an HDD cache, to a RAM cache.
+     *
+     * @param key to get an object by
      */
     private void reCache(@NonNull Object key) {
         switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
@@ -258,33 +271,6 @@ public class CacheProcessor {
             mLogger.info("Object in RAM cache key=" + keyRAMCache + " has been moved to an HDD cache.");
             mLogger.info("Object in HDD cache key=" + keyHDDCache + " has been moved to a RAM cache.");
             mLogger.info("");
-        }
-    }
-
-    // Logging a contents of both the caches.
-    private void printCaches() {
-//        if (ramCache.mapObjects instanceof LinkedHashMap) {
-//
-//        }
-        mLogger.info("********    RAM cache contents    ********");
-        if (mRamCache.getCacheEntries() != null) {
-            if (mRamCache.getCacheEntries().size() == 0) {
-                mLogger.info("\tCache is empty");
-            }
-            for (Map.Entry<Object, Object> entrySet : mRamCache.getCacheEntries().entrySet()) {
-                Object key = entrySet.getKey();
-                Object value = entrySet.getValue().toString();
-                mLogger.info("\tkey=" + key + ", value=" + value);
-            }
-            mLogger.info("********    HDD cache contents    ********");
-            if (mHddCache.getCacheEntries().size() == 0) {
-                mLogger.info("\tCache is empty");
-            }
-            for (Map.Entry<Object, Object> entrySet : mHddCache.getCacheEntries().entrySet()) {
-                Object key = entrySet.getKey();
-                Object value = entrySet.getValue();
-                mLogger.info("\tkey=" + key + ", value=" + ((String) value).split("[\\\\]+")[1]);
-            }
         }
     }
 

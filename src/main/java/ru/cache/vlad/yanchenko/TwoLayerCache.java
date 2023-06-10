@@ -1,8 +1,9 @@
 package ru.cache.vlad.yanchenko;
 
 import org.apache.logging.log4j.Logger;
-import ru.cache.vlad.yanchenko.arguments.CacheArgumentsParserImpl;
-import ru.cache.vlad.yanchenko.arguments.CacheArgumentsValidatorImpl;
+import ru.cache.vlad.yanchenko.arguments.ArgumentsParserImpl;
+import ru.cache.vlad.yanchenko.arguments.ArgumentsUtils;
+import ru.cache.vlad.yanchenko.arguments.ArgumentsValidatorImpl;
 import ru.cache.vlad.yanchenko.caches.HDDCache;
 import ru.cache.vlad.yanchenko.caches.ICache;
 import ru.cache.vlad.yanchenko.caches.RAMCache;
@@ -18,8 +19,8 @@ import ru.cache.vlad.yanchenko.utils.ValidatingUtils;
 import java.io.IOException;
 import java.util.Map;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.*;
-import static ru.cache.vlad.yanchenko.utils.CachePopulationUtils.populateCaches;
+import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.*;
+import static ru.cache.vlad.yanchenko.operating.CacheUtils.populateCaches;
 
 /**
  * Entry point class.
@@ -41,16 +42,16 @@ public class TwoLayerCache {
         ValidatingUtils.validateFileConstants(mLogger);
 
         // Processing command line arguments
-        CacheArgumentsValidatorImpl argumentsValidator = new CacheArgumentsValidatorImpl(mLogger);
+        ArgumentsValidatorImpl argumentsValidator = new ArgumentsValidatorImpl(mLogger);
 
         // Validating command line arguments
         mArguments = argumentsValidator.validateCommandLineArguments(
-                new CacheArgumentsParserImpl(mLogger).parseCommandLineArguments(args)
+                new ArgumentsParserImpl(mLogger).parseCommandLineArguments(args)
         );
 
         // Printing command line arguments if detailed report argument is on
         if (mArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY).equals("true")) {
-            CacheLoggingUtils.printArgs(mArguments);
+            ArgumentsUtils.printArgs(mLogger, mArguments);
         }
 
         // Creating RAM cache

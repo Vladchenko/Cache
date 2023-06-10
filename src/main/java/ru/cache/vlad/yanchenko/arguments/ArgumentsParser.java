@@ -5,7 +5,7 @@ import org.apache.commons.cli.CommandLine;
 /**
  * Command line arguments parser
  */
-public interface CacheArgumentsParser {
+public interface ArgumentsParser {
 
 
     /**

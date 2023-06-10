@@ -11,8 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY;
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.LEVEL_2_CACHE_SIZE_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.LEVEL_2_CACHE_SIZE_ARGUMENT_KEY;
 
 /**
  * In charge of an operations made with a RAM cache.

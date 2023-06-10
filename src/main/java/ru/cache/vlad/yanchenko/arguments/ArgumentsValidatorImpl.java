@@ -4,22 +4,20 @@ import android.support.annotation.NonNull;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.Logger;
-import ru.cache.vlad.yanchenko.CacheConstants;
+import ru.cache.vlad.yanchenko.caches.CacheConstants;
 import ru.cache.vlad.yanchenko.caches.CacheKind;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.*;
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_DETAILED_REPORT_ARGUMENT_KEY;
-import static ru.cache.vlad.yanchenko.CacheConstants.*;
-import static ru.cache.vlad.yanchenko.CacheConstants.DEFAULT_CACHE_ENTRIES_NUMBER;
+import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.*;
+import static ru.cache.vlad.yanchenko.caches.CacheConstants.*;
 
 /**
  * Command line arguments validator
  */
-public class CacheArgumentsValidatorImpl implements CacheArgumentsValidator {
+public class ArgumentsValidatorImpl implements ArgumentsValidator {
 
     private final Logger mLogger;
 
@@ -28,7 +26,7 @@ public class CacheArgumentsValidatorImpl implements CacheArgumentsValidator {
      *
      * @param logger to log the events
      */
-    public CacheArgumentsValidatorImpl(@NonNull Logger logger) {
+    public ArgumentsValidatorImpl(@NonNull Logger logger) {
         mLogger = logger;
     }
 

@@ -1,6 +1,4 @@
-package ru.cache.vlad.yanchenko;
-
-import ru.cache.vlad.yanchenko.caches.CacheKind;
+package ru.cache.vlad.yanchenko.caches;
 
 /**
  * Constants for the program.

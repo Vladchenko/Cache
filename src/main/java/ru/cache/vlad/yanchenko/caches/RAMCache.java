@@ -9,8 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY;
-import static ru.cache.vlad.yanchenko.ArgumentsConstants.LEVEL_1_CACHE_SIZE_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.CACHE_KIND_ARGUMENT_KEY;
+import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.LEVEL_1_CACHE_SIZE_ARGUMENT_KEY;
 
 /**
  * In charge of an operations done with a RAM cache.
