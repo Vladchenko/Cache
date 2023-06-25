@@ -22,6 +22,8 @@ RAM cache - кэш первого уровня, HDD cache - кэш второг�
 	m целое_число 	- Количество записей в выборке, из которых случайным образом запрашивается запись из кэша.
 
 TODO:
+        - ! Files are not put into Data Cache folder, fix it
+        - Move constants to gradle
         - ? Make caches not to be fully filled in the beginning
         - ? Maybe validate some more arguments
         - Put all hardcodes to consts
@@ -33,3 +35,4 @@ TODO:
         - Multithreading (JavaRx2/3)
         - DI (Dagger2)
         - Check cache algorithms
+        - Unit tests

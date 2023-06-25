@@ -44,12 +44,12 @@ public class CacheProcessor {
     /**
      * Provide singleton for this class.
      *
-     * @param logger to log cache events
-     * @param ramCache memory cache
-     * @param hddCache disk cache
-     * @param cacheFeeder that feeds data to cache
-     * @param arguments that keep data to operate caches
-     * @return instance for this class
+     * @param logger        to log the events
+     * @param ramCache      memory cache
+     * @param hddCache      disk cache
+     * @param cacheFeeder   cache data feeder
+     * @param arguments     command line arguments
+     * @return              processor for cache
      */
     public static CacheProcessor getInstance(
             @NonNull Logger logger,

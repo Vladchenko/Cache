@@ -10,6 +10,7 @@ import java.util.Optional;
  */
 public interface CacheArgumentsParser {
 
+
     /**
      * Reading arguments entered from command line.
      *
