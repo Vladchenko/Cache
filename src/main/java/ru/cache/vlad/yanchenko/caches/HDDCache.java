@@ -37,14 +37,14 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         mArguments = arguments;
         mCacheEntriesNumber = Integer.parseInt(mArguments.get(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY));
         switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
-            case LFU, MRU -> mCacheEntries = new HashMap<>();
-            case LRU -> mCacheEntries = new LinkedHashMap<>();
+            case LFU, MRU -> cacheEntries = new HashMap<>();
+            case LRU -> cacheEntries = new LinkedHashMap<>();
         }
     }
 
     @Override
     public Map<Object, Object> getCacheEntries() {
-        return mCacheEntries;
+        return cacheEntries;
     }
 
     @Override
@@ -55,9 +55,9 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
                 Files.delete(file.toPath());
             }
         }
-        mCacheEntries.clear();
+        cacheEntries.clear();
 //        mapFrequency.clear();
-        mSize = 0;
+        size = 0;
     }
 
     // Uploading file to RAM.
@@ -68,24 +68,24 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         ObjectInputStream ous = null;
         // Serializing object
         try {
-            fos = new FileInputStream((String) mCacheEntries.get(key));
+            fos = new FileInputStream((String) cacheEntries.get(key));
             ous = new ObjectInputStream(fos);
             obj = ous.readObject();
             // Increasing a call count for this entry.
 //            mapFrequency.put(key, mapFrequency.get(key) + 1);
-            mLastAccessedEntryKey = key;
+            lastAccessedEntryKey = key;
             switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
                 case LFU -> {
                     // TODO
                 }
                 case LRU -> {
-                    obj = mCacheEntries.get(key);
-                    mCacheEntries.remove(key);
-                    mCacheEntries.put(key, obj);
+                    obj = cacheEntries.get(key);
+                    cacheEntries.remove(key);
+                    cacheEntries.put(key, obj);
                 }
                 case MRU -> {
-                    mLastAccessedEntryKey = key;
-                    return mLastAccessedEntryKey;
+                    lastAccessedEntryKey = key;
+                    return lastAccessedEntryKey;
                 }
                 default -> {
                     // TODO
@@ -120,10 +120,10 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         }
 //        File file = new File(fullFileName);
 //        cacheSize += file.length();
-        mSize++;
+        size++;
 //        mapFrequency.put(key, 1);
-        mCacheEntries.put(key, fullFileName);
-        mLastAccessedEntryKey = key;
+        cacheEntries.put(key, fullFileName);
+        lastAccessedEntryKey = key;
     }
 
     @Override
@@ -132,7 +132,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         if (file.exists()) {
             file.delete();
 //            mapFrequency.remove(key);
-            mCacheEntries.remove(key);
+            cacheEntries.remove(key);
         } else {
             throw new NotPresentException("\tEntry with key=" + key + ", value=" + file.getName()
                     + " is absent in cache");
@@ -156,10 +156,10 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
             }
             case LRU -> {
                 // Getting the first key from a map of objects, since first is the one that was used least recently.
-                return mCacheEntries.entrySet().iterator().next().getKey();
+                return cacheEntries.entrySet().iterator().next().getKey();
             }
             case MRU -> {
-                return mLastAccessedEntryKey;
+                return lastAccessedEntryKey;
             }
             default -> {
             }

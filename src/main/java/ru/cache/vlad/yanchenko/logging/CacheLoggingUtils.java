@@ -15,7 +15,7 @@ import static ru.cache.vlad.yanchenko.ArgumentsConstants.CACHE_PIPELINE_RUN_TIME
  */
 public final class CacheLoggingUtils {
 
-    private static Logger sLogger;
+    private static Logger logger;
 
     private CacheLoggingUtils() { }
 
@@ -23,10 +23,10 @@ public final class CacheLoggingUtils {
      * Get logger to log the events
      */
     public static Logger getLogger() {
-        if (sLogger == null) {
-            sLogger = LogManager.getLogger(CacheLoggingUtils.class);
+        if (logger == null) {
+            logger = LogManager.getLogger(CacheLoggingUtils.class);
         }
-        return sLogger;
+        return logger;
     }
 
     /**
@@ -39,14 +39,14 @@ public final class CacheLoggingUtils {
     public static void printSummary(@NonNull ICache ramCache,
                                     @NonNull ICache hddCache,
                                     @NonNull Map<String, String> arguments) {
-        sLogger.info("╔══╣Summary╠═══════════════════════╗");
-        sLogger.info("║ Cache algorithm : " + arguments.get(CACHE_KIND_ARGUMENT_KEY));
-        sLogger.info("║ Pipeline ran for: " + arguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY) + " times");
-        sLogger.info("║ RAM cache hits  : " + ramCache.getCacheHits() + " times");
-        sLogger.info("║ HDD cache hits  : " + hddCache.getCacheHits() + " times");
-        sLogger.info("║ RAM cache misses: " + ramCache.getCacheMisses() + " times");
-        sLogger.info("║ HDD cache misses: " + hddCache.getCacheMisses() + " times");
-        sLogger.info("╚══════════════════════════════════╝");
+        logger.info("╔══╣Summary╠═══════════════════════╗");
+        logger.info("║ Cache algorithm : " + arguments.get(CACHE_KIND_ARGUMENT_KEY));
+        logger.info("║ Pipeline ran for: " + arguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY) + " times");
+        logger.info("║ RAM cache hits  : " + ramCache.getCacheHits() + " times");
+        logger.info("║ HDD cache hits  : " + hddCache.getCacheHits() + " times");
+        logger.info("║ RAM cache misses: " + ramCache.getCacheMisses() + " times");
+        logger.info("║ HDD cache misses: " + hddCache.getCacheMisses() + " times");
+        logger.info("╚══════════════════════════════════╝");
     }
 
     /**
@@ -55,14 +55,14 @@ public final class CacheLoggingUtils {
      * @param map of command line parameters
      */
     public static void printArgs(@NonNull Map<String, String> map) {
-        sLogger.info("Command line arguments are:");
+        logger.info("Command line arguments are:");
         if (map.isEmpty()) {
-            sLogger.info("No command line arguments present");
+            logger.info("No command line arguments present");
         } else {
             for (Map.Entry<String, String> entrySet : map.entrySet()) {
                 String key = entrySet.getKey();
                 String value = entrySet.getValue();
-                sLogger.info("\t\t" + key + "=" + value);
+                logger.info("\t\t" + key + "=" + value);
             }
         }
     }

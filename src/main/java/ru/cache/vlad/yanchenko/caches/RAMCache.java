@@ -46,20 +46,20 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
                 mMapObjectsLFU = new LinkedHashMap<>();
                 mMapFrequency = new HashMap<>();
             }
-            case LRU -> mCacheEntries = new LinkedHashMap<>();
-            case MRU -> mCacheEntries = new HashMap<>();
+            case LRU -> cacheEntries = new LinkedHashMap<>();
+            case MRU -> cacheEntries = new HashMap<>();
         }
         mMapFrequency = new LinkedHashMap<>();
     }
 
     @Override
     public Map<Object, Object> getCacheEntries() {
-        return mCacheEntries;
+        return cacheEntries;
     }
 
     @Override
     public void clearCache() {
-        mCacheEntries.clear();
+        cacheEntries.clear();
         mMapFrequency.clear();
     }
 
@@ -75,31 +75,31 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
                  * put every requested object to the end of the LinkedHashMap. Finally, one will have a list of
                  * an objects beginning with least used, an ending with most used.
                  */
-                mTempObject = mCacheEntries.get(key);
-                mCacheEntries.remove(key);
-                mCacheEntries.put(key, mTempObject);
+                tempObject = cacheEntries.get(key);
+                cacheEntries.remove(key);
+                cacheEntries.put(key, tempObject);
             }
             case MRU -> {
-                mLastAccessedEntryKey = key;
-                return mCacheEntries.get(mLastAccessedEntryKey);
+                lastAccessedEntryKey = key;
+                return cacheEntries.get(lastAccessedEntryKey);
             }
         }
-        return mCacheEntries.get(key);
+        return cacheEntries.get(key);
     }
 
     @Override
     public void putEntry(@NonNull Object key, @NonNull Object obj) {
-        mLastAccessedEntryKey = key;
-        mCacheEntries.put(key, obj);
+        lastAccessedEntryKey = key;
+        cacheEntries.put(key, obj);
         mMapFrequency.put(key, 1);
-        mSize++;
+        size++;
     }
 
     @Override
     public void removeEntry(@NonNull Object key) {
-        mCacheEntries.remove(key);
+        cacheEntries.remove(key);
         mMapFrequency.remove(key);
-        mSize--;
+        size--;
 //        if (lfu) {
 //            remove the one with a least mapFrequency
 //        }
@@ -113,7 +113,7 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
 
     @Override
     public boolean hasCacheEntry(@NonNull Object key) {
-        return mCacheEntries.containsKey(key);
+        return cacheEntries.containsKey(key);
     }
 
     @Override
@@ -124,10 +124,10 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
             }
             case LRU -> {
                 // Getting the first key from a map of objects, since first is the one that was used least recently.
-                return mCacheEntries.entrySet().iterator().next().getKey();
+                return cacheEntries.entrySet().iterator().next().getKey();
             }
             case MRU -> {
-                return mLastAccessedEntryKey;
+                return lastAccessedEntryKey;
             }
         }
         return null;
