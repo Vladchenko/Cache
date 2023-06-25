@@ -11,9 +11,10 @@ public class CachesFactory {
 
     /**
      * Create a cache
+     *
      * @param cacheType that define a required cache
      * @param arguments that keep needed data to crate cache
-     * @return
+     * @return needed cache
      */
     ICache createCache(@NonNull CacheType cacheType, @NonNull Map<String, String> arguments) {
         switch (cacheType) {
