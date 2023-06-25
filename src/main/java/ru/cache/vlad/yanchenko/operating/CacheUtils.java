@@ -28,12 +28,12 @@ public final class CacheUtils {
             @NonNull ICache hddCache,
             @NonNull CacheFeeder cacheFeeder) throws IOException {
         while (ramCache.getSize() < ramCache.getEntriesNumber()) {
-            ramCache.putEntry(cacheFeeder.requestObject(),
-                    cacheFeeder.deliverObject(cacheFeeder.requestObject()));
+            ramCache.putEntry(cacheFeeder.fetchObject(),
+                    cacheFeeder.deliverObject(cacheFeeder.fetchObject()));
         }
         while (hddCache.getSize() < hddCache.getEntriesNumber()) {
-            hddCache.putEntry(cacheFeeder.requestObject(),
-                    cacheFeeder.deliverObject(cacheFeeder.requestObject()));
+            hddCache.putEntry(cacheFeeder.fetchObject(),
+                    cacheFeeder.deliverObject(cacheFeeder.fetchObject()));
         }
     }
 

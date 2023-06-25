@@ -21,12 +21,12 @@ import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.LEVEL_2_CACHE
  */
 public class HDDCache extends AbstractCache implements Serializable, ICache {
 
-    private final Map<String, String> mArguments;
+    private final Map<String, String> commandLineArguments;
 
-    private int mCacheHits = 0;
-    private int mCacheMisses = 0;
+    private int cacheHits = 0;
+    private int cacheMisses = 0;
     // Number of entries to be present in cache.
-    private int mCacheEntriesNumber;
+    private int cacheEntriesNumber;
 
     /**
      * Create an instance of this class
@@ -34,17 +34,17 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
      * @param arguments from command line
      */
     public HDDCache(@NonNull Map<String, String> arguments) {
-        mArguments = arguments;
-        mCacheEntriesNumber = Integer.parseInt(mArguments.get(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY));
-        switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
-            case LFU, MRU -> mCacheEntries = new HashMap<>();
-            case LRU -> mCacheEntries = new LinkedHashMap<>();
+        commandLineArguments = arguments;
+        cacheEntriesNumber = Integer.parseInt(commandLineArguments.get(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY));
+        switch (CacheKind.valueOf(commandLineArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
+            case LFU, MRU -> cacheEntries = new HashMap<>();
+            case LRU -> cacheEntries = new LinkedHashMap<>();
         }
     }
 
     @Override
     public Map<Object, Object> getCacheEntries() {
-        return mCacheEntries;
+        return cacheEntries;
     }
 
     @Override
@@ -55,9 +55,9 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
                 Files.delete(file.toPath());
             }
         }
-        mCacheEntries.clear();
+        cacheEntries.clear();
 //        mapFrequency.clear();
-        mSize = 0;
+        size = 0;
     }
 
     // Uploading file to RAM.
@@ -68,24 +68,24 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         ObjectInputStream ous = null;
         // Serializing object
         try {
-            fos = new FileInputStream((String) mCacheEntries.get(key));
+            fos = new FileInputStream((String) cacheEntries.get(key));
             ous = new ObjectInputStream(fos);
             obj = ous.readObject();
             // Increasing a call count for this entry.
 //            mapFrequency.put(key, mapFrequency.get(key) + 1);
-            mLastAccessedEntryKey = key;
-            switch (CacheKind.valueOf(mArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
+            lastAccessedEntryKey = key;
+            switch (CacheKind.valueOf(commandLineArguments.get(CACHE_KIND_ARGUMENT_KEY))) {
                 case LFU -> {
                     // TODO
                 }
                 case LRU -> {
-                    obj = mCacheEntries.get(key);
-                    mCacheEntries.remove(key);
-                    mCacheEntries.put(key, obj);
+                    obj = cacheEntries.get(key);
+                    cacheEntries.remove(key);
+                    cacheEntries.put(key, obj);
                 }
                 case MRU -> {
-                    mLastAccessedEntryKey = key;
-                    return mLastAccessedEntryKey;
+                    lastAccessedEntryKey = key;
+                    return lastAccessedEntryKey;
                 }
                 default -> {
                     // TODO
@@ -120,10 +120,10 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         }
 //        File file = new File(fullFileName);
 //        cacheSize += file.length();
-        mSize++;
+        size++;
 //        mapFrequency.put(key, 1);
-        mCacheEntries.put(key, fullFileName);
-        mLastAccessedEntryKey = key;
+        cacheEntries.put(key, fullFileName);
+        lastAccessedEntryKey = key;
     }
 
     @Override
@@ -132,7 +132,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
         if (file.exists()) {
             file.delete();
 //            mapFrequency.remove(key);
-            mCacheEntries.remove(key);
+            cacheEntries.remove(key);
         } else {
             throw new NotPresentException("\tEntry with key=" + key + ", value=" + file.getName()
                     + " is absent in cache");
@@ -156,10 +156,10 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
             }
             case LRU -> {
                 // Getting the first key from a map of objects, since first is the one that was used least recently.
-                return mCacheEntries.entrySet().iterator().next().getKey();
+                return cacheEntries.entrySet().iterator().next().getKey();
             }
             case MRU -> {
-                return mLastAccessedEntryKey;
+                return lastAccessedEntryKey;
             }
             default -> {
             }
@@ -169,38 +169,38 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     @Override
     public int getCacheHits() {
-        return mCacheHits;
+        return cacheHits;
     }
 
     @Override
     public void setCacheHits(int hitsHDDCache) {
-        mCacheHits = hitsHDDCache;
+        cacheHits = hitsHDDCache;
     }
 
     @Override
     public int getCacheMisses() {
-        return mCacheMisses;
+        return cacheMisses;
     }
 
     @Override
     public void setCacheMisses(int missesHDDCache) {
-        mCacheMisses = missesHDDCache;
+        cacheMisses = missesHDDCache;
     }
 
     @Override
     public int getEntriesNumber() {
-        return mCacheEntriesNumber;
+        return cacheEntriesNumber;
     }
 
     @Override
     public void setEntriesNumber(int entriesNumber) {
-        mCacheEntriesNumber = entriesNumber;
+        cacheEntriesNumber = entriesNumber;
     }
 
     @Override
     public void resetCacheStatistics() {
-        mCacheMisses = 0;
-        mCacheHits = 0;
+        cacheMisses = 0;
+        cacheHits = 0;
     }
 
     /**
@@ -209,6 +209,6 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
      * @param hddCacheEntriesNumber
      */
     public void setHDDCacheEntriesNumber(int hddCacheEntriesNumber) {
-        mCacheEntriesNumber = hddCacheEntriesNumber;
+        cacheEntriesNumber = hddCacheEntriesNumber;
     }
 }

@@ -9,9 +9,9 @@ import ru.cache.vlad.yanchenko.exceptions.FilePrefixException;
 /**
  * Some data validating utils.
  */
-public final class ValidatingUtils {
+public final class ValidationUtils {
 
-    private ValidatingUtils() {
+    private ValidationUtils() {
     }
 
     /**

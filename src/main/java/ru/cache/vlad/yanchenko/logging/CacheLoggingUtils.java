@@ -15,7 +15,7 @@ import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.CACHE_PIPELIN
  */
 public final class CacheLoggingUtils {
 
-    private static Logger sLogger;
+    private static Logger logger;
 
     private CacheLoggingUtils() { }
 
@@ -23,10 +23,10 @@ public final class CacheLoggingUtils {
      * Get logger to log the events
      */
     public static Logger getLogger() {
-        if (sLogger == null) {
-            sLogger = LogManager.getLogger(CacheLoggingUtils.class);
+        if (logger == null) {
+            logger = LogManager.getLogger(CacheLoggingUtils.class);
         }
-        return sLogger;
+        return logger;
     }
 
     /**
@@ -39,13 +39,13 @@ public final class CacheLoggingUtils {
     public static void printSummary(@NonNull ICache ramCache,
                                     @NonNull ICache hddCache,
                                     @NonNull Map<String, String> arguments) {
-        sLogger.info("╔══╣Summary╠═══════════════════════╗");
-        sLogger.info("║ Cache algorithm : " + arguments.get(CACHE_KIND_ARGUMENT_KEY));
-        sLogger.info("║ Pipeline ran for: " + arguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY) + " times");
-        sLogger.info("║ RAM cache hits  : " + ramCache.getCacheHits() + " times");
-        sLogger.info("║ HDD cache hits  : " + hddCache.getCacheHits() + " times");
-        sLogger.info("║ RAM cache misses: " + ramCache.getCacheMisses() + " times");
-        sLogger.info("║ HDD cache misses: " + hddCache.getCacheMisses() + " times");
-        sLogger.info("╚══════════════════════════════════╝");
+        logger.info("╔══╣Summary╠═══════════════════════╗");
+        logger.info("║ Cache algorithm : " + arguments.get(CACHE_KIND_ARGUMENT_KEY));
+        logger.info("║ Pipeline ran for: " + arguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY) + " times");
+        logger.info("║ RAM cache hits  : " + ramCache.getCacheHits() + " times");
+        logger.info("║ HDD cache hits  : " + hddCache.getCacheHits() + " times");
+        logger.info("║ RAM cache misses: " + ramCache.getCacheMisses() + " times");
+        logger.info("║ HDD cache misses: " + hddCache.getCacheMisses() + " times");
+        logger.info("╚══════════════════════════════════╝");
     }
 }

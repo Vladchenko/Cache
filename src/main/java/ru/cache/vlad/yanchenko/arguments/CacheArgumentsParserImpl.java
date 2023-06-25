@@ -9,17 +9,17 @@ import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.*;
 /**
  * Cache arguments parser
  */
-public class ArgumentsParserImpl implements ArgumentsParser {
+public class CacheArgumentsParserImpl implements CacheArgumentsParser {
 
-    private final Logger mLogger;
+    private final Logger logger;
 
     /**
      * Public constructor - creates an instance of class
      *
      * @param logger logger to log the events
      */
-    public ArgumentsParserImpl(@NonNull Logger logger) {
-        mLogger = logger;
+    public CacheArgumentsParserImpl(@NonNull Logger logger) {
+        this.logger = logger;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class ArgumentsParserImpl implements ArgumentsParser {
         try {
             commandLine = parser.parse(options, args);
         } catch (ParseException e) {
-            mLogger.error(e.getMessage());
+            logger.error(e.getMessage());
             System.exit(1);
         }
         return commandLine;
