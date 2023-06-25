@@ -1,2 +1,12 @@
 /build/
 /dist/
+/logs
+Cache.iml
+Cache.bat
+/gradle
+gradlew
+gradlew.bat
+out/
+Cache Data/
+.gradle/
+.idea/
