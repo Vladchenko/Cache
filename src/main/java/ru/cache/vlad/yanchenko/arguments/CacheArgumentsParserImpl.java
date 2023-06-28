@@ -1,8 +1,8 @@
 package ru.cache.vlad.yanchenko.arguments;
 
-import android.support.annotation.NonNull;
 import org.apache.commons.cli.*;
-import org.apache.logging.log4j.Logger;
+
+import java.util.Optional;
 
 import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.*;
 
@@ -11,39 +11,53 @@ import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.*;
  */
 public class CacheArgumentsParserImpl implements CacheArgumentsParser {
 
-    private final Logger logger;
-
-    /**
-     * Public constructor - creates an instance of class
-     *
-     * @param logger logger to log the events
-     */
-    public CacheArgumentsParserImpl(@NonNull Logger logger) {
-        this.logger = logger;
-    }
-
     @Override
-    public CommandLine parseCommandLineArguments(String[] args) {
-        Options options = new Options();
-        defineCommandLineOptions(options);
+    public Optional<CommandLine> parse(String[] args) throws ParseException {
+        Options options = createCommandLineOptions();
         CommandLineParser parser = new DefaultParser();
-        CommandLine commandLine = null;
-        try {
-            commandLine = parser.parse(options, args);
-        } catch (ParseException e) {
-            logger.error(e.getMessage());
-            System.exit(1);
-        }
-        return commandLine;
+        return Optional.of(parser.parse(options, args));
     }
 
-    private void defineCommandLineOptions(Options options) {
-        options.addOption(CACHE_ENTRIES_FED_ARGUMENT_KEY, true, "Number of entries to be fed to a cache processor");
-        options.addOption(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY, true, "Number of times cache pipeline is to run");
-        options.addOption(CACHE_KIND_ARGUMENT_KEY, true, "Cache kind - LRU/MRU/LFU");
-        options.addOption(CACHE_DETAILED_REPORT_ARGUMENT_KEY, false, "If detailed report on cache operating should be provided");
-        options.addOption(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY, true, "RAM cache size");
-        options.addOption(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY, true, "HDD cache size");
-        options.addOption(CACHE_TEST_ARGUMENT_KEY, false, "If cache test run to be performed");
+    private Options createCommandLineOptions() {
+        Options options = new Options();
+        options.addOption(Option.builder()
+                .longOpt(CACHE_ENTRIES_FED_ARGUMENT_KEY)
+                .hasArg()
+                .argName("entries")
+                .desc("Number of entries to be fed to a cache processor")
+                .build());
+        options.addOption(Option.builder()
+                .longOpt(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)
+                .hasArg()
+                .argName("times")
+                .desc("Number of times cache pipeline is to run")
+                .build());
+        options.addOption(Option.builder()
+                .longOpt(CACHE_KIND_ARGUMENT_KEY)
+                .hasArg()
+                .argName("kind")
+                .desc("Cache kind - LRU/MRU/LFU")
+                .build());
+        options.addOption(Option.builder()
+                .longOpt(CACHE_DETAILED_REPORT_ARGUMENT_KEY)
+                .desc("If detailed report on cache operating should be provided")
+                .build());
+        options.addOption(Option.builder()
+                .longOpt(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY)
+                .hasArg()
+                .argName("size")
+                .desc("RAM cache size")
+                .build());
+        options.addOption(Option.builder()
+                .longOpt(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY)
+                .hasArg()
+                .argName("size")
+                .desc("HDD cache size")
+                .build());
+        options.addOption(Option.builder()
+                .longOpt(CACHE_TEST_ARGUMENT_KEY)
+                .desc("If cache test run to be performed")
+                .build());
+        return options;
     }
 }
