@@ -12,6 +12,7 @@ import ru.cache.vlad.yanchenko.exceptions.FilePrefixException;
 public final class ValidationUtils {
 
     private ValidationUtils() {
+        throw new IllegalStateException("Do not create an instance of a util class");
     }
 
     /**

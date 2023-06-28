@@ -7,9 +7,9 @@ import ru.cache.vlad.yanchenko.arguments.ArgumentsUtils;
 import ru.cache.vlad.yanchenko.arguments.CacheArgumentsParser;
 import ru.cache.vlad.yanchenko.arguments.CacheArgumentsParserImpl;
 import ru.cache.vlad.yanchenko.arguments.CacheArgumentsValidatorImpl;
-import ru.cache.vlad.yanchenko.caches.HDDCache;
+import ru.cache.vlad.yanchenko.caches.CacheType;
+import ru.cache.vlad.yanchenko.caches.CachesFactory;
 import ru.cache.vlad.yanchenko.caches.ICache;
-import ru.cache.vlad.yanchenko.caches.RAMCache;
 import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
 import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
@@ -45,6 +45,7 @@ public class TwoLayerCache {
         ValidationUtils.validateFileConstants(logger);
         CacheArgumentsValidatorImpl argumentsValidator = new CacheArgumentsValidatorImpl(logger);
         CacheArgumentsParser argumentsParser = new CacheArgumentsParserImpl();
+        CachesFactory cachesFactory = new CachesFactory();
 
         try {
             Optional<CommandLine> commandLineOpt = argumentsParser.parse(args);
@@ -60,7 +61,7 @@ public class TwoLayerCache {
             }
 
             // Creating RAM cache
-            ICache ramCache = new RAMCache(commandLineArguments);
+            ICache ramCache = cachesFactory.createCache(CacheType.RAM, commandLineArguments);
 
             // Creating HDD cache folder, if needed
             try {
@@ -70,7 +71,7 @@ public class TwoLayerCache {
             }
 
             // Creating HDD cache
-            ICache hddCache = new HDDCache(commandLineArguments);
+            ICache hddCache = cachesFactory.createCache(CacheType.HDD, commandLineArguments);
 
             // Creating cache feeder to fetch cache data to caches
             cacheFeeder = new CacheFeeder(

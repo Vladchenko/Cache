@@ -16,7 +16,7 @@ public class CachesFactory {
      * @param arguments that keep needed data to crate cache
      * @return needed cache
      */
-    ICache createCache(@NonNull CacheType cacheType, @NonNull Map<String, String> arguments) {
+    public ICache createCache(@NonNull CacheType cacheType, @NonNull Map<String, String> arguments) {
         switch (cacheType) {
             case RAM: {
                 return new RAMCache(arguments);

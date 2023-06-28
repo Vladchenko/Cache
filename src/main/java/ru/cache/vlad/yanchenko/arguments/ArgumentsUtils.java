@@ -11,6 +11,7 @@ import java.util.Map;
 public final class ArgumentsUtils {
 
     private ArgumentsUtils() {
+        throw new IllegalStateException("Do not create an instance of a util class");
     }
 
     /**

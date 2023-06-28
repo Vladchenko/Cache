@@ -8,11 +8,12 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Cache population utility.
+ * Cache population utils.
  */
 public final class CacheUtils {
 
     private CacheUtils() {
+        throw new IllegalStateException("Do not create an instance of a util class");
     }
 
     /**
@@ -65,7 +66,7 @@ public final class CacheUtils {
             for (Map.Entry<Object, Object> entrySet : hddCache.getCacheEntries().entrySet()) {
                 Object key = entrySet.getKey();
                 Object value = entrySet.getValue();
-                logger.info("\tkey=" + key + ", value=" + ((String) value).split("[\\\\]+")[1]);
+                logger.info("\tkey=" + key + ", value=" + ((String) value).split("[/]+")[1]);
             }
         }
     }

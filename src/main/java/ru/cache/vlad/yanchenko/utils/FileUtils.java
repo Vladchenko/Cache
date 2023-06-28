@@ -1,11 +1,10 @@
 package ru.cache.vlad.yanchenko.utils;
 
 import android.support.annotation.NonNull;
+import org.apache.logging.log4j.Logger;
 import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
 import ru.cache.vlad.yanchenko.exceptions.FileExtensionException;
 import ru.cache.vlad.yanchenko.exceptions.FilePrefixException;
-
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.regex.Matcher;
@@ -13,8 +12,6 @@ import java.util.regex.Pattern;
 
 /**
  * Checking validity of all the fields in the application.
- * <p>
- * Created by v.yanchenko on 02.09.2016.
  */
 public final class FileUtils {
 
@@ -23,7 +20,7 @@ public final class FileUtils {
     /**
      * Folder for a files that represents a 2nd level cache (HDD cache)
      */
-    public static final String FILES_FOLDER = "Cache Data\\";
+    public static final String FILES_FOLDER = "Cache Data/";
     /**
      * File prefix for files to be cached
      */
@@ -34,6 +31,7 @@ public final class FileUtils {
     public static final String FILE_EXTENSION = ".cache";
 
     private FileUtils() {
+        throw new IllegalStateException("Do not create an instance of a util class");
     }
 
     /**
@@ -44,15 +42,15 @@ public final class FileUtils {
      */
     public static void validateFilePath(@NonNull Logger logger) throws DirectoryException {
         // To perform a check if a path is to have any of these letters.
-        String pathSpecialCharacters = "[:<>|*/?]";
+        String pathSpecialCharacters = "[:<>|*?]";
         Pattern p = Pattern.compile(pathSpecialCharacters);
         Matcher m = p.matcher(FILES_FOLDER);
         if (m.find()) {
             // Some special characters are present, thus throw an exception.
             throw new DirectoryException("Folder path \"" + FILES_FOLDER + "\" has some special letters.", logger);
         } else {
-            // If filepath has no backslash at the end, add it.
-            if (FILES_FOLDER.lastIndexOf('\\') != FILES_FOLDER.length() - 1) {
+            // If filepath has no slash at the end, add it.
+            if (FILES_FOLDER.lastIndexOf('/') != FILES_FOLDER.length() - 1) {
                 logger.error("Add slash at the end of path " + FILES_FOLDER);
             }
         }

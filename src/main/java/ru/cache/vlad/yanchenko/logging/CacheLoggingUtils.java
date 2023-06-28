@@ -48,22 +48,4 @@ public final class CacheLoggingUtils {
         logger.info("║ HDD cache misses: " + hddCache.getCacheMisses() + " times");
         logger.info("╚══════════════════════════════════╝");
     }
-
-    /**
-     * Printing the command line arguments
-     *
-     * @param map of command line parameters
-     */
-    public static void printArgs(@NonNull Map<String, String> map) {
-        logger.info("Command line arguments are:");
-        if (map.isEmpty()) {
-            logger.info("No command line arguments present");
-        } else {
-            for (Map.Entry<String, String> entrySet : map.entrySet()) {
-                String key = entrySet.getKey();
-                String value = entrySet.getValue();
-                logger.info("\t\t" + key + "=" + value);
-            }
-        }
-    }
 }
