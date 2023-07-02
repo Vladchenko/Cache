@@ -16,7 +16,7 @@ import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.CACHE_KIND_AR
 import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.LEVEL_2_CACHE_SIZE_ARGUMENT_KEY;
 
 /**
- * In charge of an operations made with a RAM cache.
+ * In charge of an operations done with an HDD cache.
  *
  * @author v.yanchenko
  */
@@ -65,12 +65,9 @@ public class HDDCache<T, V> extends AbstractCache<T, V> implements Serializable,
     @Override
     public V getEntry(@NonNull T key) throws IOException, ClassNotFoundException {
         V obj;
-        FileInputStream fos = null;
-        ObjectInputStream ous = null;
         // Serializing object
-        try {
-            fos = new FileInputStream((String) cacheEntries.get(key));
-            ous = new ObjectInputStream(fos);
+        try (FileInputStream fos = new FileInputStream((String) cacheEntries.get(key));
+             ObjectInputStream ous = new ObjectInputStream(fos)) {
             obj = (V) ous.readObject();
             // Increasing a call count for this entry.
 //            mapFrequency.put(key, mapFrequency.get(key) + 1);
@@ -92,13 +89,6 @@ public class HDDCache<T, V> extends AbstractCache<T, V> implements Serializable,
                     // TODO
                 }
             }
-        } finally {
-            if (ous != null) {
-                ous.close();
-            }
-            if (fos != null) {
-                fos.close();
-            }
         }
         return obj;
     }
@@ -107,20 +97,11 @@ public class HDDCache<T, V> extends AbstractCache<T, V> implements Serializable,
     @Override
     public void putEntry(@NonNull T key, @NonNull V cacheEntry) throws IOException {
         String fullFileName = FileUtils.FILES_FOLDER + FileUtils.FILE_PREFIX + key + FileUtils.FILE_EXTENSION;
-        FileOutputStream fos;
-        ObjectOutputStream ous;
         // Deserializing object
-        fos = new FileOutputStream(fullFileName);
-        ous = new ObjectOutputStream(fos);
-        ous.writeObject(cacheEntry);
-        if (ous != null) {
-            ous.close();
+        try (FileOutputStream fos = new FileOutputStream(fullFileName);
+             ObjectOutputStream ous = new ObjectOutputStream(fos)) {
+            ous.writeObject(cacheEntry);
         }
-        if (fos != null) {
-            fos.close();
-        }
-//        File file = new File(fullFileName);
-//        cacheSize += file.length();
         size++;
 //        mapFrequency.put(key, 1);
         cacheEntries.put(key, (V) fullFileName);
@@ -204,14 +185,5 @@ public class HDDCache<T, V> extends AbstractCache<T, V> implements Serializable,
     public void resetCacheStatistics() {
         cacheMisses = 0;
         cacheHits = 0;
-    }
-
-    /**
-     * Set number of entries for HDD cache
-     *
-     * @param hddCacheEntriesNumber number of entries for HDD cache
-     */
-    public void setHDDCacheEntriesNumber(int hddCacheEntriesNumber) {
-        cacheEntriesNumber = hddCacheEntriesNumber;
     }
 }
