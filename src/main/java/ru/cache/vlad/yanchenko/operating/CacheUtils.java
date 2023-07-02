@@ -10,11 +10,7 @@ import java.util.Map;
 /**
  * Cache population utils.
  */
-public final class CacheUtils {
-
-    private CacheUtils() {
-        throw new IllegalStateException("Do not create an instance of a util class");
-    }
+public final class CacheUtils<T, V> {
 
     /**
      * Populating caches before running a caching-retrieval process.
@@ -24,17 +20,17 @@ public final class CacheUtils {
      * @param cacheFeeder cache data feeder
      * @throws IOException when a disk operating problem occurs
      */
-    public static void populateCaches(
-            @NonNull ICache ramCache,
-            @NonNull ICache hddCache,
+    public void populateCaches(
+            @NonNull ICache<T, V> ramCache,
+            @NonNull ICache<T, V> hddCache,
             @NonNull CacheFeeder cacheFeeder) throws IOException {
         while (ramCache.getSize() < ramCache.getEntriesNumber()) {
-            ramCache.putEntry(cacheFeeder.fetchObject(),
-                    cacheFeeder.deliverObject(cacheFeeder.fetchObject()));
+            ramCache.putEntry((T) cacheFeeder.fetchKey(),
+                    (V) cacheFeeder.deliverCacheEntry(cacheFeeder.fetchKey()));
         }
         while (hddCache.getSize() < hddCache.getEntriesNumber()) {
-            hddCache.putEntry(cacheFeeder.fetchObject(),
-                    cacheFeeder.deliverObject(cacheFeeder.fetchObject()));
+            hddCache.putEntry((T) cacheFeeder.fetchKey(),
+                    (V) cacheFeeder.deliverCacheEntry(cacheFeeder.fetchKey()));
         }
     }
 
@@ -45,7 +41,7 @@ public final class CacheUtils {
      * @param ramCache memory cache
      * @param hddCache disk cache
      */
-    public static void logCaches(@NonNull Logger logger, @NonNull ICache ramCache, @NonNull ICache hddCache) {
+    public void logCaches(@NonNull Logger logger, @NonNull ICache<T, V> ramCache, @NonNull ICache<T, V> hddCache) {
 //        if (ramCache.mapObjects instanceof LinkedHashMap) {
 //
 //        }
@@ -54,7 +50,7 @@ public final class CacheUtils {
             if (ramCache.getCacheEntries().size() == 0) {
                 logger.info("\tCache is empty");
             }
-            for (Map.Entry<Object, Object> entrySet : ramCache.getCacheEntries().entrySet()) {
+            for (Map.Entry<T, V> entrySet : ramCache.getCacheEntries().entrySet()) {
                 Object key = entrySet.getKey();
                 Object value = entrySet.getValue().toString();
                 logger.info("\tkey=" + key + ", value=" + value);
@@ -63,7 +59,7 @@ public final class CacheUtils {
             if (hddCache.getCacheEntries().size() == 0) {
                 logger.info("\tCache is empty");
             }
-            for (Map.Entry<Object, Object> entrySet : hddCache.getCacheEntries().entrySet()) {
+            for (Map.Entry<T, V> entrySet : hddCache.getCacheEntries().entrySet()) {
                 Object key = entrySet.getKey();
                 Object value = entrySet.getValue();
                 logger.info("\tkey=" + key + ", value=" + ((String) value).split("[/]+")[1]);

@@ -54,12 +54,12 @@ public class Testing {
     public void runTesting() throws NotPresentException, IOException, ClassNotFoundException {
 
         // Putting all the entries from a testing map to a msp that's going to be fed to a caching algorithm.
-        cacheProcessor.getCacheFeeder().setKeyToObjectsMap(
+        cacheProcessor.getCacheFeeder().setKeysToObjectsMap(
                 cacheProcessor.getCacheFeeder().copyData(
                         testingObjects));
 
         // Putting all the entries from a testing map to a map that's going to be fed to a caching pipeline.
-        cacheProcessor.getCacheFeeder().setKeyToObjectsMap(
+        cacheProcessor.getCacheFeeder().setKeysToObjectsMap(
                 cacheProcessor.getCacheFeeder().copyData(testingObjects)
         );
 
@@ -67,7 +67,7 @@ public class Testing {
         commandLineArguments.put(CACHE_KIND_ARGUMENT_KEY, CacheKind.LRU.toString());
         for (int i = 0; i < Integer.parseInt(commandLineArguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)); i++) {
             cacheProcessor.processRequest(
-                    cacheProcessor.getCacheFeeder().fetchObject()
+                    cacheProcessor.getCacheFeeder().fetchKey()
             );
         }
         // Printing a summary for a current caching process.
@@ -89,14 +89,16 @@ public class Testing {
         logger.info("");
 
         // Putting all the entries from a testing msp to a map that's going to be fed to a caching algorithm.
-        cacheProcessor.getCacheFeeder().setKeyToObjectsMap(
+        cacheProcessor.getCacheFeeder().setKeysToObjectsMap(
                 cacheProcessor.getCacheFeeder().copyData(
                         testingObjects));
 
         // Setting a cache kind.
         commandLineArguments.put(CACHE_KIND_ARGUMENT_KEY, CacheKind.MRU.toString());
+
+        // Run cache pipeline.
         for (int i = 0; i < Integer.parseInt(commandLineArguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)); i++) {
-            cacheProcessor.processRequest(cacheProcessor.getCacheFeeder().fetchObject());
+            cacheProcessor.processRequest(cacheProcessor.getCacheFeeder().fetchKey());
         }
 
         // Printing a summary for a current caching process.

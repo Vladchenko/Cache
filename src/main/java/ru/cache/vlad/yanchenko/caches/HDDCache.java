@@ -6,6 +6,7 @@ import ru.cache.vlad.yanchenko.utils.FileUtils;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.LEVEL_2_CACHE
  *
  * @author v.yanchenko
  */
-public class HDDCache extends AbstractCache implements Serializable, ICache {
+public class HDDCache<T, V> extends AbstractCache<T, V> implements Serializable, ICache<T, V> {
 
     private final Map<String, String> commandLineArguments;
 
@@ -43,7 +44,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public Map<Object, Object> getCacheEntries() {
+    public Map<T, V> getCacheEntries() {
         return cacheEntries;
     }
 
@@ -62,15 +63,15 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     // Uploading file to RAM.
     @Override
-    public Object getEntry(@NonNull Object key) throws IOException, ClassNotFoundException {
-        Object obj;
+    public V getEntry(@NonNull T key) throws IOException, ClassNotFoundException {
+        V obj;
         FileInputStream fos = null;
         ObjectInputStream ous = null;
         // Serializing object
         try {
             fos = new FileInputStream((String) cacheEntries.get(key));
             ous = new ObjectInputStream(fos);
-            obj = ous.readObject();
+            obj = (V) ous.readObject();
             // Increasing a call count for this entry.
 //            mapFrequency.put(key, mapFrequency.get(key) + 1);
             lastAccessedEntryKey = key;
@@ -85,7 +86,7 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
                 }
                 case MRU -> {
                     lastAccessedEntryKey = key;
-                    return lastAccessedEntryKey;
+                    obj = cacheEntries.get(lastAccessedEntryKey);
                 }
                 default -> {
                     // TODO
@@ -104,14 +105,14 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 
     // Saving file to disk.
     @Override
-    public void putEntry(@NonNull Object key, @NonNull Object obj) throws IOException {
+    public void putEntry(@NonNull T key, @NonNull V cacheEntry) throws IOException {
         String fullFileName = FileUtils.FILES_FOLDER + FileUtils.FILE_PREFIX + key + FileUtils.FILE_EXTENSION;
         FileOutputStream fos;
         ObjectOutputStream ous;
         // Deserializing object
         fos = new FileOutputStream(fullFileName);
         ous = new ObjectOutputStream(fos);
-        ous.writeObject(obj);
+        ous.writeObject(cacheEntry);
         if (ous != null) {
             ous.close();
         }
@@ -122,25 +123,25 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
 //        cacheSize += file.length();
         size++;
 //        mapFrequency.put(key, 1);
-        cacheEntries.put(key, fullFileName);
+        cacheEntries.put(key, (V) fullFileName);
         lastAccessedEntryKey = key;
     }
 
     @Override
-    public void removeEntry(@NonNull Object key) throws NotPresentException {
-        File file = new File(FileUtils.FILES_FOLDER + FileUtils.FILE_PREFIX + key + FileUtils.FILE_EXTENSION);
-        if (file.exists()) {
-            file.delete();
-//            mapFrequency.remove(key);
-            cacheEntries.remove(key);
-        } else {
-            throw new NotPresentException("\tEntry with key=" + key + ", value=" + file.getName()
-                    + " is absent in cache");
+    public void removeEntry(@NonNull T key) throws NotPresentException {
+        Path filePath = Path.of(FileUtils.FILES_FOLDER + FileUtils.FILE_PREFIX + key + FileUtils.FILE_EXTENSION);
+        try {
+            Files.delete(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new NotPresentException("\tEntry with key=" + key + ", value=" + filePath + " is absent in cache");
         }
+//            mapFrequency.remove(key);
+        cacheEntries.remove(key);
     }
 
     @Override
-    public boolean hasCacheEntry(@NonNull Object key) {
+    public boolean hasCacheEntry(@NonNull T key) {
         File file = new File(
                 FileUtils.FILES_FOLDER
                         + FileUtils.FILE_PREFIX
@@ -150,18 +151,20 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public Object getLeastUsedEntry(@NonNull CacheKind cacheKind) {
+    public T getLeastUsedEntryKey(@NonNull CacheKind cacheKind) {
         switch (cacheKind) {
             case LFU -> {
+                //TODO
             }
             case LRU -> {
-                // Getting the first key from a map of objects, since first is the one that was used least recently.
+                // Getting the first key from a map of cache entries, since first is the one that was used least recently.
                 return cacheEntries.entrySet().iterator().next().getKey();
             }
             case MRU -> {
                 return lastAccessedEntryKey;
             }
             default -> {
+                //TODO
             }
         }
         return null;
@@ -204,9 +207,9 @@ public class HDDCache extends AbstractCache implements Serializable, ICache {
     }
 
     /**
-     * TODO
+     * Set number of entries for HDD cache
      *
-     * @param hddCacheEntriesNumber
+     * @param hddCacheEntriesNumber number of entries for HDD cache
      */
     public void setHDDCacheEntriesNumber(int hddCacheEntriesNumber) {
         cacheEntriesNumber = hddCacheEntriesNumber;

@@ -12,12 +12,12 @@ import java.util.Map;
  *
  * @author v.yanchenko
  */
-public interface ICache {
+public interface ICache<T, V> {
 
     /**
-     * TODO
+     * @return entries present in a cache
      */
-    Map<Object, Object> getCacheEntries();
+    Map<T, V> getCacheEntries();
 
     /**
      * Clearing a cache of all the entries.
@@ -25,26 +25,29 @@ public interface ICache {
     void clearCache() throws IOException;
 
     /**
-     * Getting requested object by key.
+     * @return requested entry V by key T.
      */
-    Object getEntry(@NonNull Object key) throws IOException, ClassNotFoundException;
+    V getEntry(@NonNull T key) throws IOException, ClassNotFoundException;
 
     /**
      * Adding an entry to a cache.
+     *
+     * @param key        to get a cache entry by
+     * @param cacheEntry cache entry
      */
-    void putEntry(@NonNull Object key, @NonNull Object obj) throws IOException;
+    void putEntry(@NonNull T key, @NonNull V cacheEntry) throws IOException;
 
     /**
      * Getting the least used entry to make an eviction.
      */
-    Object getLeastUsedEntry(@NonNull CacheKind cacheKind);
+    T getLeastUsedEntryKey(@NonNull CacheKind cacheKind);
 
     /**
      * Checking if a specific object exists.
      *
      * @param key to get some entry from cache
      */
-    boolean hasCacheEntry(@NonNull Object key);
+    boolean hasCacheEntry(@NonNull T key);
 
     /**
      * Get number of cache hits
@@ -92,19 +95,19 @@ public interface ICache {
      *
      * @param key to remove entry by
      */
-    void removeEntry(@NonNull Object key) throws NotPresentException;
+    void removeEntry(@NonNull T key) throws NotPresentException;
 
     /**
      * @return key of entry to remove from cache
      */
-    Object getKeyLastAccessed();
+    T getKeyLastAccessed();
 
     /**
      * Set last accessed entry's key
      *
      * @param keyLastAccessed
      */
-    void setKeyLastAccessed(@NonNull Object keyLastAccessed);
+    void setKeyLastAccessed(@NonNull T keyLastAccessed);
 
     /**
      * Retrieve size of cache (number of entries in it)

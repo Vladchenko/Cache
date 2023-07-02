@@ -17,7 +17,7 @@ import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.LEVEL_1_CACHE
  *
  * @author v.yanchenko
  */
-public class RAMCache extends AbstractCache implements Serializable, ICache {
+public class RAMCache<T, V> extends AbstractCache<T, V> implements Serializable, ICache<T, V> {
 
     private final Map<String, String> commandLineArguments;
 
@@ -28,9 +28,9 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     // Number of entries to be present in a RAM cache.
     private int cacheEntriesNumber;
 
-    Map<Object, Integer> mapFrequency;
+    Map<T, Integer> mapFrequency;
     // Only for LFU algorithm
-    LinkedHashMap<Integer, HashMap<Object, Object>> mapObjectsLFU;
+    LinkedHashMap<Integer, HashMap<T, V>> mapObjectsLFU;
 
     /**
      * Public constructor. Provides dependencies and creates instance of class
@@ -53,7 +53,7 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public Map<Object, Object> getCacheEntries() {
+    public Map<T, V> getCacheEntries() {
         return cacheEntries;
     }
 
@@ -64,10 +64,11 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public Object getEntry(@NonNull Object key) {
+    public V getEntry(@NonNull T key) {
         mapFrequency.put(key, mapFrequency.get(key) + 1);
         switch (CacheKind.valueOf(commandLineArguments.get(CACHE_KIND_ARGUMENT_KEY).toUpperCase(Locale.ROOT))) {
             case LFU -> {
+                //TODO
             }
             case LRU -> {
                 /*
@@ -75,9 +76,9 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
                  * put every requested object to the end of the LinkedHashMap. Finally, one will have a list of
                  * an objects beginning with least used, an ending with most used.
                  */
-                tempObject = cacheEntries.get(key);
+                tempCacheEntry = cacheEntries.get(key);
                 cacheEntries.remove(key);
-                cacheEntries.put(key, tempObject);
+                cacheEntries.put(key, tempCacheEntry);
             }
             case MRU -> {
                 lastAccessedEntryKey = key;
@@ -88,15 +89,15 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public void putEntry(@NonNull Object key, @NonNull Object obj) {
+    public void putEntry(@NonNull T key, @NonNull V cacheEntry) {
         lastAccessedEntryKey = key;
-        cacheEntries.put(key, obj);
+        cacheEntries.put(key, cacheEntry);
         mapFrequency.put(key, 1);
         size++;
     }
 
     @Override
-    public void removeEntry(@NonNull Object key) {
+    public void removeEntry(@NonNull T key) {
         cacheEntries.remove(key);
         mapFrequency.remove(key);
         size--;
@@ -112,12 +113,12 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     }
 
     @Override
-    public boolean hasCacheEntry(@NonNull Object key) {
+    public boolean hasCacheEntry(@NonNull T key) {
         return cacheEntries.containsKey(key);
     }
 
     @Override
-    public Object getLeastUsedEntry(@NonNull CacheKind cacheKind) {
+    public T getLeastUsedEntryKey(@NonNull CacheKind cacheKind) {
 //        return mapFrequency.lastKey();
         switch (cacheKind) {
             case LFU -> {
@@ -165,8 +166,9 @@ public class RAMCache extends AbstractCache implements Serializable, ICache {
     }
 
     /**
-     * TODO
-     * @param ramCacheEntriesNumber
+     * Set number of entries for RAM cache
+     *
+     * @param ramCacheEntriesNumber Number of entries for RAM cache
      */
     public void setEntriesNumber(int ramCacheEntriesNumber) {
         cacheEntriesNumber = ramCacheEntriesNumber;

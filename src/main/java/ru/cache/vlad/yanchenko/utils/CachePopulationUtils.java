@@ -9,10 +9,7 @@ import java.io.IOException;
 /**
  * Cache population utility.
  */
-public final class CachePopulationUtils {
-
-    private CachePopulationUtils() {
-    }
+public final class CachePopulationUtils<T, V> {
 
     /**
      * Populating caches before running a caching-retrieval process.
@@ -22,17 +19,17 @@ public final class CachePopulationUtils {
      * @param cacheFeeder cache data feeder
      * @throws IOException when a disk operating problem occurs
      */
-    public static void populateCaches(
-            @NonNull ICache ramCache,
-            @NonNull ICache hddCache,
-            @NonNull CacheFeeder cacheFeeder) throws IOException {
+    public void populateCaches(
+            @NonNull ICache<T, V> ramCache,
+            @NonNull ICache<T, V> hddCache,
+            @NonNull CacheFeeder<T, V> cacheFeeder) throws IOException {
         while (ramCache.getSize() < ramCache.getEntriesNumber()) {
-            ramCache.putEntry(cacheFeeder.fetchObject(),
-                    cacheFeeder.deliverObject(cacheFeeder.fetchObject()));
+            ramCache.putEntry(cacheFeeder.fetchKey(),
+                    cacheFeeder.deliverCacheEntry(cacheFeeder.fetchKey()));
         }
         while (hddCache.getSize() < hddCache.getEntriesNumber()) {
-            hddCache.putEntry(cacheFeeder.fetchObject(),
-                    cacheFeeder.deliverObject(cacheFeeder.fetchObject()));
+            hddCache.putEntry(cacheFeeder.fetchKey(),
+                    cacheFeeder.deliverCacheEntry(cacheFeeder.fetchKey()));
         }
     }
 }

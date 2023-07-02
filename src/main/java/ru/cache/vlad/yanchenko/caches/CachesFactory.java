@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Creates required cache.
  */
-public class CachesFactory {
+public class CachesFactory<T, V> {
 
     /**
      * Create a cache
@@ -16,13 +16,13 @@ public class CachesFactory {
      * @param arguments that keep needed data to crate cache
      * @return needed cache
      */
-    public ICache createCache(@NonNull CacheType cacheType, @NonNull Map<String, String> arguments) {
+    public ICache<T, V> createCache(@NonNull CacheType cacheType, @NonNull Map<String, String> arguments) {
         switch (cacheType) {
             case RAM: {
-                return new RAMCache(arguments);
+                return new RAMCache<>(arguments);
             }
             case HDD: {
-                return new HDDCache(arguments);
+                return new HDDCache<>(arguments);
             }
         }
         return null;

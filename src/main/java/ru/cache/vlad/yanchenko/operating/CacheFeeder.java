@@ -12,12 +12,12 @@ import java.util.Random;
  *
  * @author v.yanchenko
  */
-public class CacheFeeder {
+public class CacheFeeder<T, V> {
 
     // Number of an entries that a data map is to have.
     private final int entryNumber;
     // Data that is going to be fed to a cacheProcessor.
-    private Map<Object, Object> keyToObjectsMap;
+    private Map<T, V> keysToObjectsMap;
     private final Random random = new Random();
     // Array of objects for one could get by index.
     private final Object[] values;
@@ -32,8 +32,8 @@ public class CacheFeeder {
         // Array that keeps the keys to all the maps, for further picking a 
         // random key out of it, that will be requested from cacheProcessor.
         values = new Object[entryNumber];
-        keyToObjectsMap = new HashMap<>();
-        keyToObjectsMap = populateMap();
+        keysToObjectsMap = new HashMap<>();
+        keysToObjectsMap = populateMap();
     }
 
     /**
@@ -41,12 +41,12 @@ public class CacheFeeder {
      *
      * @return map of cache entries <key, cached-object>
      */
-    public Map<Object, Object> populateMap() {
-        Map<Object, Object> map = new HashMap<>();
+    public Map<T, V> populateMap() {
+        Map<T, V> map = new HashMap<>();
         for (int i = 0; i < entryNumber; i++) {
             values[i] = Integer.toString(random.nextInt(1000000000));
             String key = values[i].toString();
-            map.put(key, Integer.toString(random.nextInt(1000000000)));
+            map.put((T) key, (V) Integer.toString(random.nextInt(1000000000)));
         }
         return map;
     }
@@ -57,11 +57,11 @@ public class CacheFeeder {
      * @param map to be copied
      * @return copied map
      */
-    public Map<Object, Object> copyData(Map<Object, Object> map) {
-        Map<Object, Object> newMap = new HashMap<>();
-        for (Map.Entry<Object, Object> entrySet : map.entrySet()) {
-            Object key = entrySet.getKey();
-            Object value = entrySet.getValue();
+    public Map<T, V> copyData(Map<T, V> map) {
+        Map<T, V> newMap = new HashMap<>();
+        for (Map.Entry<T, V> entrySet : map.entrySet()) {
+            T key = entrySet.getKey();
+            V value = entrySet.getValue();
             newMap.put(key, value);
         }
         return newMap;
@@ -73,27 +73,24 @@ public class CacheFeeder {
      * @param key to get cached-object by
      * @return cached-object
      */
-    public Object deliverObject(@NonNull String key) {
-        return keyToObjectsMap.get(key);
+    public V deliverCacheEntry(@NonNull T key) {
+        return keysToObjectsMap.get(key);
     }
 
     /**
-     * Randomly pick a key and further fetch it to a cacheProcessor, for it could get it from its caches or download
-     * from alleged source and finally, retrieve to alleged CPU.
-     *
-     * @return TODO
+     * @return randomly picked key
      */
-    public String fetchObject() {
+    public T fetchKey() {
         int i = (int) (random.nextDouble() * entryNumber);
-        return (String) values[i];
+        return (T) values[i];
     }
 
     /**
      * Set map of objects for cache
      *
-     * @param keyToObjectsMap the mapObjectsFed to set
+     * @param keysToObjectsMap a new keys->objects map to set
      */
-    public void setKeyToObjectsMap(@NonNull Map<Object, Object> keyToObjectsMap) {
-        this.keyToObjectsMap = keyToObjectsMap;
+    public void setKeysToObjectsMap(@NonNull Map<T, V> keysToObjectsMap) {
+        this.keysToObjectsMap = keysToObjectsMap;
     }
 }

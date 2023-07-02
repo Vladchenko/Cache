@@ -9,30 +9,30 @@ import java.util.Map;
  *
  * Created by v.yanchenko on 31.08.2016.
  */
-public abstract class AbstractCache implements ICache {
+public abstract class AbstractCache<T, V> implements ICache<T, V> {
 
     // Current size of a cache.
     protected int size = 0;
     // Key of an object that was accessed last.
-    protected Object lastAccessedEntryKey;
+    protected T lastAccessedEntryKey;
     // Reference to some object needed in a logic of an app.
-    protected Object tempObject;
+    protected V tempCacheEntry;
     // Map that holds the keys to an entries that constitute a cache.
-    protected Map<Object, Object> cacheEntries;
+    protected Map<T, V> cacheEntries;
 
-    public Object getTempObject() {
-        return tempObject;
+    public V getTempCacheEntry() {
+        return tempCacheEntry;
     }
 
-    public void setTempObject(@NonNull Object tempObject) {
-        this.tempObject = tempObject;
+    public void setTempCacheEntry(@NonNull V tempCacheEntry) {
+        this.tempCacheEntry = tempCacheEntry;
     }
 
-    public Object getKeyLastAccessed() {
+    public T getKeyLastAccessed() {
         return lastAccessedEntryKey;
     }
 
-    public void setKeyLastAccessed(@NonNull Object keyLastAccessed) {
+    public void setKeyLastAccessed(@NonNull T keyLastAccessed) {
         lastAccessedEntryKey = keyLastAccessed;
     }
 
