@@ -6,7 +6,9 @@ import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
 import ru.cache.vlad.yanchenko.exceptions.FileExtensionException;
 import ru.cache.vlad.yanchenko.exceptions.FilePrefixException;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -98,21 +100,14 @@ public final class FileUtils {
      *
      * @param logger to log events
      */
-    public static boolean createFilesFolder(@NonNull Logger logger) throws DirectoryException {
-        File directory = new File(FILES_FOLDER);
-        // Checking if a directory keeps the real path on a disk.
-        if (!directory.isDirectory()) {
-            throw new DirectoryException(
-                    FILES_FOLDER + " is not a valid pathname. Change and rerun an app. Program exits.",
-                    logger);
-        }
-        // Checking if directory exists.
-        if (!directory.exists()) {
-            // And if not, create it.
-            return directory.mkdir();
+    public static void createHddCacheFolder(@NonNull Logger logger) throws IOException {
+        Path path = Path.of(FILES_FOLDER);
+        // Check if a directory exists,
+        if (!Files.exists(path)) {
+            // and if not, create it.
+            Files.createDirectory(path);
         } else {
             logger.info("HDD cache files folder already exists");
         }
-        return false;
     }
 }

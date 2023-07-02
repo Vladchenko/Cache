@@ -23,14 +23,12 @@ public final class CacheUtils<T, V> {
     public void populateCaches(
             @NonNull ICache<T, V> ramCache,
             @NonNull ICache<T, V> hddCache,
-            @NonNull CacheFeeder cacheFeeder) throws IOException {
+            @NonNull CacheFeeder<T, V> cacheFeeder) throws IOException {
         while (ramCache.getSize() < ramCache.getEntriesNumber()) {
-            ramCache.putEntry((T) cacheFeeder.fetchKey(),
-                    (V) cacheFeeder.deliverCacheEntry(cacheFeeder.fetchKey()));
+            ramCache.putEntry(cacheFeeder.fetchKey(), cacheFeeder.deliverCacheEntry(cacheFeeder.fetchKey()));
         }
         while (hddCache.getSize() < hddCache.getEntriesNumber()) {
-            hddCache.putEntry((T) cacheFeeder.fetchKey(),
-                    (V) cacheFeeder.deliverCacheEntry(cacheFeeder.fetchKey()));
+            hddCache.putEntry(cacheFeeder.fetchKey(), cacheFeeder.deliverCacheEntry(cacheFeeder.fetchKey()));
         }
     }
 

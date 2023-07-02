@@ -10,7 +10,6 @@ import ru.cache.vlad.yanchenko.arguments.CacheArgumentsValidatorImpl;
 import ru.cache.vlad.yanchenko.caches.CacheType;
 import ru.cache.vlad.yanchenko.caches.CachesFactory;
 import ru.cache.vlad.yanchenko.caches.ICache;
-import ru.cache.vlad.yanchenko.exceptions.DirectoryException;
 import ru.cache.vlad.yanchenko.exceptions.NotPresentException;
 import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 import ru.cache.vlad.yanchenko.operating.CacheFeeder;
@@ -65,9 +64,9 @@ public class TwoLayerCache<T, V> {
 
             // Creating HDD cache folder, if needed
             try {
-                FileUtils.createFilesFolder(logger);
-            } catch (DirectoryException e) {
-                e.printStackTrace();
+                FileUtils.createHddCacheFolder(logger);
+            } catch (IOException e) {
+                logger.error(e.getMessage());
             }
 
             // Creating HDD cache

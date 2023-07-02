@@ -1,5 +1,19 @@
 package ru.cache.vlad.yanchenko.caches;
 
+/**
+ * Define cache kind.
+ */
 public enum CacheKind {
-    NONE, LFU, LRU, MRU
+    /**
+     * Least frequently used
+     */
+    LFU,
+    /**
+     * Least recently used
+     */
+    LRU,
+    /**
+     * Most recently used
+     */
+    MRU
 }
