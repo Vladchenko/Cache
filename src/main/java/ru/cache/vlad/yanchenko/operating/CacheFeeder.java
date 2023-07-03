@@ -20,7 +20,7 @@ public class CacheFeeder<T, V> {
     private Map<T, V> keysToObjectsMap;
     private final Random random = new Random();
     // Array of objects for one could get by index.
-    private final Object[] values;
+    private final T[] cacheKeys;
 
     /**
      * Constructor that creates an instance of a class
@@ -31,7 +31,7 @@ public class CacheFeeder<T, V> {
         this.entryNumber = entryNumber;
         // Array that keeps the keys to all the maps, for further picking a 
         // random key out of it, that will be requested from cacheProcessor.
-        values = new Object[entryNumber];
+        cacheKeys = (T[]) new Object[entryNumber];
         keysToObjectsMap = new HashMap<>();
         keysToObjectsMap = populateMap();
     }
@@ -44,8 +44,8 @@ public class CacheFeeder<T, V> {
     public Map<T, V> populateMap() {
         Map<T, V> map = new HashMap<>();
         for (int i = 0; i < entryNumber; i++) {
-            values[i] = Integer.toString(random.nextInt(1000000000));
-            String key = values[i].toString();
+            cacheKeys[i] = (T) Integer.toString(random.nextInt(1000000000));
+            String key = cacheKeys[i].toString();
             map.put((T) key, (V) Integer.toString(random.nextInt(1000000000)));
         }
         return map;
@@ -82,7 +82,7 @@ public class CacheFeeder<T, V> {
      */
     public T fetchKey() {
         int i = (int) (random.nextDouble() * entryNumber);
-        return (T) values[i];
+        return cacheKeys[i];
     }
 
     /**

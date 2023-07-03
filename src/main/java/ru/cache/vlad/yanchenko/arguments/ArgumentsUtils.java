@@ -28,7 +28,7 @@ public final class ArgumentsUtils {
             for (Map.Entry<String, String> entrySet : map.entrySet()) {
                 String key = entrySet.getKey();
                 String value = entrySet.getValue();
-                logger.info("\t\t" + key + "=" + value);
+                logger.info("\t\t {} = {}", key, value);
             }
         }
     }

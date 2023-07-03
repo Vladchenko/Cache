@@ -18,6 +18,7 @@ RAM cache - кэш первого уровня, HDD cache - кэш второг�
 	-m целое_число 	- Количество записей в выборке, из которых случайным образом запрашивается запись из кэша.
 
 TODO:
+        - Remove all System.exit(1);
         - ? Make caches not to be fully filled in the beginning
         - ? Maybe validate some more arguments
         - Put all hardcodes to consts

@@ -1,7 +1,6 @@
 package ru.cache.vlad.yanchenko.exceptions;
 
 import android.support.annotation.NonNull;
-
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -18,6 +17,6 @@ public class FilePrefixException extends Exception {
      * @param logger  class to log this exception
      */
     public FilePrefixException(@NonNull String message, @NonNull Logger logger) {
-        logger.info("\"" + message + "\"" + " is not a valid file prefix.");
+        logger.info("{} is not a valid file prefix.", message);
     }
 }

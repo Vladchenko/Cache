@@ -20,32 +20,36 @@ import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.CACHE_PIPELIN
  *
  * @author v.yanchenko
  */
-public class Testing {
+public class Testing<T, V> {
 
     private final Logger logger;
     // Map of objects that is going to be fed to a caching algorithm.
-    private Map<Object, Object> testingObjects;
-    private final CacheProcessor cacheProcessor;
+    private Map<T, V> testingObjects;
+    private final CacheProcessor<T, V> cacheProcessor;
+    private final CacheLoggingUtils<T, V> cacheLoggingUtils;
     private final Map<String, String> commandLineArguments;
 
     /**
      * Public constructor. Provides dependencies and creates an instance of a class.
      *
-     * @param logger         to log a testing events
+     * @param logger         to log a caching events
      * @param cacheFeeder    cache data feeder
      * @param arguments      from command line
      * @param cacheProcessor that operates the caches
+     * @param cacheLoggingUtils to print summary
      */
     public Testing(@NonNull Logger logger,
-                   @NonNull CacheFeeder cacheFeeder,
+                   @NonNull CacheFeeder<T, V> cacheFeeder,
                    @NonNull Map<String, String> arguments,
-                   @NonNull CacheProcessor cacheProcessor) {
+                   @NonNull CacheProcessor<T, V> cacheProcessor,
+                   @NonNull CacheLoggingUtils<T, V> cacheLoggingUtils) {
         this.logger = logger;
         commandLineArguments = arguments;
         testingObjects = new HashMap<>();
         this.cacheProcessor = cacheProcessor;
         // Populating a map for further using it as a template entry set for all the caching algorithms.
         testingObjects = cacheFeeder.populateMap();
+        this.cacheLoggingUtils = cacheLoggingUtils;
     }
 
     /**
@@ -55,8 +59,7 @@ public class Testing {
 
         // Putting all the entries from a testing map to a msp that's going to be fed to a caching algorithm.
         cacheProcessor.getCacheFeeder().setKeysToObjectsMap(
-                cacheProcessor.getCacheFeeder().copyData(
-                        testingObjects));
+                cacheProcessor.getCacheFeeder().copyData(testingObjects));
 
         // Putting all the entries from a testing map to a map that's going to be fed to a caching pipeline.
         cacheProcessor.getCacheFeeder().setKeysToObjectsMap(
@@ -71,7 +74,7 @@ public class Testing {
             );
         }
         // Printing a summary for a current caching process.
-        CacheLoggingUtils.printSummary(cacheProcessor.getRamCache(), cacheProcessor.getHddCache(), commandLineArguments);
+        cacheLoggingUtils.printSummary(cacheProcessor.getRamCache(), cacheProcessor.getHddCache(), commandLineArguments);
         try {
             cacheProcessor.getRamCache().clearCache();
         } catch (IOException ioex) {
@@ -90,8 +93,7 @@ public class Testing {
 
         // Putting all the entries from a testing msp to a map that's going to be fed to a caching algorithm.
         cacheProcessor.getCacheFeeder().setKeysToObjectsMap(
-                cacheProcessor.getCacheFeeder().copyData(
-                        testingObjects));
+                cacheProcessor.getCacheFeeder().copyData(testingObjects));
 
         // Setting a cache kind.
         commandLineArguments.put(CACHE_KIND_ARGUMENT_KEY, CacheKind.MRU.toString());
@@ -102,6 +104,6 @@ public class Testing {
         }
 
         // Printing a summary for a current caching process.
-        CacheLoggingUtils.printSummary(cacheProcessor.getRamCache(), cacheProcessor.getHddCache(), commandLineArguments);
+        cacheLoggingUtils.printSummary(cacheProcessor.getRamCache(), cacheProcessor.getHddCache(), commandLineArguments);
     }
 }

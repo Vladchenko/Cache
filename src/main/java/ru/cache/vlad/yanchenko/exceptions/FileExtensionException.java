@@ -1,7 +1,6 @@
 package ru.cache.vlad.yanchenko.exceptions;
 
 import android.support.annotation.NonNull;
-
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -18,6 +17,6 @@ public class FileExtensionException extends Exception {
      * @param logger  class to log this exception
      */
     public FileExtensionException(@NonNull String message, @NonNull Logger logger) {
-        logger.info("\"" + message + "\"" + " is not a valid file extension.");
+        logger.info("{} is not a valid file extension.", message);
     }
 }

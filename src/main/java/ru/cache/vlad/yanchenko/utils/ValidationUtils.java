@@ -24,19 +24,19 @@ public final class ValidationUtils {
         try {
             FileUtils.validateFilePath(logger);
         } catch (DirectoryException e) {
-            logger.error(FileUtils.FILES_FOLDER + " is not a valid folder. Program exits.");
+            logger.error("{} is not a valid folder. Program exits.", FileUtils.FILES_FOLDER);
             System.exit(1);
         }
         try {
             FileUtils.validateFilePrefix(logger);
         } catch (FilePrefixException e) {
-            logger.error(FileUtils.FILE_PREFIX + " is not a valid file prefix. Program exits.");
+            logger.error("{} is not a valid file prefix. Program exits.", FileUtils.FILE_PREFIX);
             System.exit(1);
         }
         try {
             FileUtils.validateFileExtension(logger);
         } catch (FileExtensionException e) {
-            logger.error(FileUtils.FILE_EXTENSION + " is not a valid file extension. Program exits.");
+            logger.error("{} is not a valid file extension. Program exits.", FileUtils.FILE_EXTENSION);
             System.exit(1);
         }
     }

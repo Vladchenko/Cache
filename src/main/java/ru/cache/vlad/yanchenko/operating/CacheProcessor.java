@@ -24,8 +24,8 @@ public class CacheProcessor<T, V> {
     private final ICache<T, V> ramCache;
     private final ICache<T, V> hddCache;
     private final CacheFeeder<T, V> cacheFeeder;
-    private final CacheUtils<T, V> cacheUtils;
     private final Map<String, String> commandLineArguments;
+    private final CacheLoggingUtils<T, V> cacheLoggingUtils;
 
     /**
      * Public constructor - creates an instance of class and provides dependencies.
@@ -40,14 +40,14 @@ public class CacheProcessor<T, V> {
                           @NonNull ICache<T, V> ramCache,
                           @NonNull ICache<T, V> hddCache,
                           @NonNull CacheFeeder<T, V> cacheFeeder,
-                          @NonNull CacheUtils<T, V> cacheUtils,
-                          @NonNull Map<String, String> arguments) {
+                          @NonNull Map<String, String> arguments,
+                          @NonNull CacheLoggingUtils<T, V> cacheLoggingUtils) {
         this.logger = logger;
         this.ramCache = ramCache;
         this.hddCache = hddCache;
-        this.cacheUtils = cacheUtils;
-        commandLineArguments = arguments;
         this.cacheFeeder = cacheFeeder;
+        commandLineArguments = arguments;
+        this.cacheLoggingUtils = cacheLoggingUtils;
     }
 
     /**
@@ -62,30 +62,30 @@ public class CacheProcessor<T, V> {
         V cacheEntry = null;
 
         if (Boolean.parseBoolean(commandLineArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
-            cacheUtils.logCaches(logger, ramCache, hddCache);
+            cacheLoggingUtils.printCachesContents(logger, ramCache, hddCache);
             logger.info("");
-            logger.info(">>> Requested key=" + key);
+            logger.info(">>> Requested key = {}", key);
         }
 
         // If RAM cache has a requested entry,
         if (ramCache.hasCacheEntry(key)) {
-            logger.info("RAM cache hit, key=" + key);
+            logger.info("RAM cache hit, key = {}", key);
             // return it to CPU.
             ramCache.setCacheHits(ramCache.getCacheHits() + 1);
             return ramCache.getEntry(key);
         } else {
             // RAM cache miss, 
             ramCache.setCacheMisses(ramCache.getCacheMisses() + 1);
-            logger.info("! RAM cache miss, key=" + key);
+            logger.info("! RAM cache miss, key = {}", key);
             try {
                 // Retrieve an entry from an HDD cache.
                 cacheEntry = hddCache.getEntry(key);
                 hddCache.setCacheHits(hddCache.getCacheHits() + 1);
-                logger.info("HDD cache hit, key=" + key);
+                logger.info("HDD cache hit, key = {}", key);
                 reCache(key);
                 return cacheEntry;
             } catch (NullPointerException | IOException | ClassNotFoundException ignored) {
-                logger.info("! HDD cache miss, key=" + key);
+                logger.info("! HDD cache miss, key = {}", key);
             }
             // When both caches miss,
             if (cacheEntry == null) {
@@ -97,7 +97,7 @@ public class CacheProcessor<T, V> {
                     // Add a newly downloaded entry to a RAM cache.
                     ramCache.putEntry(key, cacheEntry);
                     if (Boolean.parseBoolean(commandLineArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
-                        logger.info("Entry with key=" + key + " is added to a RAM cache.");
+                        logger.info("Entry with key = {}, is added to a RAM cache.", key);
                     }
                     return cacheEntry;
                 } else {    // RAM cache is full, it needs an eviction.
@@ -145,7 +145,7 @@ public class CacheProcessor<T, V> {
                         // Add a newly downloaded entry to a RAM cache.
                         ramCache.putEntry(key, cacheEntry);
                         if (Boolean.parseBoolean(commandLineArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
-                            logger.info("New entry with key=" + key + " is added to a RAM cache.");
+                            logger.info("New entry with key = {}, is added to a RAM cache.", key);
                         }
                     }
                 }
@@ -158,20 +158,21 @@ public class CacheProcessor<T, V> {
 
     private void moveLeastUsedRamEntryToHdd(T leastUsedEntryKey) throws ClassNotFoundException, NotPresentException {
         try {
-            // Move least used RAM entry to HDD cache.
+            // Move the least used RAM entry to HDD cache.
             hddCache.putEntry(leastUsedEntryKey, ramCache.getEntry(leastUsedEntryKey));
 //                            hddCache.getMapFrequency().put(leastUsedEntryKey, 0);
             if (Boolean.parseBoolean(commandLineArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
-                logger.info("Least used RAM cache entry with key="
-                        + leastUsedEntryKey + " is moved to an HDD cache. ");
+                logger.info("Least used RAM cache entry with key = {}, is moved to an HDD cache. ",
+                        leastUsedEntryKey);
             }
         } catch (IOException ex) {
             logger.info("!!! Cannot move to HDD cache ! Disk drive might be corrupt.");
+            logger.error(ex.getMessage());
         }
         // Remove the least used entry from a RAM cache.
         ramCache.removeEntry(leastUsedEntryKey);
         if (Boolean.parseBoolean(commandLineArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
-            logger.info("Least used RAM cache entry with key=" + leastUsedEntryKey + " is removed.");
+            logger.info("Least used RAM cache entry with key = {}, is removed.", leastUsedEntryKey);
         }
     }
 
@@ -180,7 +181,7 @@ public class CacheProcessor<T, V> {
             // Remove this entry from HDD cache.
             hddCache.removeEntry(leastUsedEntryKey);
             if (Boolean.parseBoolean(commandLineArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
-                logger.info("Entry with key=" + leastUsedEntryKey + " is removed from an HDD cache. ");
+                logger.info("Entry with key = {} is removed from an HDD cache. ", leastUsedEntryKey);
             }
         } catch (NotPresentException ex) {
             logger.error("!!! HDD cache entry cannot be removed");
@@ -193,8 +194,8 @@ public class CacheProcessor<T, V> {
         hddCache.putEntry(leastUsedEntryKey, ramCache.getEntry(leastUsedEntryKey));
 //                            hddCache.getMapFrequency().put(leastUsedEntryKey, 0);
         if (Boolean.parseBoolean(commandLineArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
-            logger.info("An entry with key=" + leastUsedEntryKey + " is moved to an HDD cache.");
-            logger.info("Entry with key=" + key + " is moved to a RAM cache.");
+            logger.info("An entry with key = {} is moved to an HDD cache.", leastUsedEntryKey);
+            logger.info("Entry with key = {} is moved to a RAM cache.", key);
             logger.info("");
         }
         // Remove such entry from a RAM cache.
@@ -249,13 +250,13 @@ public class CacheProcessor<T, V> {
 
         // If ram cache object is absent, no sense in replacement.
         if (!ramCache.hasCacheEntry(keyRAMCache)) {
-            logger.info("RAM cache has no entry by key " + keyRAMCache + ". Cache integrity is broken.");
+            logger.info("RAM cache has no entry by key = {}. Cache integrity is broken.", keyRAMCache);
             return;
         }
 
         // If hdd cache object is absent, no sense in replacement.
         if (!hddCache.hasCacheEntry(keyHDDCache)) {
-            logger.info("HDD cache has no entry by key " + keyHDDCache + ". Cache integrity is broken.");
+            logger.info("HDD cache has no entry by key = {}. Cache integrity is broken.", keyHDDCache);
             return;
         }
 
@@ -274,8 +275,8 @@ public class CacheProcessor<T, V> {
 
         if (Boolean.parseBoolean(commandLineArguments.get(CACHE_DETAILED_REPORT_ARGUMENT_KEY))) {
             logger.info("Recaching has been done.");
-            logger.info("Entry in RAM cache key=" + keyRAMCache + " has been moved to an HDD cache.");
-            logger.info("Entry in HDD cache key=" + keyHDDCache + " has been moved to a RAM cache.");
+            logger.info("Entry in RAM cache key = {} has been moved to an HDD cache.", keyRAMCache);
+            logger.info("Entry in HDD cache key = {} has been moved to a RAM cache.", keyHDDCache);
             logger.info("");
         }
     }
@@ -291,13 +292,13 @@ public class CacheProcessor<T, V> {
         for (int i = 0; i < Integer.parseInt(commandLineArguments.get(CACHE_PIPELINE_RUN_TIMES_ARGUMENT_KEY)); i++) {
             try {
                 cacheEntry = processRequest(cacheFeeder.fetchKey());
-                logger.info("Requested entry = " + cacheEntry + " delivered to a requester.");
+                logger.info("Requested entry = {} delivered to a requester.", cacheEntry);
                 logger.info("");
             } catch (NotPresentException | ClassNotFoundException | IOException npex) {
                 logger.error(npex);
             }
         }
-        CacheLoggingUtils.printSummary(ramCache, hddCache, commandLineArguments);
+        cacheLoggingUtils.printSummary(ramCache, hddCache, commandLineArguments);
     }
 
     //<editor-fold defaultstate="collapsed" desc="getters">

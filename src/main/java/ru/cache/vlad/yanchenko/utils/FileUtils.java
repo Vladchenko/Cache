@@ -53,7 +53,7 @@ public final class FileUtils {
         } else {
             // If filepath has no slash at the end, add it.
             if (FILES_FOLDER.lastIndexOf('/') != FILES_FOLDER.length() - 1) {
-                logger.error("Add slash at the end of path " + FILES_FOLDER);
+                logger.error("Add slash at the end of path {}", FILES_FOLDER);
             }
         }
     }
@@ -71,7 +71,7 @@ public final class FileUtils {
             // Some special characters are present, thus throw an exception
             throw new FilePrefixException("File prefix \"" + FILE_PREFIX + "\" has some special letters.", logger);
         } else {
-            logger.info("File prefix is set to: " + FILE_PREFIX);
+            logger.info("File prefix is set to: {}", FILE_PREFIX);
         }
     }
 
@@ -91,7 +91,7 @@ public final class FileUtils {
 //            filePrefix = "cache_file";
 //            repository.getLogger().info("It is set to default " + filePrefix);
         } else {
-            logger.info("File extension is set to: " + FILE_EXTENSION);
+            logger.info("File extension is set to: {}", FILE_EXTENSION);
         }
     }
 
