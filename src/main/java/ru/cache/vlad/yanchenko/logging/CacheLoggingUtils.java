@@ -1,7 +1,6 @@
 package ru.cache.vlad.yanchenko.logging;
 
 import android.support.annotation.NonNull;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.cache.vlad.yanchenko.caches.ICache;
 
@@ -15,26 +14,16 @@ import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.CACHE_PIPELIN
  */
 public final class CacheLoggingUtils<T, V> {
 
-    private static Logger logger;
-
-    /**
-     * @return logger to log the events
-     */
-    public static Logger getLogger() {
-        if (logger == null) {
-            logger = LogManager.getLogger(CacheLoggingUtils.class);
-        }
-        return logger;
-    }
-
     /**
      * Writing a summary about a current caching process to a log file.
      *
+     * @param logger    to log summary of caching process
      * @param ramCache  memory cache
      * @param hddCache  disk cache
      * @param arguments from command line
      */
-    public void printSummary(@NonNull ICache<T, V> ramCache,
+    public void printSummary(@NonNull Logger logger,
+                             @NonNull ICache<T, V> ramCache,
                              @NonNull ICache<T, V> hddCache,
                              @NonNull Map<String, String> arguments) {
         logger.info("╔══╣Summary╠═══════════════════════╗");
@@ -54,7 +43,9 @@ public final class CacheLoggingUtils<T, V> {
      * @param ramCache memory cache
      * @param hddCache disk cache
      */
-    public void printCachesContents(@NonNull Logger logger, @NonNull ICache<T, V> ramCache, @NonNull ICache<T, V> hddCache) {
+    public void printCachesContents(@NonNull Logger logger,
+                                    @NonNull ICache<T, V> ramCache,
+                                    @NonNull ICache<T, V> hddCache) {
 //        if (ramCache.mapObjects instanceof LinkedHashMap) {
 //
 //        }

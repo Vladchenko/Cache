@@ -3,6 +3,7 @@ package ru.cache.vlad.yanchenko;
 import android.support.annotation.NonNull;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.cache.vlad.yanchenko.arguments.ArgumentsUtils;
 import ru.cache.vlad.yanchenko.arguments.CacheArgumentsParser;
@@ -63,7 +64,7 @@ public class TwoLayerCache<T, V> {
     }
 
     private TwoLayerCache(@NonNull String[] args) {
-        logger = CacheLoggingUtils.getLogger();
+        logger = LogManager.getLogger(TwoLayerCache.class);
         cacheLoggingUtils = new CacheLoggingUtils<>();
         // Validating file constants
         ValidationUtils.validateFileConstants(logger);
@@ -77,12 +78,7 @@ public class TwoLayerCache<T, V> {
             // Creating RAM cache
             ICache<T, V> ramCache = cachesFactory.createCache(CacheType.RAM, commandLineArguments);
 
-            // Creating HDD cache folder, if needed
-            try {
-                FileUtils.createHddCacheFolder(logger);
-            } catch (IOException e) {
-                logger.error(e.getMessage());
-            }
+            createHddCacheFolderIfNeeded();
 
             // Creating HDD cache
             ICache<T, V> hddCache = cachesFactory.createCache(CacheType.HDD, commandLineArguments);
@@ -110,7 +106,15 @@ public class TwoLayerCache<T, V> {
         }
     }
 
-    private void populateCachesWithData(ICache<T, V> ramCache, ICache<T, V> hddCache) {
+    private void createHddCacheFolderIfNeeded() {
+        try {
+            FileUtils.createHddCacheFolder(logger);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void populateCachesWithData(@NonNull ICache<T, V> ramCache,@NonNull  ICache<T, V> hddCache) {
         try {
             // Populating caches with data from cacheFeeder
             new CachePopulationUtils<T, V>().populateCaches(ramCache, hddCache, cacheFeeder);
@@ -121,7 +125,9 @@ public class TwoLayerCache<T, V> {
         }
     }
 
-    private void processCommandLineArguments(String[] args, CacheArgumentsParser argumentsParser, CacheArgumentsValidatorImpl argumentsValidator) throws ParseException {
+    private void processCommandLineArguments(@NonNull String[] args,
+                                             @NonNull CacheArgumentsParser argumentsParser,
+                                             @NonNull CacheArgumentsValidatorImpl argumentsValidator) throws ParseException {
         Optional<CommandLine> commandLineOpt = argumentsParser.parse(args);
         if (commandLineOpt.isPresent()) {
             CommandLine commandLine = commandLineOpt.get();

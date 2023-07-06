@@ -21,6 +21,7 @@ import static ru.cache.vlad.yanchenko.caches.CacheConstants.*;
 public class CacheArgumentsValidatorImpl implements CacheArgumentsValidator {
 
     private final Logger logger;
+    private static final String USING_DEFAULT = "using default = {}";
 
     /**
      * Public constructor - creates an instance of class
@@ -89,19 +90,19 @@ public class CacheArgumentsValidatorImpl implements CacheArgumentsValidator {
             try {
                 if (Integer.parseInt(commandLine.getOptionValue(CACHE_ENTRIES_FED_ARGUMENT_KEY)) < DEFAULT_CACHE_ENTRIES_NUMBER) {
                     logger.error("Command line argument for entries number for cache to get data from is small, " +
-                            "using default = {}", DEFAULT_CACHE_ENTRIES_NUMBER);
+                            USING_DEFAULT, DEFAULT_CACHE_ENTRIES_NUMBER);
                     arguments.put(CACHE_ENTRIES_FED_ARGUMENT_KEY, String.valueOf(DEFAULT_CACHE_ENTRIES_NUMBER));
                 } else {
                     arguments.put(CACHE_ENTRIES_FED_ARGUMENT_KEY, commandLine.getOptionValue(CACHE_ENTRIES_FED_ARGUMENT_KEY));
                 }
-            } catch (NumberFormatException mfex) {
+            } catch (NumberFormatException nfex) {
                 logger.error("Command line argument for entries number for cache to get data from is wrong, " +
-                        "using default = {}", DEFAULT_CACHE_ENTRIES_NUMBER);
+                        USING_DEFAULT, DEFAULT_CACHE_ENTRIES_NUMBER);
                 arguments.put(CACHE_ENTRIES_FED_ARGUMENT_KEY, String.valueOf(DEFAULT_CACHE_ENTRIES_NUMBER));
             }
         } else {
             logger.info("Command line argument for entries number for cache to get data from is not stated, " +
-                    "using default = {}", DEFAULT_CACHE_ENTRIES_NUMBER);
+                    USING_DEFAULT, DEFAULT_CACHE_ENTRIES_NUMBER);
             arguments.put(CACHE_ENTRIES_FED_ARGUMENT_KEY, String.valueOf(DEFAULT_CACHE_ENTRIES_NUMBER));
         }
     }

@@ -298,7 +298,7 @@ public class CacheProcessor<T, V> {
                 logger.error(npex);
             }
         }
-        cacheLoggingUtils.printSummary(ramCache, hddCache, commandLineArguments);
+        cacheLoggingUtils.printSummary(logger, ramCache, hddCache, commandLineArguments);
     }
 
     //<editor-fold defaultstate="collapsed" desc="getters">

@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * Class simulates a source where the objects, that are not present in cache,
- * are downloaded from. It also simulates a requests sent to a caches.
+ * Class simulates a source where the objects, that are not present in cache, are downloaded from.
+ * It also simulates a requests sent to a caches.
  *
  * @author v.yanchenko
  */

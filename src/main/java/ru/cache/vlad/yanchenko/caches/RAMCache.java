@@ -28,9 +28,9 @@ public class RAMCache<T, V> extends AbstractCache<T, V> implements Serializable,
     // Number of entries to be present in a RAM cache.
     private int cacheEntriesNumber;
 
-    Map<T, Integer> mapFrequency;
+    transient Map<T, Integer> mapFrequency;
     // Only for LFU algorithm
-    LinkedHashMap<Integer, HashMap<T, V>> mapObjectsLFU;
+    private transient LinkedHashMap<Integer, HashMap<T, V>> mapObjectsLFU;
 
     /**
      * Public constructor. Provides dependencies and creates instance of class
@@ -163,15 +163,6 @@ public class RAMCache<T, V> extends AbstractCache<T, V> implements Serializable,
     public void resetCacheStatistics() {
         cacheMisses = 0;
         cacheHits = 0;
-    }
-
-    /**
-     * Set number of entries for RAM cache
-     *
-     * @param ramCacheEntriesNumber Number of entries for RAM cache
-     */
-    public void setEntriesNumber(int ramCacheEntriesNumber) {
-        cacheEntriesNumber = ramCacheEntriesNumber;
     }
 
 }

@@ -177,11 +177,6 @@ public class HDDCache<T, V> extends AbstractCache<T, V> implements Serializable,
     }
 
     @Override
-    public void setEntriesNumber(int entriesNumber) {
-        cacheEntriesNumber = entriesNumber;
-    }
-
-    @Override
     public void resetCacheStatistics() {
         cacheMisses = 0;
         cacheHits = 0;

@@ -32,10 +32,10 @@ public class Testing<T, V> {
     /**
      * Public constructor. Provides dependencies and creates an instance of a class.
      *
-     * @param logger         to log a caching events
-     * @param cacheFeeder    cache data feeder
-     * @param arguments      from command line
-     * @param cacheProcessor that operates the caches
+     * @param logger            to log a caching events
+     * @param cacheFeeder       cache data feeder
+     * @param arguments         from command line
+     * @param cacheProcessor    that operates the caches
      * @param cacheLoggingUtils to print summary
      */
     public Testing(@NonNull Logger logger,
@@ -74,7 +74,11 @@ public class Testing<T, V> {
             );
         }
         // Printing a summary for a current caching process.
-        cacheLoggingUtils.printSummary(cacheProcessor.getRamCache(), cacheProcessor.getHddCache(), commandLineArguments);
+        cacheLoggingUtils.printSummary(
+                logger,
+                cacheProcessor.getRamCache(),
+                cacheProcessor.getHddCache(),
+                commandLineArguments);
         try {
             cacheProcessor.getRamCache().clearCache();
         } catch (IOException ioex) {
@@ -104,6 +108,10 @@ public class Testing<T, V> {
         }
 
         // Printing a summary for a current caching process.
-        cacheLoggingUtils.printSummary(cacheProcessor.getRamCache(), cacheProcessor.getHddCache(), commandLineArguments);
+        cacheLoggingUtils.printSummary(
+                logger,
+                cacheProcessor.getRamCache(),
+                cacheProcessor.getHddCache(),
+                commandLineArguments);
     }
 }

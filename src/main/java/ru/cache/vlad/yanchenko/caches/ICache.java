@@ -79,13 +79,6 @@ public interface ICache<T, V> {
     int getEntriesNumber();
 
     /**
-     * Set entries number present in cache
-     *
-     * @param entriesNumber present in cache
-     */
-    void setEntriesNumber(int entriesNumber);
-
-    /**
      * Reset some cache statistics.
      */
     void resetCacheStatistics();
