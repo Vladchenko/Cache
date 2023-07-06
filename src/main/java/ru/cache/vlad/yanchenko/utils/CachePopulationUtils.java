@@ -14,20 +14,20 @@ public final class CachePopulationUtils<T, V> {
     /**
      * Populating caches before running a caching-data-retrieval process.
      *
-     * @param ramCache    memory cache
-     * @param hddCache    disk cache
+     * @param memoryCache memory cache
+     * @param diskCache   disk cache
      * @param cacheFeeder cache data feeder
      * @throws IOException when a disk operating problem occurs
      */
     public void populateCaches(
-            @NonNull ICache<T, V> ramCache,
-            @NonNull ICache<T, V> hddCache,
+            @NonNull ICache<T, V> memoryCache,
+            @NonNull ICache<T, V> diskCache,
             @NonNull CacheFeeder<T, V> cacheFeeder) throws IOException {
-        while (ramCache.getSize() < ramCache.getEntriesNumber()) {
-            ramCache.putEntry(cacheFeeder.fetchKey(), cacheFeeder.deliverCacheEntry(cacheFeeder.fetchKey()));
+        while (memoryCache.getSize() > memoryCache.getEntriesNumber()) {
+            memoryCache.putEntry(cacheFeeder.fetchKey(), cacheFeeder.deliverCacheEntry(cacheFeeder.fetchKey()));
         }
-        while (hddCache.getSize() < hddCache.getEntriesNumber()) {
-            hddCache.putEntry(cacheFeeder.fetchKey(), cacheFeeder.deliverCacheEntry(cacheFeeder.fetchKey()));
+        while (diskCache.getSize() > diskCache.getEntriesNumber()) {
+            diskCache.putEntry(cacheFeeder.fetchKey(), cacheFeeder.deliverCacheEntry(cacheFeeder.fetchKey()));
         }
     }
 }

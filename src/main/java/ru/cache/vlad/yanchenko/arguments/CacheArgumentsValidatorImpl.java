@@ -40,8 +40,8 @@ public class CacheArgumentsValidatorImpl implements CacheArgumentsValidator {
         parseMaximumEntriesToBeFedToCacheArgument(commandLine, arguments);
         parseCachingProcessRunTimesArgument(commandLine, arguments);
         parseCacheKindArgument(commandLine, arguments);
-        processRamCacheSizeArgument(commandLine, arguments);
-        processHddCacheSizeArgument(commandLine, arguments);
+        processMemoryCacheSizeArgument(commandLine, arguments);
+        processDiskCacheSizeArgument(commandLine, arguments);
         return arguments;
     }
 
@@ -126,7 +126,7 @@ public class CacheArgumentsValidatorImpl implements CacheArgumentsValidator {
         }
     }
 
-    private void processRamCacheSizeArgument(@NonNull CommandLine commandLine, @NonNull Map<String, String> arguments) {
+    private void processMemoryCacheSizeArgument(@NonNull CommandLine commandLine, @NonNull Map<String, String> arguments) {
         if (commandLine.hasOption(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY)) {
             try {
                 int cacheSize = Integer.parseInt(commandLine.getOptionValue(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY));
@@ -146,7 +146,7 @@ public class CacheArgumentsValidatorImpl implements CacheArgumentsValidator {
         }
     }
 
-    private void processHddCacheSizeArgument(@NonNull CommandLine commandLine, @NonNull Map<String, String> arguments) {
+    private void processDiskCacheSizeArgument(@NonNull CommandLine commandLine, @NonNull Map<String, String> arguments) {
         if (commandLine.hasOption(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY)) {
             try {
                 int cacheSize = Integer.parseInt(commandLine.getOptionValue(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY));

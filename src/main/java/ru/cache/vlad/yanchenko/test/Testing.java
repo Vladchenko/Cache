@@ -76,22 +76,22 @@ public class Testing<T, V> {
         // Printing a summary for a current caching process.
         cacheLoggingUtils.printSummary(
                 logger,
-                cacheProcessor.getRamCache(),
-                cacheProcessor.getHddCache(),
+                cacheProcessor.getMemoryCache(),
+                cacheProcessor.getDiskCache(),
                 commandLineArguments);
         try {
-            cacheProcessor.getRamCache().clearCache();
+            cacheProcessor.getMemoryCache().clearCache();
         } catch (IOException ioex) {
             logger.error(ioex.getMessage());
         }
         try {
-            cacheProcessor.getHddCache().clearCache();
+            cacheProcessor.getDiskCache().clearCache();
         } catch (IOException ioex) {
             logger.error(ioex.getMessage());
         }
 
-        cacheProcessor.getRamCache().resetCacheStatistics();
-        cacheProcessor.getHddCache().resetCacheStatistics();
+        cacheProcessor.getMemoryCache().resetCacheStatistics();
+        cacheProcessor.getDiskCache().resetCacheStatistics();
         logger.info("");
         logger.info("");
 
@@ -110,8 +110,8 @@ public class Testing<T, V> {
         // Printing a summary for a current caching process.
         cacheLoggingUtils.printSummary(
                 logger,
-                cacheProcessor.getRamCache(),
-                cacheProcessor.getHddCache(),
+                cacheProcessor.getMemoryCache(),
+                cacheProcessor.getDiskCache(),
                 commandLineArguments);
     }
 }

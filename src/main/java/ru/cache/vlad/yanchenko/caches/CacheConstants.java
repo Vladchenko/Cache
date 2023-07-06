@@ -9,19 +9,19 @@ public final class CacheConstants {
     }
 
     /**
-     * Number of entries that RAM cache can hold.
+     * Number of entries that Memory cache can hold.
      */
     public static final int DEFAULT_RAM_CACHE_ENTRIES = 10;
     /**
-     * Number of entries that HDD cache can hold.
+     * Number of entries that Disk cache can hold.
      */
     public static final int DEFAULT_HDD_CACHE_ENTRIES = 10;
     /**
-     * Minimum number of entries that RAM cache can hold.
+     * Minimum number of entries that Memory cache can hold.
      */
     public static final int MINIMUM_RAM_CACHE_ENTRIES = 1;
     /**
-     * Minimum number of entries that HDD cache can hold.
+     * Minimum number of entries that Disk cache can hold.
      */
     public static final int MINIMUM_HDD_CACHE_ENTRIES = 1;
     /**

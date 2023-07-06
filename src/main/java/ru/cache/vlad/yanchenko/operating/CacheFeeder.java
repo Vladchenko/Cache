@@ -29,10 +29,9 @@ public class CacheFeeder<T, V> {
      */
     public CacheFeeder(int entryNumber) {
         this.entryNumber = entryNumber;
-        // Array that keeps the keys to all the maps, for further picking a 
-        // random key out of it, that will be requested from cacheProcessor.
+        // Array that keeps the keys to all the maps, for further picking a random key out of it, that will be
+        // requested from cacheProcessor.
         cacheKeys = (T[]) new Object[entryNumber];
-        keysToObjectsMap = new HashMap<>();
         keysToObjectsMap = populateMap();
     }
 

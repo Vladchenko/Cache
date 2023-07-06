@@ -1,4 +1,4 @@
-//import ru.cache.vlad.yanchenko.caches.RAMCache;
+//import ru.cache.vlad.yanchenko.caches.hierarchy.memory.RAMCache;
 //import ru.cache.vlad.yanchenko.Repository;
 //import org.junit.AfterClass;
 //import org.junit.BeforeClass;
@@ -31,16 +31,16 @@
 //        Repository repository = Repository.getInstance();
 //        repository.setCacheKind(CacheKind.LRU);
 //
-//        RAMCache ramCache = new RAMCache();
-//        ramCache.addObject("123", new Object());
-//        ramCache.addObject("456", new Object());
-//        ramCache.addObject("789", new Object());
-//        ramCache.getObject("123");
-//        ramCache.getObject("123");
-//        ramCache.getObject("456");
+//        RAMCache memoryCache = new RAMCache();
+//        memoryCache.addObject("123", new Object());
+//        memoryCache.addObject("456", new Object());
+//        memoryCache.addObject("789", new Object());
+//        memoryCache.getObject("123");
+//        memoryCache.getObject("123");
+//        memoryCache.getObject("456");
 //
 //        // The least recently used here is "789".
-//        assertEquals(ramCache.getLeastUsed(CacheKind.LRU), "789");
+//        assertEquals(memoryCache.getLeastUsed(CacheKind.LRU), "789");
 //    }
 //
 //    @Test
@@ -49,16 +49,16 @@
 //        Repository repository = Repository.getInstance();
 //        repository.setCacheKind(CacheKind.MRU);
 //
-//        RAMCache ramCache = new RAMCache();
-//        ramCache.addObject("123", new Object());
-//        ramCache.addObject("456", new Object());
-//        ramCache.addObject("789", new Object());
-//        ramCache.getObject("123");
-//        ramCache.getObject("123");
-//        ramCache.getObject("456");
+//        RAMCache memoryCache = new RAMCache();
+//        memoryCache.addObject("123", new Object());
+//        memoryCache.addObject("456", new Object());
+//        memoryCache.addObject("789", new Object());
+//        memoryCache.getObject("123");
+//        memoryCache.getObject("123");
+//        memoryCache.getObject("456");
 //
 //        // The most recently used here is "456".
-//        assertEquals(ramCache.getLeastUsed(CacheKind.MRU), "456");
+//        assertEquals(memoryCache.getLeastUsed(CacheKind.MRU), "456");
 //    }
 //
 //}

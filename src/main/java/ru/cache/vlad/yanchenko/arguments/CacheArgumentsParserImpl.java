@@ -46,13 +46,13 @@ public class CacheArgumentsParserImpl implements CacheArgumentsParser {
                 .longOpt(LEVEL_1_CACHE_SIZE_ARGUMENT_KEY)
                 .hasArg()
                 .argName("size")
-                .desc("RAM cache size")
+                .desc("Memory cache size")
                 .build());
         options.addOption(Option.builder()
                 .longOpt(LEVEL_2_CACHE_SIZE_ARGUMENT_KEY)
                 .hasArg()
                 .argName("size")
-                .desc("HDD cache size")
+                .desc("Disk cache size")
                 .build());
         options.addOption(Option.builder()
                 .longOpt(CACHE_TEST_ARGUMENT_KEY)

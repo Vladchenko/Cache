@@ -20,7 +20,7 @@ public final class FileUtils {
     // To perform a check if a filename, extension or have any of these letters.
     private static final String FILE_SPECIAL_CHARACTERS = "[\\\\:<>|*/?]";
     /**
-     * Folder for a files that represents a 2nd level cache (HDD cache)
+     * Folder for a files that represents a 2nd level cache (Disk cache)
      */
     public static final String FILES_FOLDER = "Cache Data/";
     /**
@@ -87,27 +87,24 @@ public final class FileUtils {
         if (m.find()) { // Some special characters are present, thus ...
             // Throwing an exception.
             throw new FileExtensionException("File prefix \"" + FILE_EXTENSION + "\" has some special letters.", logger);
-            // Make a folder named, some valid path, say a current time.
-//            filePrefix = "cache_file";
-//            repository.getLogger().info("It is set to default " + filePrefix);
         } else {
             logger.info("File extension is set to: {}", FILE_EXTENSION);
         }
     }
 
     /**
-     * Create a folder (in case its absent) for a files that constitute an HDD cache.
+     * Create a folder (in case its absent) for a files that constitute a disk cache.
      *
      * @param logger to log events
      */
-    public static void createHddCacheFolder(@NonNull Logger logger) throws IOException {
+    public static void createDiskCacheFolder(@NonNull Logger logger) throws IOException {
         Path path = Path.of(FILES_FOLDER);
         // Check if a directory exists,
         if (!Files.exists(path)) {
             // and if not, create it.
             Files.createDirectory(path);
         } else {
-            logger.info("HDD cache files folder already exists");
+            logger.info("Disk cache files folder already exists");
         }
     }
 }

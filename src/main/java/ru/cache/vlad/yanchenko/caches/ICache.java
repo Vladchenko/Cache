@@ -27,7 +27,7 @@ public interface ICache<T, V> {
     /**
      * @return requested entry V by key T.
      */
-    V getEntry(@NonNull T key) throws IOException, ClassNotFoundException;
+    V getEntry(@NonNull T key) throws NotPresentException, IOException, ClassNotFoundException;
 
     /**
      * Adding an entry to a cache.
@@ -96,15 +96,14 @@ public interface ICache<T, V> {
     T getKeyLastAccessed();
 
     /**
-     * Set last accessed entry's key
-     *
-     * @param keyLastAccessed
-     */
-    void setKeyLastAccessed(@NonNull T keyLastAccessed);
-
-    /**
      * Retrieve size of cache (number of entries in it)
      */
     int getSize();
 
+    /**
+     * Set cache maximum size.
+     *
+     * @param size of cache
+     */
+    void setSize(int size);
 }

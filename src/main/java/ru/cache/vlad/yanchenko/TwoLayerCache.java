@@ -75,13 +75,13 @@ public class TwoLayerCache<T, V> {
         try {
             processCommandLineArguments(args, argumentsParser, argumentsValidator);
 
-            // Creating RAM cache
-            ICache<T, V> ramCache = cachesFactory.createCache(CacheType.RAM, commandLineArguments);
+            // Creating Memory cache
+            ICache<T, V> memoryCache = cachesFactory.createCache(CacheType.MEMORY, commandLineArguments);
 
-            createHddCacheFolderIfNeeded();
+            createDiskCacheFolderIfNeeded();
 
-            // Creating HDD cache
-            ICache<T, V> hddCache = cachesFactory.createCache(CacheType.HDD, commandLineArguments);
+            // Creating Disk cache
+            ICache<T, V> diskCache = cachesFactory.createCache(CacheType.DISK, commandLineArguments);
 
             // Creating cache feeder to fetch cache data to caches
             cacheFeeder = new CacheFeeder<>(
@@ -90,13 +90,13 @@ public class TwoLayerCache<T, V> {
                     )
             );
 
-            populateCachesWithData(ramCache, hddCache);
+            populateCachesWithData(memoryCache, diskCache);
 
             // Run caching process
             cacheProcessor = new CacheProcessor<>(
                     logger,
-                    ramCache,
-                    hddCache,
+                    memoryCache,
+                    diskCache,
                     cacheFeeder,
                     commandLineArguments,
                     new CacheLoggingUtils<>());
@@ -106,21 +106,21 @@ public class TwoLayerCache<T, V> {
         }
     }
 
-    private void createHddCacheFolderIfNeeded() {
+    private void createDiskCacheFolderIfNeeded() {
         try {
-            FileUtils.createHddCacheFolder(logger);
+            FileUtils.createDiskCacheFolder(logger);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }
 
-    private void populateCachesWithData(@NonNull ICache<T, V> ramCache,@NonNull  ICache<T, V> hddCache) {
+    private void populateCachesWithData(@NonNull ICache<T, V> memoryCache,@NonNull  ICache<T, V> diskCache) {
         try {
             // Populating caches with data from cacheFeeder
-            new CachePopulationUtils<T, V>().populateCaches(ramCache, hddCache, cacheFeeder);
+            new CachePopulationUtils<T, V>().populateCaches(memoryCache, diskCache, cacheFeeder);
             logger.info("Caches have been populated");
         } catch (IOException exception) {
-            logger.error("Cannot populate HDD cache, some IO problem.");
+            logger.error("Cannot populate Disk cache, some IO problem.");
             logger.error(exception);
         }
     }
