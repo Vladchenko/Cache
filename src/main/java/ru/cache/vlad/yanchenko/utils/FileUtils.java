@@ -97,12 +97,16 @@ public final class FileUtils {
      *
      * @param logger to log events
      */
-    public static void createDiskCacheFolder(@NonNull Logger logger) throws IOException {
+    public static void createDiskCacheFolder(@NonNull Logger logger) {
         Path path = Path.of(FILES_FOLDER);
         // Check if a directory exists,
         if (!Files.exists(path)) {
             // and if not, create it.
-            Files.createDirectory(path);
+            try {
+                Files.createDirectory(path);
+            } catch (IOException ioex) {
+                logger.error(ioex);
+            }
         } else {
             logger.info("Disk cache files folder already exists");
         }

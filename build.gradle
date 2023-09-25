@@ -14,11 +14,14 @@ repositories {
 }
 
 dependencies {
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.20'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.20'
     implementation 'commons-cli:commons-cli:1.5.0'
     implementation 'com.android.support:support-annotations:28.0.0'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.logging.log4j:log4j:2.20.0'
     implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    implementation 'com.google.dagger:dagger:2.45'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 }

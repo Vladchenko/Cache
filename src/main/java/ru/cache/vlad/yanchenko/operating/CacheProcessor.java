@@ -10,6 +10,7 @@ import ru.cache.vlad.yanchenko.logging.CacheLoggingUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static ru.cache.vlad.yanchenko.arguments.ArgumentsConstants.*;
 
@@ -294,7 +295,7 @@ public class CacheProcessor<T, V> {
                 cacheEntry = processRequest(cacheFeeder.fetchKey());
                 logger.info("Requested entry = {} delivered to a requester.", cacheEntry);
                 logger.info("");
-            } catch (NotPresentException | ClassNotFoundException | IOException npex) {
+            } catch (NoSuchElementException | NotPresentException | ClassNotFoundException | IOException npex) {
                 logger.error(npex);
             }
         }
