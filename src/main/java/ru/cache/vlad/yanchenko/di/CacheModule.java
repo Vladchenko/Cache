@@ -102,9 +102,9 @@ public class CacheModule {
     TwoLayerCache provideTwoLayerCache(Logger logger,
                                        CacheFeeder cacheFeeder,
                                        CacheProcessor cacheProcessor,
-                                       @Named("DiskCache") ICache diskCache,
+                                       @DiskCache ICache diskCache,
                                        Map<String, String> commandLineArguments,
-                                       @Named("MemoryCache") ICache memoryCache,
+                                       @MemoryCache ICache memoryCache,
                                        CachePopulationUtils cachePopulationUtils) {
         return new TwoLayerCache<>(logger, diskCache, memoryCache, cacheFeeder, cacheProcessor,
                 commandLineArguments, cachePopulationUtils);
@@ -112,7 +112,7 @@ public class CacheModule {
 
     @Provides
     @Singleton
-    @Named("MemoryCache")
+    @MemoryCache
     ICache provideMemoryCache(CachesFactory cachesFactory,
                               Map<String, String> commandLineArguments) {
         return cachesFactory.createCache(CacheType.MEMORY, commandLineArguments);
@@ -120,7 +120,7 @@ public class CacheModule {
 
     @Provides
     @Singleton
-    @Named("DiskCache")
+    @DiskCache
     ICache provideDiskCache(CachesFactory cachesFactory,
                             Map<String, String> commandLineArguments) {
         return cachesFactory.createCache(CacheType.DISK, commandLineArguments);
@@ -132,9 +132,9 @@ public class CacheModule {
             Logger logger,
             CacheFeeder cacheFeeder,
             CacheLoggingUtils cacheLoggingUtils,
-            @Named("DiskCache") ICache diskCache,
+            @DiskCache ICache diskCache,
             Map<String, String> commandLineArguments,
-            @Named("MemoryCache") ICache memoryCache) {
+            @MemoryCache ICache memoryCache) {
         return new CacheProcessor<>(
                 logger,
                 memoryCache,
